@@ -1,48 +1,47 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", "Noto Sans Arabic", system-ui, sans-serif;
-  --font-heading: "Manrope", "Noto Sans Arabic", system-ui, sans-serif;
-  --font-arabic: "Noto Sans Arabic", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-heading: "Manrope", system-ui, -apple-system, sans-serif;
 
-  --color-brand-primary: #187645;
-  --color-brand-secondary: #0f4d2d;
-  --color-brand-accent: #22995b;
-  --color-brand-light: #f1f8f4;
+  /* Ramco Red-and-White Brand Identity */
+  --color-brand-primary: #ED1C24;
+  --color-brand-primary-hover: #D0171E;
+  --color-brand-secondary: #222222;
+  --color-brand-accent: #ED1C24;
+  --color-brand-light: #FFF5F5;
+  --color-brand-surface: #F5F5F5;
+  --color-brand-charcoal: #222222;
+  --color-brand-neutral: #666666;
 }
 
 @layer base {
   body {
-    @apply font-sans bg-slate-50 text-slate-900 antialiased overflow-x-hidden;
+    @apply font-sans bg-white text-[#222222] antialiased overflow-x-hidden;
   }
   
-  /* Bold text styling using Manrope for English LTR */
-  [dir="ltr"] h1, [dir="ltr"] h2, [dir="ltr"] h3, [dir="ltr"] h4, [dir="ltr"] h5, [dir="ltr"] h6,
-  [dir="ltr"] strong, [dir="ltr"] b,
-  [dir="ltr"] .font-semibold, [dir="ltr"] .font-bold, [dir="ltr"] .font-extrabold, [dir="ltr"] .font-black {
-    font-family: "Manrope", system-ui, sans-serif;
+  /* Bold headings typography using Manrope */
+  h1, h2, h3, h4, h5, h6,
+  strong, b,
+  .font-semibold, .font-bold, .font-extrabold, .font-black {
+    font-family: "Manrope", system-ui, -apple-system, sans-serif;
   }
 
-  /* Reduce font weight globally for headers and bold classes */
+  /* Consistent corporate typography weighting */
   h1, h2, h3, h4, h5, h6 {
-    font-weight: 400 !important;
+    font-weight: 700;
   }
 
   .font-extrabold, .font-black {
-    font-weight: 500 !important;
+    font-weight: 800;
   }
 
   .font-bold, strong, b {
-    font-weight: 500 !important;
+    font-weight: 700;
   }
 
   .font-semibold {
-    font-weight: 400 !important;
-  }
-
-  /* Proper line heights and styling for RTL Arabic text */
-  [dir="rtl"] {
-    font-family: "Noto Sans Arabic", system-ui, sans-serif;
+    font-weight: 600;
   }
 }
 
@@ -66,23 +65,12 @@
   100% { transform: translateX(-50%); }
 }
 
-@keyframes marqueeRtl {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(50%); }
-}
-
 .animate-marquee-ltr {
   display: flex;
   width: max-content;
   animation: marqueeLtr 25s linear infinite;
 }
 
-.animate-marquee-rtl {
-  display: flex;
-  width: max-content;
-  animation: marqueeRtl 25s linear infinite;
-}
-
-.animate-marquee-ltr:hover, .animate-marquee-rtl:hover {
+.animate-marquee-ltr:hover {
   animation-play-state: paused;
 }

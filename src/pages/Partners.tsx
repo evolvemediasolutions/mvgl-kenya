@@ -1,65 +1,55 @@
 import { Link } from 'react-router-dom'
-import { useLanguage } from '../context/LanguageContext'
 import { partnersData } from '../data/partners'
-import { ArrowRight, ArrowLeft } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import IndustrialChallengeCTA from '../components/ui/IndustrialChallengeCTA'
 
 export default function Partners() {
-  const { locale, dir } = useLanguage()
-
-  const localizedPath = (path: string) => `/${locale}${path === '/' ? '' : path}`
-
   return (
-    <div className="font-sans min-h-screen bg-slate-50">
+    <div className="font-sans min-h-screen bg-white text-[#222222]">
       {/* Partners Hero */}
       <div className="pt-28 sm:pt-32 pb-6 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
-        <section className="relative w-full h-[450px] rounded-3xl overflow-hidden bg-slate-900 text-white flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50 z-10"></div>
+        <section className="relative w-full h-[450px] rounded-3xl overflow-hidden bg-[#222222] text-white flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60 z-10"></div>
           <img
             src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80"
-            alt=""
+            alt="MVGL Kenya Technology Partners"
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 text-center space-y-4">
-            <span className="text-xs font-bold uppercase tracking-widest text-slate-300">
-              {locale === 'ar' ? 'الرئيسية / شركاؤنا' : 'HOME / PARTNERS'}
+            <span className="text-xs font-bold uppercase tracking-widest text-[#ED1C24] bg-white/10 px-3.5 py-1.5 rounded-full border border-white/20">
+              HOME / PARTNERS
             </span>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">
-              {locale === 'ar' ? 'التقنيات العالمية والخبرة المحلية' : 'Technology Partners'}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
+              Global Technology Leaders. Regional Excellence.
             </h1>
-            <p className="text-slate-300 max-w-2xl mx-auto text-sm sm:text-base">
-              {locale === 'ar'
-                ? 'نتعاون مع الشركات التقنية الرائدة عالمياً لتقديم حلول هندسية متطورة تلبي احتياجات الأسواق الصناعية في المملكة العربية السعودية.'
-                : 'We collaborate with world-class technology leaders to deliver cutting-edge engineering solutions customized for Saudi industrial markets.'}
+            <p className="text-slate-200 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+              We collaborate with world-class technology leaders to deliver cutting-edge engineering solutions customized for Kenya and East African industrial markets.
             </p>
           </div>
         </section>
       </div>
 
-      {/* Partners List (Sticky-scroll Journey Showcase) */}
+      {/* Partners List */}
       <section className="py-24 px-4 max-w-[1360px] mx-auto font-sans">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
           {/* Left Side (Sticky on desktop) */}
-          <div className="lg:col-span-4 lg:sticky lg:top-32 space-y-4 text-start">
-            <span className="text-xs font-semibold text-brand-primary uppercase tracking-widest block">
-              {locale === 'ar' ? 'شراكاتنا الهندسية' : 'OUR ALIGNMENT'}
+          <div className="lg:col-span-4 lg:sticky lg:top-32 space-y-4 text-left">
+            <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
+              OUR STRATEGIC OEM ALIGNMENT
             </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
-              {locale === 'ar' ? 'تكامل متميز لأفضل الأنظمة' : 'Integrated Solutions Engineered by Partners'}
+            <h2 className="text-3xl sm:text-4xl font-black text-[#222222] tracking-tight leading-tight">
+              Integrated Solutions Engineered by World Leaders
             </h2>
-            <p className="text-slate-500 text-sm sm:text-base leading-relaxed">
-              {locale === 'ar'
-                ? 'نحن نعمل جنباً إلى جنب مع كبار مصنعي التكنولوجيا حول العالم لتطوير حلول هندسية مصممة خصيصاً تلبي أدق المعايير التشغيلية.'
-                : 'We work side-by-side with global technology leaders to deliver tailored industrial equipment and engineering integration that meet the highest operational standards.'}
+            <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+              We work side-by-side with global technology leaders to deliver tailored industrial equipment and engineering integration that meet the highest operational standards.
             </p>
           </div>
 
-          {/* Spacer Column */}
           <div className="hidden lg:block lg:col-span-1"></div>
 
-          {/* Right Side (Scrolling timeline card stack) */}
-          <div className="lg:col-span-7 relative border-l-2 border-slate-200/60 rtl:border-l-0 rtl:border-r-2 rtl:border-slate-200/60 pl-8 rtl:pl-0 rtl:pr-8 space-y-16 py-4">
+          {/* Right Side (Scrolling card stack) */}
+          <div className="lg:col-span-7 relative border-l-2 border-slate-200 pl-8 space-y-16 py-4">
             {partnersData.map((partner) => {
               const localLogo = (() => {
                 switch (partner.slug) {
@@ -85,44 +75,42 @@ export default function Partners() {
               return (
                 <div key={partner.id} className="relative group">
                   
-                  {/* Timeline node circle */}
-                  <div className="absolute -left-[41px] rtl:-left-0 rtl:-right-[41px] top-6 h-4 w-4 rounded-full bg-slate-900 border-2 border-slate-50 group-hover:bg-brand-primary transition-colors duration-300 z-10"></div>
+                  {/* Timeline node */}
+                  <div className="absolute -left-[41px] top-6 h-4 w-4 rounded-full bg-[#222222] border-2 border-white group-hover:bg-[#ED1C24] transition-colors duration-300 z-10"></div>
                   
                   {/* Partner Card */}
-                  <div className="bg-white border border-slate-100 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-shadow space-y-6 text-start">
+                  <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-md hover:border-[#ED1C24] transition-all space-y-6 text-left">
                     <div className="space-y-2">
-                      <span className="text-xs font-bold text-brand-primary uppercase tracking-widest block">
-                        {locale === 'ar' ? 'الشركة المصنعة' : 'MANUFACTURER'}
+                      <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
+                        PRINCIPAL OEM
                       </span>
-                      <h3 className="text-2xl font-extrabold text-slate-950 tracking-tight">
+                      <h3 className="text-2xl font-black text-[#222222] tracking-tight">
                         {partner.name}
                       </h3>
-                      <p className="text-slate-655 leading-relaxed text-sm">
-                        {partner.description[locale]}
+                      <p className="text-slate-600 leading-relaxed text-sm">
+                        {partner.description.en}
                       </p>
                     </div>
 
-                    {/* Logo display container at the bottom of the card */}
-                    <div className="rounded-2xl overflow-hidden h-48 sm:h-56 relative border border-slate-100 bg-slate-50 flex items-center justify-center p-6 sm:p-8">
-                      <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:16px_16px] opacity-40"></div>
-                      <img 
-                        src={localLogo} 
-                        alt={partner.name} 
-                        className="max-h-full max-w-full object-contain filter grayscale group-hover:grayscale-0 transform group-hover:scale-105 transition-all duration-500 relative z-10" 
-                      />
+                    <div className="border-t border-slate-100 pt-6">
+                      <div className="h-44 bg-[#F5F5F5] rounded-2xl flex items-center justify-center p-6 border border-slate-200/80 relative overflow-hidden group">
+                        <img 
+                          src={localLogo} 
+                          alt={partner.name} 
+                          className="max-h-24 max-w-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300 relative z-10" 
+                        />
+                      </div>
                     </div>
 
-                    {/* Partnership details CTA link */}
-                    <div className="pt-2">
+                    <div className="flex justify-end pt-2">
                       <Link
-                        to={localizedPath(`/partners/${partner.slug}`)}
-                        className="inline-flex items-center gap-1.5 text-sm font-bold text-brand-primary group-hover:text-brand-secondary transition-colors"
+                        to={`/partners/${partner.slug}`}
+                        className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#ED1C24] hover:bg-[#D0171E] text-white font-bold rounded-lg transition-colors text-xs uppercase tracking-wider shadow-sm"
                       >
-                        {locale === 'ar' ? 'عرض تفاصيل الشراكة' : 'Partnership Details'}
-                        {dir === 'rtl' ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+                        Explore Partner Portfolio
+                        <ArrowRight className="h-4 w-4" />
                       </Link>
                     </div>
-
                   </div>
 
                 </div>
@@ -133,7 +121,8 @@ export default function Partners() {
         </div>
       </section>
 
-      <IndustrialChallengeCTA bgImage="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80" />
+      {/* Reusable Challenge CTA */}
+      <IndustrialChallengeCTA bgImage="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80" />
 
     </div>
   )

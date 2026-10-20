@@ -2,62 +2,66 @@ export interface EventItem {
   id: string
   title: {
     en: string
-    ar: string
   }
   date: {
     en: string
-    ar: string
   }
   location: {
     en: string
-    ar: string
   }
   description: {
     en: string
-    ar: string
   }
   image: string
 }
 
 export const eventsData: EventItem[] = [
   {
-    id: 'sabic-exhibition-2026',
+    id: 'east-africa-industrial-expo-2026',
     title: {
-      en: 'SABIC Technical Conference 2026',
-      ar: 'مؤتمر سابك الفني 2026'
+      en: 'East Africa Industrial & Manufacturing Expo 2026'
     },
     date: {
-      en: 'February 15, 2026',
-      ar: '١٥ فبراير ٢٠٢٦'
+      en: 'March 18, 2026'
     },
     location: {
-      en: 'Jubail, Saudi Arabia',
-      ar: 'الجبيل، المملكة العربية السعودية'
+      en: 'Kenyatta International Convention Centre (KICC), Nairobi, Kenya'
     },
     description: {
-      en: 'Showcasing our latest industrial automation and gas compression technologies directly to engineering and procurement teams.',
-      ar: 'عرض أحدث تقنياتنا في الأتمتة الصناعية وضغط الغاز مباشرة لفرق الهندسة والمشتريات.'
+      en: 'Showcasing our latest industrial automation, compressed air packages, and smart control technologies directly to engineering and plant operations teams across Kenya.'
     },
     image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80'
   },
   {
-    id: 'saudi-water-forum',
+    id: 'kenya-energy-infrastructure-summit',
     title: {
-      en: 'Saudi Water Forum',
-      ar: 'منتدى المياه السعودي'
+      en: 'Kenya Energy & Infrastructure Summit'
     },
     date: {
-      en: 'April 22, 2026',
-      ar: '٢٢ أبريل ٢٠٢٦'
+      en: 'May 20, 2026'
     },
     location: {
-      en: 'Riyadh, Saudi Arabia',
-      ar: 'الرياض، المملكة العربية السعودية'
+      en: 'Nairobi, Kenya'
     },
     description: {
-      en: 'Demonstrating energy-efficient pumping systems and water treatment solutions catering to municipal and agricultural requirements.',
-      ar: 'استعراض أنظمة الضخ الموفرة للطاقة وحلول معالجة المياه التي تلبي الاحتياجات البلدية والزراعية.'
+      en: 'Demonstrating certified fire pump houses, energy-efficient HVAC chillers, and corrosion-resistant composite piping systems catering to industrial and utility developments.'
     },
     image: 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'east-africa-cold-chain-forum',
+    title: {
+      en: 'East Africa HVAC & Cold Chain Forum'
+    },
+    date: {
+      en: 'July 14, 2026'
+    },
+    location: {
+      en: 'Sarit Expo Centre, Nairobi, Kenya'
+    },
+    description: {
+      en: 'Presenting state-of-the-art ammonia screw refrigeration packages, cold storage solutions, and process water chillers engineered for horticultural and food processing industries.'
+    },
+    image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80'
   }
 ]

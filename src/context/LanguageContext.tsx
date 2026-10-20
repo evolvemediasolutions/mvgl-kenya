@@ -1,55 +1,43 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, type ReactNode } from 'react'
+import translationsData from '../data/translations.json'
 
-export type Locale = 'en' | 'ar'
+export type Locale = 'en'
 
 interface LanguageContextType {
   locale: Locale
-  dir: 'ltr' | 'rtl'
+  dir: 'ltr'
   setLocale: (locale: Locale) => void
   t: (key: string, defaultValue?: string) => string
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
-import translationsData from '../data/translations.json'
-
 const translations: Record<string, Record<string, string>> = translationsData
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(() => {
-    // Attempt to load from URL path first
-    const path = window.location.pathname
-    if (path.startsWith('/ar')) return 'ar'
-    if (path.startsWith('/en')) return 'en'
-    
-    // Fallback to local storage or browser preference
-    const saved = localStorage.getItem('3t_locale') as Locale
-    if (saved === 'en' || saved === 'ar') return saved
-    
-    return 'en'
-  })
+  const locale: Locale = 'en'
+  const dir = 'ltr'
 
-  const setLocale = (newLocale: Locale) => {
-    setLocaleState(newLocale)
-    localStorage.setItem('3t_locale', newLocale)
+  const setLocale = (_newLocale: Locale) => {
+    // English-only Kenya website
   }
 
-  const dir = locale === 'ar' ? 'rtl' : 'ltr'
-
-  // Apply lang and dir attribute to html tag
+  // Ensure document lang and dir attributes are clean English LTR
   useEffect(() => {
-    document.documentElement.lang = locale
-    document.documentElement.dir = dir
+    document.documentElement.lang = 'en'
+    document.documentElement.dir = 'ltr'
+    document.body.style.fontFamily = '"Inter", system-ui, sans-serif'
     
-    if (locale === 'ar') {
-      document.body.style.fontFamily = '"Noto Sans Arabic", system-ui, sans-serif'
-    } else {
-      document.body.style.fontFamily = '"Inter", system-ui, sans-serif'
+    // Clean up any residual Arabic locale key from localStorage
+    try {
+      localStorage.removeItem('3t_locale')
+    } catch {
+      // Ignore if localStorage is restricted
     }
-  }, [locale, dir])
+  }, [])
 
   const t = (key: string, defaultValue?: string): string => {
-    const dict = translations[locale] || {}
+    const dict = translations['en'] || {}
     return dict[key] || defaultValue || key
   }
 

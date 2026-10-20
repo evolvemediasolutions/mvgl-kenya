@@ -1,33 +1,28 @@
-import { useLanguage } from '../context/LanguageContext'
 import { eventsData } from '../data/events'
 import { Calendar, MapPin } from 'lucide-react'
 import IndustrialChallengeCTA from '../components/ui/IndustrialChallengeCTA'
 
 export default function Events() {
-  const { locale } = useLanguage()
-
   return (
-    <div className="font-sans min-h-screen bg-slate-50">
+    <div className="font-sans min-h-screen bg-white text-[#222222]">
       {/* Events Hero */}
       <div className="pt-28 sm:pt-32 pb-6 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
-        <section className="relative w-full h-[450px] rounded-3xl overflow-hidden bg-slate-900 text-white flex items-center justify-center">
+        <section className="relative w-full h-[450px] rounded-3xl overflow-hidden bg-[#222222] text-white flex items-center justify-center">
           <div className="absolute inset-0 bg-black/60 z-10"></div>
           <img
             src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80"
-            alt=""
+            alt="MVGL Kenya Events & Expos"
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 text-center space-y-4">
-            <span className="text-xs font-bold uppercase tracking-widest text-slate-300">
-              {locale === 'ar' ? 'الرئيسية / الفعاليات' : 'HOME / EVENTS'}
+            <span className="text-xs font-bold uppercase tracking-widest text-[#ED1C24] bg-white/10 px-3.5 py-1.5 rounded-full border border-white/20">
+              HOME / EVENTS & EXPOS
             </span>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">
-              {locale === 'ar' ? 'نتواصل. نتعاون. نبتكر.' : 'Connect. Collaborate. Innovate.'}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
+              Connect. Collaborate. Innovate.
             </h1>
-            <p className="text-slate-300 max-w-2xl mx-auto text-sm sm:text-base">
-              {locale === 'ar'
-                ? 'نبني شراكات قوية ونتبادل المعرفة من خلال مشاركتنا الفعالة في المعارض والمؤتمرات الفنية الكبرى.'
-                : 'Building partnerships and exchanging technical knowledge through active engagement in major exhibitions and conferences.'}
+            <p className="text-slate-200 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+              Building lasting industrial partnerships and sharing technical know-how through active participation in regional engineering conferences and exhibitions across Kenya and East Africa.
             </p>
           </div>
         </section>
@@ -39,24 +34,24 @@ export default function Events() {
           {eventsData.map((ev) => (
             <div
               key={ev.id}
-              className="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col lg:flex-row text-start"
+              className="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md hover:border-[#ED1C24] transition-all duration-300 flex flex-col lg:flex-row text-left"
             >
               <div className="lg:w-1/3 h-64 lg:h-auto overflow-hidden relative">
-                <img src={ev.image} alt={ev.title[locale]} className="w-full h-full object-cover" />
+                <img src={ev.image} alt={ev.title.en} className="w-full h-full object-cover" />
               </div>
               <div className="p-8 lg:w-2/3 space-y-4 flex flex-col justify-center">
-                <h3 className="text-2xl font-bold text-slate-950">{ev.title[locale]}</h3>
-                <div className="flex flex-wrap gap-4 text-xs font-bold text-slate-500">
-                  <div className="flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-md">
-                    <Calendar className="h-4 w-4 text-brand-accent" />
-                    <span>{ev.date[locale]}</span>
+                <h3 className="text-2xl font-black text-[#222222]">{ev.title.en}</h3>
+                <div className="flex flex-wrap gap-4 text-xs font-bold text-slate-600">
+                  <div className="flex items-center gap-1.5 bg-[#F5F5F5] px-3.5 py-2 rounded-lg border border-slate-200/60">
+                    <Calendar className="h-4 w-4 text-[#ED1C24]" />
+                    <span>{ev.date.en}</span>
                   </div>
-                  <div className="flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-md">
-                    <MapPin className="h-4 w-4 text-brand-accent" />
-                    <span>{ev.location[locale]}</span>
+                  <div className="flex items-center gap-1.5 bg-[#F5F5F5] px-3.5 py-2 rounded-lg border border-slate-200/60">
+                    <MapPin className="h-4 w-4 text-[#ED1C24]" />
+                    <span>{ev.location.en}</span>
                   </div>
                 </div>
-                <p className="text-slate-600 leading-relaxed text-sm">{ev.description[locale]}</p>
+                <p className="text-slate-600 leading-relaxed text-sm sm:text-base">{ev.description.en}</p>
               </div>
             </div>
           ))}

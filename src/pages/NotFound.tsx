@@ -1,27 +1,22 @@
 import { Link } from 'react-router-dom'
-import { useLanguage } from '../context/LanguageContext'
 
 export default function NotFound() {
-  const { locale } = useLanguage()
-
   return (
-    <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center font-sans p-6 text-center">
+    <div className="min-h-screen bg-[#222222] text-white flex items-center justify-center font-sans p-6 text-center">
       <div className="space-y-6 max-w-md">
-        <h1 className="text-6xl font-black text-brand-accent">404</h1>
-        <h2 className="text-2xl font-bold text-slate-100">
-          {locale === 'ar' ? 'الصفحة غير موجودة' : 'Page Not Found'}
+        <h1 className="text-7xl font-black text-[#ED1C24]">404</h1>
+        <h2 className="text-2xl font-bold text-white">
+          Page Not Found
         </h2>
-        <p className="text-slate-400">
-          {locale === 'ar'
-            ? 'عذراً، الصفحة التي تبحث عنها غير متوفرة أو تم نقلها.'
-            : 'Sorry, the page you are looking for does not exist or has been moved.'}
+        <p className="text-slate-300 text-sm leading-relaxed">
+          Sorry, the page you are looking for does not exist or has been moved.
         </p>
         <div className="pt-4">
           <Link
-            to={`/${locale}`}
-            className="px-6 py-3 bg-brand-accent hover:bg-brand-accent/90 text-white font-bold rounded-lg shadow-lg"
+            to="/"
+            className="inline-flex px-8 py-3.5 bg-[#ED1C24] hover:bg-[#D0171E] text-white font-bold rounded-lg shadow-lg hover:shadow-red-500/20 text-xs uppercase tracking-wider transition-all"
           >
-            {locale === 'ar' ? 'العودة للرئيسية' : 'Go to Homepage'}
+            Go to Homepage
           </Link>
         </div>
       </div>

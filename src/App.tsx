@@ -1,5 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom'
-import { LanguageProvider, useLanguage } from './context/LanguageContext'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { LanguageProvider } from './context/LanguageContext'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import Home from './pages/Home'
@@ -15,37 +15,28 @@ import Chairman from './pages/Chairman'
 import Sustainability from './pages/Sustainability'
 import Careers from './pages/Careers'
 import Insights from './pages/Insights'
-import Why3T from './pages/Why3T'
+import WhyMVGL from './pages/WhyMVGL'
 import OpenPositions from './pages/OpenPositions'
 import AirGasSolutions from './pages/AirGasSolutions'
 import AutomationControlSolutions from './pages/AutomationControlSolutions'
 import RefrigerationHvacSolutions from './pages/RefrigerationHvacSolutions'
 import NonMetallicSolutions from './pages/NonMetallicSolutions'
 import FirePumpSolutions from './pages/FirePumpSolutions'
-import { useEffect } from 'react'
 
-function RootRedirect() {
-  const { locale } = useLanguage()
-  return <Navigate to={`/${locale}`} replace />
-}
-
-function LocaleWrapper({ children }: { children: React.ReactNode }) {
-  const { locale, setLocale } = useLanguage()
-  const { lang } = useParams<{ lang: 'en' | 'ar' }>()
-
-  useEffect(() => {
-    if (lang && (lang === 'en' || lang === 'ar') && lang !== locale) {
-      setLocale(lang)
-    }
-  }, [lang, locale, setLocale])
-
+function PageLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main key={locale} className="flex-grow animate-fade-in">{children}</main>
+      <main className="flex-grow animate-fade-in">{children}</main>
       <Footer />
     </div>
   )
+}
+
+function LegacyLocaleRedirect() {
+  const location = useLocation()
+  const cleanPath = location.pathname.replace(/^\/(?:en|ar)(?:\/|$)/, '/')
+  return <Navigate to={cleanPath + location.search + location.hash} replace />
 }
 
 function App() {
@@ -53,253 +44,49 @@ function App() {
     <LanguageProvider>
       <BrowserRouter>
         <Routes>
-          {/* Base Redirect */}
-          <Route path="/" element={<RootRedirect />} />
+          {/* Main Clean English Routes */}
+          <Route path="/" element={<PageLayout><Home /></PageLayout>} />
+          <Route path="/about" element={<PageLayout><About /></PageLayout>} />
+          <Route path="/chairman" element={<PageLayout><Chairman /></PageLayout>} />
+          
+          {/* Solutions Routes */}
+          <Route path="/solutions" element={<PageLayout><Solutions /></PageLayout>} />
+          <Route path="/solutions/air-gas-solutions" element={<PageLayout><AirGasSolutions /></PageLayout>} />
+          <Route path="/solutions/refrigeration-hvac-solutions" element={<PageLayout><RefrigerationHvacSolutions /></PageLayout>} />
+          <Route path="/solutions/refrigeration-hvac" element={<PageLayout><RefrigerationHvacSolutions /></PageLayout>} />
+          <Route path="/solutions/automation-control" element={<PageLayout><AutomationControlSolutions /></PageLayout>} />
+          <Route path="/solutions/industrial-automation" element={<PageLayout><AutomationControlSolutions /></PageLayout>} />
+          <Route path="/solutions/non-metallic-solutions" element={<PageLayout><NonMetallicSolutions /></PageLayout>} />
+          <Route path="/solutions/non-metallic-solution" element={<PageLayout><NonMetallicSolutions /></PageLayout>} />
+          <Route path="/solutions/fire-pump-solutions" element={<PageLayout><FirePumpSolutions /></PageLayout>} />
+          <Route path="/solutions/fire-pump-solution" element={<PageLayout><FirePumpSolutions /></PageLayout>} />
+          
+          {/* Nested Partner Detail under Solutions */}
+          <Route path="/solutions/:solutionSlug/:partnerSlug" element={<PageLayout><PartnerDetail /></PageLayout>} />
+          
+          {/* Partners Routes */}
+          <Route path="/partners" element={<PageLayout><Partners /></PageLayout>} />
+          <Route path="/partners/:slug" element={<PageLayout><PartnerDetail /></PageLayout>} />
+          
+          {/* Company & Content Pages */}
+          <Route path="/industries" element={<PageLayout><Industries /></PageLayout>} />
+          <Route path="/events" element={<PageLayout><Events /></PageLayout>} />
+          <Route path="/contact" element={<PageLayout><Contact /></PageLayout>} />
+          <Route path="/sustainability" element={<PageLayout><Sustainability /></PageLayout>} />
+          <Route path="/careers" element={<PageLayout><Careers /></PageLayout>} />
+          <Route path="/why-mvgl" element={<PageLayout><WhyMVGL /></PageLayout>} />
+          <Route path="/why-3t" element={<Navigate to="/why-mvgl" replace />} />
+          <Route path="/open-positions" element={<PageLayout><OpenPositions /></PageLayout>} />
+          <Route path="/insights" element={<PageLayout><Insights /></PageLayout>} />
 
-          {/* Locale-aware Routes */}
-          <Route
-            path="/:lang"
-            element={
-              <LocaleWrapper>
-                <Home />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/about"
-            element={
-              <LocaleWrapper>
-                <About />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/chairman"
-            element={
-              <LocaleWrapper>
-                <Chairman />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/solutions"
-            element={
-              <LocaleWrapper>
-                <Solutions />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/solutions/air-gas-solutions"
-            element={
-              <LocaleWrapper>
-                <AirGasSolutions />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/solutions/refrigeration-hvac-solutions"
-            element={
-              <LocaleWrapper>
-                <RefrigerationHvacSolutions />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/solutions/refrigeration-hvac"
-            element={
-              <LocaleWrapper>
-                <RefrigerationHvacSolutions />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/solutions/automation-control"
-            element={
-              <LocaleWrapper>
-                <AutomationControlSolutions />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/solutions/industrial-automation"
-            element={
-              <LocaleWrapper>
-                <AutomationControlSolutions />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/solutions/non-metallic-solutions"
-            element={
-              <LocaleWrapper>
-                <NonMetallicSolutions />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/solutions/non-metallic-solution"
-            element={
-              <LocaleWrapper>
-                <NonMetallicSolutions />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/solutions/non-metallic-solutions/:partnerSlug"
-            element={
-              <LocaleWrapper>
-                <PartnerDetail />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/solutions/non-metallic-solution/:partnerSlug"
-            element={
-              <LocaleWrapper>
-                <PartnerDetail />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/solutions/fire-pump-solutions"
-            element={
-              <LocaleWrapper>
-                <FirePumpSolutions />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/solutions/fire-pump-solution"
-            element={
-              <LocaleWrapper>
-                <FirePumpSolutions />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/solutions/fire-pump-solutions/:partnerSlug"
-            element={
-              <LocaleWrapper>
-                <PartnerDetail />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/solutions/fire-pump-solution/:partnerSlug"
-            element={
-              <LocaleWrapper>
-                <PartnerDetail />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/solutions/automation-control/:partnerSlug"
-            element={
-              <LocaleWrapper>
-                <PartnerDetail />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/solutions/air-gas-solutions/:partnerSlug"
-            element={
-              <LocaleWrapper>
-                <PartnerDetail />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/solutions/:solutionSlug/:partnerSlug"
-            element={
-              <LocaleWrapper>
-                <PartnerDetail />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/partners"
-            element={
-              <LocaleWrapper>
-                <Partners />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/partners/:slug"
-            element={
-              <LocaleWrapper>
-                <PartnerDetail />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/industries"
-            element={
-              <LocaleWrapper>
-                <Industries />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/events"
-            element={
-              <LocaleWrapper>
-                <Events />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/contact"
-            element={
-              <LocaleWrapper>
-                <Contact />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/sustainability"
-            element={
-              <LocaleWrapper>
-                <Sustainability />
-              </LocaleWrapper>
-            }
-          />
-           <Route
-            path="/:lang/careers"
-            element={
-              <LocaleWrapper>
-                <Careers />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/why-3t"
-            element={
-              <LocaleWrapper>
-                <Why3T />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/open-positions"
-            element={
-              <LocaleWrapper>
-                <OpenPositions />
-              </LocaleWrapper>
-            }
-          />
-          <Route
-            path="/:lang/insights"
-            element={
-              <LocaleWrapper>
-                <Insights />
-              </LocaleWrapper>
-            }
-          />
+          {/* Legacy Locale Redirects (e.g. /en/about -> /about, /ar/solutions -> /solutions) */}
+          <Route path="/en/*" element={<LegacyLocaleRedirect />} />
+          <Route path="/ar/*" element={<LegacyLocaleRedirect />} />
+          <Route path="/en" element={<Navigate to="/" replace />} />
+          <Route path="/ar" element={<Navigate to="/" replace />} />
 
           {/* Fallback 404 Route */}
-          <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<PageLayout><NotFound /></PageLayout>} />
         </Routes>
       </BrowserRouter>
     </LanguageProvider>

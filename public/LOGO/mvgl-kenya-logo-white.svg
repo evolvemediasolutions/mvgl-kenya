@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" fill="none" width="100%" height="100%">
+  <!-- Icon Emblem -->
+  <g transform="translate(4, 6)">
+    <!-- Red Background Rounded Square -->
+    <rect width="52" height="52" rx="10" fill="#ED1C24" />
+    
+    <!-- Stylized Geometric MV Emblem in White -->
+    <path d="M14 38L22 18H28L24 38H14Z" fill="#FFFFFF" opacity="0.95" />
+    <path d="M22 18L30 38H36L42 18H36L32 30L28 18H22Z" fill="#FFFFFF" />
+    <circle cx="38" cy="18" r="3" fill="#FFFFFF" />
+  </g>
+
+  <!-- Typography: MVGL -->
+  <text x="68" y="38" font-family="'Manrope', 'Inter', system-ui, sans-serif" font-size="30" font-weight="900" fill="#FFFFFF" letter-spacing="-0.5">
+    MVGL
+  </text>
+  
+  <!-- Red Dot Accent -->
+  <circle cx="166" cy="33" r="4.5" fill="#ED1C24" />
+
+  <!-- Subtitle: KENYA -->
+  <text x="180" y="38" font-family="'Manrope', 'Inter', system-ui, sans-serif" font-size="22" font-weight="800" fill="#ED1C24" letter-spacing="1.5">
+    KENYA
+  </text>
+
+  <!-- Secondary Line: MULTIVISTA GLOBAL -->
+  <text x="70" y="52" font-family="'Inter', system-ui, sans-serif" font-size="9" font-weight="700" fill="#A0AEC0" letter-spacing="2.8">
+    MULTIVISTA GLOBAL &bull; INDUSTRIAL
+  </text>
+</svg>
