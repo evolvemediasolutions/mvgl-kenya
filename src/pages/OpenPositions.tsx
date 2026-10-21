@@ -45,7 +45,7 @@ export default function OpenPositions() {
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 text-center space-y-4">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#ED1C24] bg-white/10 px-3.5 py-1.5 rounded-full border border-white/20">
+            <span className="eyebrow block">
               CAREERS / OPEN POSITIONS
             </span>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
@@ -67,7 +67,7 @@ export default function OpenPositions() {
               className="bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-lg hover:border-[#ED1C24] transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-6 text-left"
             >
               <div className="space-y-3 max-w-2xl">
-                <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-wider bg-red-50 px-3 py-1 rounded-full border border-red-100">
+                <span className="eyebrow block">
                   {pos.department}
                 </span>
                 <h3 className="text-2xl font-black text-[#222222] tracking-tight">

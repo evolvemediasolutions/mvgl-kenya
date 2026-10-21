@@ -16,7 +16,7 @@ export default function Solutions() {
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 text-center space-y-4">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#ED1C24] bg-white/10 px-3.5 py-1.5 rounded-full border border-white/20">
+            <span className="eyebrow block">
               HOME / INDUSTRIAL SOLUTIONS
             </span>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
@@ -42,7 +42,7 @@ export default function Solutions() {
             >
               {/* Text Area */}
               <div className="lg:w-1/2 space-y-6 text-left">
-                <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-wider bg-red-50 border border-red-100 px-3 py-1 rounded">
+                <span className="eyebrow block">
                   {sol.category.toUpperCase()}
                 </span>
                 <h2 className="text-3xl font-black text-[#222222] tracking-tight">{sol.title.en}</h2>

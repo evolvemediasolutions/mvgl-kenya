@@ -149,7 +149,7 @@ export default function PartnerDetail() {
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 text-center space-y-4">
-            <span className="text-xs font-bold uppercase tracking-widest text-slate-300">
+            <span className="eyebrow block">
               {isRefrigerationPartner
                 ? `HOME / INDUSTRIAL SOLUTIONS / REFRIGERATION & HVAC SOLUTIONS / ${partner.name.toUpperCase()}`
                 : isAirGasPartner
@@ -297,7 +297,7 @@ export default function PartnerDetail() {
               <div className="space-y-8">
                 {/* 1. Centered Pill Badge */}
                 <div className="flex justify-center">
-                  <span className="bg-brand-primary text-white font-bold text-xs uppercase tracking-widest px-8 py-3 rounded-lg shadow-sm">
+                  <span className="eyebrow block">
                     ROCKWELL AUTOMATION
                   </span>
                 </div>
@@ -570,7 +570,7 @@ export default function PartnerDetail() {
               <div className="space-y-8">
                 {/* 1. Centered Pill Badge */}
                 <div className="flex justify-center">
-                  <span className="bg-brand-primary text-white font-bold text-xs uppercase tracking-widest px-8 py-3 rounded-lg shadow-sm">
+                  <span className="eyebrow block">
                     SPP PUMPS
                   </span>
                 </div>
@@ -698,7 +698,7 @@ export default function PartnerDetail() {
               <div className="space-y-8">
                 {/* 1. Centered Pill Badge */}
                 <div className="flex justify-center">
-                  <span className="bg-brand-primary text-white font-bold text-xs uppercase tracking-widest px-8 py-3 rounded-lg shadow-sm">
+                  <span className="eyebrow block">
                     KIRLOSKAR PNEUMATIC
                   </span>
                 </div>
@@ -898,7 +898,7 @@ export default function PartnerDetail() {
               <div className="space-y-8">
                 {/* 1. Centered Pill Badge */}
                 <div className="flex justify-center">
-                  <span className="bg-brand-primary text-white font-bold text-xs uppercase tracking-widest px-8 py-3 rounded-lg shadow-sm">
+                  <span className="eyebrow block">
                     KIRLOSKAR CHILLERS
                   </span>
                 </div>
@@ -1155,7 +1155,7 @@ export default function PartnerDetail() {
               <div className="space-y-8">
                 {/* 1. Centered Pill Badge */}
                 <div className="flex justify-center">
-                  <span className="bg-brand-primary text-white font-bold text-xs uppercase tracking-widest px-8 py-3 rounded-lg shadow-sm">
+                  <span className="eyebrow block">
                     HMS NETWORKS
                   </span>
                 </div>
@@ -1374,7 +1374,7 @@ export default function PartnerDetail() {
               <div className="space-y-8">
                 {/* 1. Centered Pill Badge */}
                 <div className="flex justify-center">
-                  <span className="bg-brand-primary text-white font-bold text-xs uppercase tracking-widest px-8 py-3 rounded-lg shadow-sm">
+                  <span className="eyebrow block">
                     PROSOFT TECHNOLOGY
                   </span>
                 </div>
@@ -1802,7 +1802,7 @@ export default function PartnerDetail() {
               <div className="space-y-8">
                 {/* 1. Centered Pill Badge */}
                 <div className="flex justify-center">
-                  <span className="bg-brand-primary text-white font-bold text-xs uppercase tracking-widest px-8 py-3 rounded-lg shadow-sm">
+                  <span className="eyebrow block">
                     EPP COMPOSITES
                   </span>
                 </div>

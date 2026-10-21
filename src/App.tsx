@@ -7,7 +7,6 @@ import About from './pages/About'
 import Solutions from './pages/Solutions'
 import Partners from './pages/Partners'
 import PartnerDetail from './pages/PartnerDetail'
-import Industries from './pages/Industries'
 import Events from './pages/Events'
 import Contact from './pages/Contact'
 import NotFound from './pages/NotFound'
@@ -69,7 +68,7 @@ function App() {
           <Route path="/partners/:slug" element={<PageLayout><PartnerDetail /></PageLayout>} />
           
           {/* Company & Content Pages */}
-          <Route path="/industries" element={<PageLayout><Industries /></PageLayout>} />
+          <Route path="/industries" element={<Navigate to="/solutions" replace />} />
           <Route path="/events" element={<PageLayout><Events /></PageLayout>} />
           <Route path="/contact" element={<PageLayout><Contact /></PageLayout>} />
           <Route path="/sustainability" element={<PageLayout><Sustainability /></PageLayout>} />

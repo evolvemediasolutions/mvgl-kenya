@@ -91,7 +91,7 @@ export default function Contact() {
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 text-center space-y-4">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#ED1C24] bg-white/10 px-3 py-1 rounded-full">
+            <span className="eyebrow block">
               HOME / CONTACT US
             </span>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
@@ -112,9 +112,9 @@ export default function Contact() {
           <div className="lg:col-span-1 space-y-8 bg-white border border-slate-100 p-8 rounded-2xl shadow-sm">
             <div className="space-y-2">
               <h3 className="text-xl font-bold text-[#222222]">MVGL Kenya</h3>
-              <p className="text-xs text-[#ED1C24] font-bold uppercase tracking-widest">
+              <span className="eyebrow block">
                 KENYA HEAD OFFICE &bull; NAIROBI
-              </p>
+              </span>
             </div>
 
             <div className="space-y-6 text-sm text-slate-600">
@@ -158,7 +158,7 @@ export default function Contact() {
           {/* Form */}
           <div className="lg:col-span-2 bg-white border border-slate-100 p-8 rounded-2xl shadow-sm space-y-6">
             <div className="space-y-1">
-              <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest">ENQUIRY FORM</span>
+              <span className="eyebrow block">ENQUIRY FORM</span>
               <h3 className="text-2xl font-bold text-[#222222]">
                 Send Us a Message
               </h3>

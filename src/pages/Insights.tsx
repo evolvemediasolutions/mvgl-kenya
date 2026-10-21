@@ -136,7 +136,7 @@ export default function Insights() {
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="max-w-4xl mx-auto px-6 relative z-20 text-center space-y-6">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#ED1C24] bg-white/10 px-3.5 py-1.5 rounded-full border border-white/20">
+            <span className="eyebrow block">
               HOME / INSIGHTS &amp; PERSPECTIVES
             </span>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
@@ -166,7 +166,7 @@ export default function Insights() {
       {/* 2. Featured Post Section */}
       <section id="featured" className="py-16 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 text-left">
         <div className="space-y-2 mb-10">
-          <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
+          <span className="eyebrow block">
             FEATURED INSIGHT
           </span>
           <h2 className="text-2xl sm:text-3xl font-black text-[#222222] tracking-tight leading-tight">
@@ -208,7 +208,7 @@ export default function Insights() {
       {/* 3. Articles Grid */}
       <section className="py-16 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 text-left">
         <div className="space-y-2 mb-10">
-          <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
+          <span className="eyebrow block">
             ALL PERSPECTIVES
           </span>
           <h2 className="text-2xl sm:text-3xl font-black text-[#222222] tracking-tight leading-tight">
@@ -260,7 +260,7 @@ export default function Insights() {
             
             <div className="w-full lg:w-[320px] bg-[#222222] text-white rounded-3xl p-8 flex flex-col justify-between items-start shadow-xl flex-shrink-0 min-h-[400px]">
               <div className="space-y-4">
-                <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest">DISCOVER</span>
+                <span className="eyebrow block">DISCOVER</span>
                 <h2 className="text-2xl sm:text-3xl font-black tracking-tight leading-tight">
                   Applied Engineering Across Disciplines
                 </h2>
@@ -345,7 +345,7 @@ export default function Insights() {
         <div className="bg-[#ED1C24] text-white rounded-3xl py-16 sm:py-20 px-8 sm:px-12 relative overflow-hidden shadow-xl text-center space-y-6 w-full">
           <div className="max-w-4xl mx-auto space-y-6 relative z-10">
             <div className="space-y-3">
-              <span className="text-xs font-bold uppercase tracking-widest text-white/80">TECHNICAL UPDATES</span>
+              <span className="eyebrow block !text-white/80">TECHNICAL UPDATES</span>
               <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
                 Stay Ahead with MVGL Kenya Insights
               </h2>

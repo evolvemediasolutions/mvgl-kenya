@@ -178,7 +178,7 @@ export default function NonMetallicSolutions() {
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="max-w-4xl mx-auto px-6 relative z-20 text-center space-y-6">
-            <span className="text-xs font-bold uppercase tracking-widest text-slate-300">
+            <span className="eyebrow block">
               HOME / INDUSTRIAL SOLUTIONS / NON METALLIC SOLUTION
             </span>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">
@@ -292,7 +292,7 @@ export default function NonMetallicSolutions() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center bg-white border border-slate-100 rounded-3xl p-8 sm:p-12 shadow-sm">
           {/* Left Text Info */}
           <div className="lg:col-span-7 space-y-4 text-start">
-            <span className="text-xs font-bold text-brand-primary uppercase tracking-widest block">
+            <span className="eyebrow block">
               PARTNERS
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
@@ -331,7 +331,7 @@ export default function NonMetallicSolutions() {
       <section className="py-16 px-4 max-w-[1360px] mx-auto my-6 font-sans">
         {/* Header */}
         <div className="text-center space-y-3 mb-12">
-          <span className="text-xs font-bold text-brand-primary uppercase tracking-widest block">
+          <span className="eyebrow block">
             SECTORS
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
@@ -377,7 +377,7 @@ export default function NonMetallicSolutions() {
 
           {/* Right Details */}
           <div className="lg:col-span-6 space-y-5 text-start">
-            <span className="text-xs font-bold text-brand-primary uppercase tracking-widest block">
+            <span className="eyebrow block">
               {currentSector.tag}
             </span>
             <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">

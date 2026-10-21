@@ -55,16 +55,6 @@ export default function Navbar() {
       path: '/partners'
     },
     {
-      id: 'industries',
-      label: 'Industries',
-      path: '/industries'
-    },
-    {
-      id: 'events',
-      label: 'Events',
-      path: '/events'
-    },
-    {
       id: 'sustainability',
       label: 'Sustainability',
       path: '/sustainability'
@@ -81,7 +71,11 @@ export default function Navbar() {
     {
       id: 'insights',
       label: 'Insights',
-      path: '/insights'
+      path: '/insights',
+      dropdown: [
+        { label: 'Industry Insights', path: '/insights' },
+        { label: 'Events & Expos', path: '/events' }
+      ]
     }
   ]
 
@@ -104,7 +98,7 @@ export default function Navbar() {
           <div className="flex-shrink-0 flex items-center">
             <Link to="/" className="flex items-center">
               <img 
-                src="/LOGO/mvgl-kenya-logo.svg" 
+                src="/NEW LOGO/logo2.png" 
                 alt="MVGL Kenya Logo" 
                 className={`w-auto object-contain transition-all duration-300 ${
                   isScrolled ? 'h-11 sm:h-12' : 'h-12 sm:h-14'

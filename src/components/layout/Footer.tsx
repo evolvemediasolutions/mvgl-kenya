@@ -18,11 +18,11 @@ export default function Footer() {
         
         {/* Branding & Logo */}
         <div className="space-y-4">
-          <Link to="/" className="inline-flex items-center">
+          <Link to="/" className="inline-flex items-center bg-white px-3.5 py-2 rounded-xl shadow-xs hover:opacity-95 transition-opacity">
             <img 
-              src="/LOGO/mvgl-kenya-logo-white.svg" 
+              src="/NEW LOGO/logo2.png" 
               alt="MVGL Kenya Logo" 
-              className="h-12 w-auto object-contain"
+              className="h-11 w-auto object-contain"
             />
           </Link>
           <p className="text-sm leading-relaxed text-slate-300">

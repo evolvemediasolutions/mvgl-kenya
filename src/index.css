@@ -43,6 +43,24 @@
   .font-semibold {
     font-weight: 600;
   }
+
+  /* Standardized Corporate Eyebrow - Single line, uppercase, bold brand red */
+  .eyebrow {
+    display: block;
+    font-family: "Manrope", system-ui, -apple-system, sans-serif;
+    font-size: 0.75rem;
+    line-height: 1.15rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #ED1C24;
+    white-space: nowrap;
+  }
+  @media (min-width: 640px) {
+    .eyebrow {
+      font-size: 0.8125rem;
+    }
+  }
 }
 
 @keyframes fadeIn {

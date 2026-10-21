@@ -52,7 +52,7 @@ export default function WhyMVGL() {
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="max-w-4xl mx-auto px-6 relative z-20 text-center space-y-6">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#ED1C24] bg-white/10 px-3 py-1 rounded-full">
+            <span className="eyebrow block">
               CAREERS / WHY MVGL KENYA
             </span>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
@@ -82,7 +82,7 @@ export default function WhyMVGL() {
       {/* 2. Why You'll Grow Here */}
       <section id="growth" className="py-20 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 text-start">
         <div className="space-y-3 mb-16 text-center max-w-3xl mx-auto">
-          <span className="text-xs font-bold text-brand-primary uppercase tracking-widest block">
+          <span className="eyebrow block">
             GROWTH & VALUES
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-[#222222] tracking-tight leading-tight">
@@ -120,7 +120,7 @@ export default function WhyMVGL() {
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="max-w-3xl mx-auto px-6 relative z-20 space-y-6">
-          <span className="text-xs font-bold text-red-300 uppercase tracking-widest block">
+          <span className="eyebrow block">
             OUR MISSION
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
@@ -142,7 +142,7 @@ export default function WhyMVGL() {
       <section className="py-20 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 text-start border-b border-slate-100">
         <div className="max-w-3xl mx-auto text-center space-y-8">
           <div className="space-y-3">
-            <span className="text-xs font-bold text-brand-primary uppercase tracking-widest block">
+            <span className="eyebrow block">
               OUR VALUES
             </span>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#222222] tracking-tight leading-tight">
@@ -178,7 +178,7 @@ export default function WhyMVGL() {
       {/* 5. Life at MVGL Kenya */}
       <section id="culture" className="py-20 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 text-start">
         <div className="space-y-3 mb-12 text-center max-w-3xl mx-auto">
-          <span className="text-xs font-bold text-brand-primary uppercase tracking-widest block">
+          <span className="eyebrow block">
             LIFE AT MVGL KENYA
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-[#222222] tracking-tight leading-tight">

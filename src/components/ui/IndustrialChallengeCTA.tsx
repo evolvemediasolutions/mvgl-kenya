@@ -18,7 +18,7 @@ export default function IndustrialChallengeCTA({ bgImage }: IndustrialChallengeC
         className="absolute inset-0 w-full h-full object-cover"
       />
       <div className="max-w-4xl mx-auto text-center relative z-20 space-y-6">
-        <span className="text-xs font-bold uppercase tracking-widest text-red-400">
+        <span className="eyebrow block">
           PARTNER WITH MVGL KENYA
         </span>
         <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">

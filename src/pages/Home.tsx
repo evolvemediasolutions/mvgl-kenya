@@ -1,14 +1,50 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Shield, Lightbulb, Users, RefreshCw, ChevronLeft, ChevronRight, Cpu, Settings } from 'lucide-react'
-import { industriesData } from '../data/industries'
 import { solutionsData } from '../data/solutions'
 import IndustrialChallengeCTA from '../components/ui/IndustrialChallengeCTA'
 
 export default function Home() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [scrollProgress, setScrollProgress] = useState(0)
-  const [activeIndustryIndex, setActiveIndustryIndex] = useState(0)
+  const [currentSlide, setCurrentSlide] = useState(0)
+
+  const slides = [
+    {
+      eyebrow: 'INDUSTRIAL ENGINEERING SOLUTIONS',
+      title: "Engineering Solutions That Keep Kenya's Industries Moving",
+      desc: 'Delivering world-class industrial equipment, precision engineering expertise, and dependable regional technical support across East Africa.',
+      image: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=1600&q=80',
+      primaryBtn: { text: 'Explore Solutions', path: '/solutions' },
+      secondaryBtn: { text: 'Contact Our Team', path: '/contact' }
+    },
+    {
+      eyebrow: 'COMPREHENSIVE UTILITIES & COOLING',
+      title: 'Reliable Compressed Air, Process Gas & Industrial HVAC',
+      desc: 'High-efficiency screw compressors, specialized gas systems, and industrial chiller packages engineered for peak uptime and harsh operating environments.',
+      image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1600&q=80',
+      primaryBtn: { text: 'Air & Gas Solutions', path: '/solutions/air-gas-solutions' },
+      secondaryBtn: { text: 'Refrigeration & HVAC', path: '/solutions/refrigeration-hvac-solutions' }
+    },
+    {
+      eyebrow: 'INTELLIGENT AUTOMATION & COMPOSITES',
+      title: 'Next-Gen Industrial Automation & Advanced Composites',
+      desc: 'Empowering East African manufacturers with certified Rockwell Automation controls, resilient industrial networks, and corrosion-resistant FRP/GRP composite piping.',
+      image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1600&q=80',
+      primaryBtn: { text: 'Automation & Control', path: '/solutions/automation-control' },
+      secondaryBtn: { text: 'Our Principal Partners', path: '/partners' }
+    }
+  ]
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length)
+    }, 6500)
+    return () => clearInterval(timer)
+  }, [slides.length])
+
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length)
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)
 
   const handleScroll = () => {
     if (scrollRef.current) {
@@ -27,15 +63,6 @@ export default function Home() {
       scrollRef.current.scrollBy({ left: scrollAmount * dirFactor, behavior: 'smooth' })
     }
   }
-
-  const slides = [
-    {
-      title: 'Engineering Solutions That Keep Industries Moving',
-      eyebrow: 'INDUSTRIAL ENGINEERING SOLUTIONS',
-      desc: 'Delivering world-class industrial products, engineering expertise and dependable support to businesses across Kenya and East Africa.',
-      image: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=1600&q=80'
-    }
-  ]
 
   const solutions = [
     {
@@ -127,50 +154,93 @@ export default function Home() {
   return (
     <div className="font-sans min-h-screen bg-white text-[#222222] overflow-x-hidden">
       
-      {/* 1. Hero Section */}
-      <section className="relative w-full h-screen overflow-hidden bg-[#222222] text-white">
-        <div className="absolute inset-0 bg-black/60 z-10"></div>
-        <img
-          src={slides[0].image}
-          alt="MVGL Kenya Industrial Engineering"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 z-20 flex items-center">
-          <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
-            <div className="max-w-3xl space-y-6">
-              <span className="inline-block text-xs font-bold uppercase tracking-widest text-[#ED1C24] bg-white/10 px-3.5 py-1.5 rounded-full border border-white/20">
-                {slides[0].eyebrow}
-              </span>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
-                {slides[0].title}
-              </h1>
-              <p className="text-lg text-slate-200 max-w-2xl leading-relaxed">
-                {slides[0].desc}
-              </p>
-              <div className="pt-4 flex flex-wrap gap-4">
-                <Link
-                  to="/solutions"
-                  className="px-8 py-3.5 bg-[#ED1C24] hover:bg-[#D0171E] text-white font-bold rounded-lg shadow-lg hover:shadow-red-500/20 transition-all uppercase tracking-wider text-xs"
-                >
-                  Explore Solutions
-                </Link>
-                <Link
-                  to="/contact"
-                  className="px-8 py-3.5 bg-transparent border border-white hover:bg-white/10 text-white font-bold rounded-lg transition-colors uppercase tracking-wider text-xs"
-                >
-                  Contact Our Team
-                </Link>
+      {/* 1. Hero Section Slider (3 Slides) */}
+      <section className="relative w-full h-screen overflow-hidden bg-[#222222] text-white select-none">
+        {slides.map((slide, idx) => (
+          <div
+            key={idx}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+              idx === currentSlide ? 'opacity-100 z-10 pointer-events-auto' : 'opacity-0 z-0 pointer-events-none'
+            }`}
+          >
+            <div className="absolute inset-0 bg-black/65 z-10"></div>
+            <img
+              src={slide.image}
+              alt={slide.title}
+              className={`absolute inset-0 w-full h-full object-cover transition-transform duration-[7000ms] ease-out ${
+                idx === currentSlide ? 'scale-105' : 'scale-100'
+              }`}
+            />
+            <div className="absolute inset-0 z-20 flex items-center">
+              <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                <div className="max-w-3xl space-y-6 text-left">
+                  <span className="eyebrow block">
+                    {slide.eyebrow}
+                  </span>
+                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
+                    {slide.title}
+                  </h1>
+                  <p className="text-lg text-slate-200 max-w-2xl leading-relaxed">
+                    {slide.desc}
+                  </p>
+                  <div className="pt-4 flex flex-wrap gap-4">
+                    <Link
+                      to={slide.primaryBtn.path}
+                      className="px-8 py-3.5 bg-[#ED1C24] hover:bg-[#D0171E] text-white font-bold rounded-lg shadow-lg hover:shadow-red-500/20 transition-all uppercase tracking-wider text-xs"
+                    >
+                      {slide.primaryBtn.text}
+                    </Link>
+                    <Link
+                      to={slide.secondaryBtn.path}
+                      className="px-8 py-3.5 bg-transparent border border-white hover:bg-white/10 text-white font-bold rounded-lg transition-colors uppercase tracking-wider text-xs"
+                    >
+                      {slide.secondaryBtn.text}
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+        ))}
+
+        {/* Carousel Prev/Next Arrows */}
+        <button
+          onClick={prevSlide}
+          className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-30 h-12 w-12 rounded-full bg-black/40 hover:bg-[#ED1C24] text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer"
+          aria-label="Previous slide"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </button>
+        <button
+          onClick={nextSlide}
+          className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-30 h-12 w-12 rounded-full bg-black/40 hover:bg-[#ED1C24] text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer"
+          aria-label="Next slide"
+        >
+          <ChevronRight className="h-6 w-6" />
+        </button>
+
+        {/* Slide Indicators / Dots */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3">
+          {slides.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentSlide(idx)}
+              className={`transition-all duration-300 rounded-full cursor-pointer ${
+                idx === currentSlide
+                  ? 'w-10 h-2.5 bg-[#ED1C24]'
+                  : 'w-2.5 h-2.5 bg-white/50 hover:bg-white'
+              }`}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
+          ))}
         </div>
       </section>
 
       {/* 2. Workplace / Leadership Stats Section */}
       <section className="py-24 bg-white font-sans text-center w-full">
         <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="space-y-4 mb-16">
-            <span className="text-xs uppercase font-bold text-[#ED1C24] tracking-widest block">
+          <div className="space-y-4 mb-16 text-center">
+            <span className="eyebrow block">
               ENGINEERING EXCELLENCE
             </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#222222] tracking-tight">
@@ -234,7 +304,7 @@ export default function Home() {
       <section className="py-24 bg-[#F5F5F5] font-sans text-left w-full border-t border-b border-slate-200/70">
         <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl space-y-4 mb-16">
-            <span className="text-xs uppercase font-bold text-[#ED1C24] tracking-widest block">
+            <span className="eyebrow block">
               ENGINEERING CAPABILITIES
             </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#222222] tracking-tight">
@@ -297,7 +367,7 @@ export default function Home() {
       {/* 4. Partner Logo Strip */}
       <section className="bg-white py-16 border-b border-slate-100 my-10 overflow-hidden font-sans">
         <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-          <span className="text-xs uppercase font-bold text-[#ED1C24] tracking-widest block">
+          <span className="eyebrow block">
             GLOBAL TECHNOLOGY. REGIONAL EXPERTISE.
           </span>
           <p className="text-slate-600 max-w-2xl mx-auto text-sm">
@@ -354,12 +424,9 @@ export default function Home() {
           {/* Content Side */}
           <div className="space-y-6 text-left">
             <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <span className="h-1.5 w-10 bg-[#ED1C24] rounded-full"></span>
-                <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest">
-                  ABOUT MVGL KENYA
-                </span>
-              </div>
+              <span className="eyebrow block">
+                ABOUT MVGL KENYA
+              </span>
               <h2 className="text-3xl sm:text-4xl font-black text-[#222222] tracking-tight leading-tight">
                 Creating Measurable Value for Our Customers
               </h2>
@@ -395,7 +462,7 @@ export default function Home() {
           {/* Left Red Card */}
           <div className="w-full lg:w-[320px] bg-[#ED1C24] text-white rounded-3xl p-8 flex flex-col justify-between items-start shadow-xl flex-shrink-0 min-h-[420px]">
             <div className="space-y-4">
-              <span className="text-xs font-bold uppercase tracking-widest text-white/80">PORTFOLIO</span>
+              <span className="eyebrow block !text-white/80">PORTFOLIO</span>
               <h2 className="text-3xl font-black tracking-tight leading-tight">
                 Engineering Solutions for Critical Operations
               </h2>
@@ -485,78 +552,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 7. Industries Section */}
-      <section className="py-24 bg-[#222222] text-white my-12 font-sans relative overflow-hidden">
-        <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            
-            <div className="lg:col-span-5 space-y-6 text-left">
-              <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
-                INDUSTRIES WE SERVE
-              </span>
-              <h2 className="text-4xl font-black tracking-tight">
-                Engineering Expertise Across Kenya's Industries
-              </h2>
-              <p className="text-slate-300 leading-relaxed text-sm">
-                Delivering robust engineering support, utility configurations, and standard-compliant equipment tailored for Kenya and East Africa's core manufacturing and infrastructure sectors.
-              </p>
-              
-              <div className="pt-2 flex flex-wrap items-center gap-4">
-                <Link
-                  to="/industries"
-                  className="px-6 py-3 bg-[#ED1C24] hover:bg-[#D0171E] text-white font-bold text-xs uppercase tracking-wider rounded-lg transition-colors shadow-md"
-                >
-                  Explore Industries
-                </Link>
-                
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setActiveIndustryIndex((prev) => (prev - 1 + industriesData.length) % industriesData.length)}
-                    className="h-10 w-10 border border-white/20 text-white hover:bg-white/10 active:scale-95 rounded-lg flex items-center justify-center transition-all cursor-pointer"
-                    aria-label="Previous industry"
-                  >
-                    <ChevronLeft className="h-5 w-5" />
-                  </button>
-                  <span className="text-xs font-mono text-slate-300">
-                    {String(activeIndustryIndex + 1).padStart(2, '0')} / {String(industriesData.length).padStart(2, '0')}
-                  </span>
-                  <button
-                    onClick={() => setActiveIndustryIndex((prev) => (prev + 1) % industriesData.length)}
-                    className="h-10 w-10 border border-white/20 text-white hover:bg-white/10 active:scale-95 rounded-lg flex items-center justify-center transition-all cursor-pointer"
-                    aria-label="Next industry"
-                  >
-                    <ChevronRight className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className="lg:col-span-7">
-              <div className="bg-white text-[#222222] rounded-3xl p-8 shadow-2xl border border-white/10 space-y-6">
-                <div className="space-y-2 text-left">
-                  <h3 className="text-2xl font-black text-[#222222] tracking-tight">
-                    {industriesData[activeIndustryIndex]?.name.en}
-                  </h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">
-                    {industriesData[activeIndustryIndex]?.description.en}
-                  </p>
-                </div>
-
-                <div className="h-64 sm:h-80 rounded-2xl overflow-hidden relative shadow-sm border border-slate-100">
-                  <img
-                    src={industriesData[activeIndustryIndex]?.image || industriesData[0].image}
-                    alt={industriesData[activeIndustryIndex]?.name.en}
-                    className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* 8. Vision / Mission Section */}
+      {/* 7. Vision / Mission Section */}
       <section className="py-20 px-4 max-w-[1360px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 my-12 font-sans">
         
         {/* Vision Card */}
@@ -568,7 +564,7 @@ export default function Home() {
             className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
           />
           <div className="relative z-20 space-y-3 text-left">
-            <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
+            <span className="eyebrow block">
               OUR VISION
             </span>
             <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
@@ -590,7 +586,7 @@ export default function Home() {
             className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
           />
           <div className="relative z-20 space-y-3 text-left">
-            <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
+            <span className="eyebrow block">
               OUR MISSION
             </span>
             <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
@@ -605,12 +601,12 @@ export default function Home() {
 
       </section>
 
-      {/* 9. Core Principles Section */}
+      {/* 8. Core Principles Section */}
       <section className="bg-[#222222] text-white py-20 px-4 my-10 relative overflow-hidden font-sans">
         <div className="max-w-[1360px] mx-auto space-y-16 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-7 space-y-3 text-left">
-              <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
+              <span className="eyebrow block">
                 THE MVGL WAY
               </span>
               <h2 className="text-3xl sm:text-4xl font-black tracking-tight">
@@ -637,10 +633,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 10. Events Section */}
+      {/* 9. Events Section */}
       <section className="py-20 px-4 max-w-[1360px] mx-auto my-10">
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
+          <span className="eyebrow block">
             MVGL EVENTS & EXPOS
           </span>
           <h2 className="text-3xl sm:text-4xl font-black text-[#222222] tracking-tight">
@@ -667,7 +663,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 11. Final CTA */}
+      {/* 10. Final CTA */}
       <IndustrialChallengeCTA bgImage="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80" />
 
     </div>

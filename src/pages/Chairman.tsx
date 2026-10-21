@@ -20,7 +20,7 @@ export default function Chairman() {
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 text-center space-y-4">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#ED1C24] bg-white/10 px-3 py-1 rounded-full">
+            <span className="eyebrow block">
               HOME / ABOUT US / CHAIRMAN MESSAGE
             </span>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
@@ -59,7 +59,7 @@ export default function Chairman() {
           {/* Letter/Message on the Right */}
           <div className="lg:col-span-7 space-y-8 text-left">
             <div className="space-y-2">
-              <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
+              <span className="eyebrow block">
                 CHAIRMAN'S MESSAGE
               </span>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-[#222222] tracking-tight leading-tight">

@@ -119,7 +119,7 @@ export default function About() {
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 text-center space-y-4">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#ED1C24] bg-white/10 px-3 py-1 rounded-full">
+            <span className="eyebrow block">
               HOME / ABOUT US
             </span>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
@@ -136,7 +136,7 @@ export default function About() {
       <section className="py-20 px-4 max-w-[1360px] mx-auto text-left">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           <div className="lg:col-span-4">
-            <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block mb-2">
+            <span className="eyebrow block mb-2">
               INTRODUCING MVGL KENYA
             </span>
             <h2 className="text-3xl font-extrabold text-[#222222] tracking-tight leading-tight">
@@ -160,7 +160,7 @@ export default function About() {
           
           {/* Left Side (Sticky on desktop) */}
           <div className="lg:col-span-4 lg:sticky lg:top-32 space-y-4 text-left">
-            <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
+            <span className="eyebrow block">
               OUR JOURNEY
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-[#222222] tracking-tight leading-tight">
@@ -215,7 +215,7 @@ export default function About() {
       <section className="py-24 px-4 max-w-[1360px] mx-auto text-left">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="space-y-6">
-            <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
+            <span className="eyebrow block">
               OUR APPROACH
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-[#222222] tracking-tight leading-tight">
@@ -232,7 +232,7 @@ export default function About() {
           </div>
 
           <div className="bg-[#222222] text-white rounded-3xl p-8 sm:p-10 relative overflow-hidden shadow-lg space-y-6">
-            <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
+            <span className="eyebrow block">
               OUR PRINCIPLES
             </span>
             <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
@@ -258,7 +258,7 @@ export default function About() {
               className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
             />
             <div className="relative z-20 space-y-3 text-left">
-              <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
+              <span className="eyebrow block">
                 VISION
               </span>
               <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
@@ -280,7 +280,7 @@ export default function About() {
               className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
             />
             <div className="relative z-20 space-y-3 text-left">
-              <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
+              <span className="eyebrow block">
                 MISSION
               </span>
               <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
@@ -300,7 +300,7 @@ export default function About() {
       <section id="culture" className="py-24 px-4 max-w-[1360px] mx-auto text-left">
         <div className="space-y-12 mb-16">
           <div className="max-w-3xl space-y-4">
-            <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
+            <span className="eyebrow block">
               OUR PEOPLE & CULTURE
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-[#222222] tracking-tight">
@@ -338,7 +338,7 @@ export default function About() {
           
           {/* Left Column: Logo Display */}
           <div className="lg:col-span-5 space-y-6 text-left">
-            <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
+            <span className="eyebrow block">
               OUR BRAND IDENTITY
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-[#222222] tracking-tight leading-tight">
@@ -348,9 +348,9 @@ export default function About() {
             <div className="bg-slate-50 border border-slate-200 p-8 rounded-3xl shadow-sm flex items-center justify-center max-w-sm mx-auto lg:mx-0 relative overflow-hidden group">
               <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative z-10">
                 <img 
-                  src="/LOGO/mvgl-kenya-logo.svg" 
+                  src="/NEW LOGO/logo2.png" 
                   alt="MVGL Kenya Logo" 
-                  className="max-h-20 w-auto object-contain transform group-hover:scale-105 transition-transform duration-300" 
+                  className="max-h-24 w-auto object-contain transform group-hover:scale-105 transition-transform duration-300" 
                 />
               </div>
             </div>

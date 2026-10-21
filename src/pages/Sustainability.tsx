@@ -124,7 +124,7 @@ export default function Sustainability() {
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="max-w-4xl mx-auto px-6 relative z-20 text-center space-y-6">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#ED1C24] bg-white/10 px-3.5 py-1.5 rounded-full border border-white/20">
+            <span className="eyebrow block">
               SUSTAINABILITY &amp; ESG
             </span>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
@@ -140,7 +140,7 @@ export default function Sustainability() {
       {/* 2. Values Section */}
       <section className="py-20 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 text-left">
         <div className="space-y-3 mb-16 text-center max-w-3xl mx-auto">
-          <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
+          <span className="eyebrow block">
             OUR COMMITMENT
           </span>
           <h2 className="text-2xl sm:text-3xl font-black text-[#222222] tracking-tight leading-tight">
@@ -174,7 +174,7 @@ export default function Sustainability() {
           <div className="flex flex-col lg:flex-row gap-8 items-stretch">
             <div className="w-full lg:w-[320px] bg-[#222222] text-white rounded-3xl p-8 flex flex-col justify-between items-start shadow-xl flex-shrink-0 min-h-[400px]">
               <div className="space-y-4">
-                <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest">FRAMEWORK</span>
+                <span className="eyebrow block">FRAMEWORK</span>
                 <h2 className="text-2xl sm:text-3xl font-black tracking-tight leading-tight">
                   Certified Standards & Continuous Optimization
                 </h2>
@@ -209,7 +209,7 @@ export default function Sustainability() {
                       className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                     />
                     <div className="absolute bottom-6 left-6 right-6 z-20 text-left">
-                      <span className="text-[10px] font-bold text-[#ED1C24] uppercase tracking-widest block mb-1">PILLAR {idx + 1}</span>
+                      <span className="eyebrow block mb-1 text-[11px]">PILLAR {idx + 1}</span>
                       <h3 className="text-xl font-bold text-white tracking-tight leading-snug">
                         {pillar.title}
                       </h3>
@@ -252,7 +252,7 @@ export default function Sustainability() {
       <section id="esg" className="py-20 bg-white text-left w-full">
         <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
           <div className="space-y-3 text-center max-w-3xl mx-auto">
-            <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
+            <span className="eyebrow block">
               OUR PARTNERSHIPS
             </span>
             <h2 className="text-2xl sm:text-3xl font-black text-[#222222] tracking-tight leading-tight">
@@ -283,7 +283,7 @@ export default function Sustainability() {
 
             {/* Right Content */}
             <div className="lg:col-span-6 space-y-6">
-              <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
+              <span className="eyebrow block">
                 OUR ESG POLICY
               </span>
               <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-[#222222] tracking-tight leading-tight">
@@ -305,7 +305,7 @@ export default function Sustainability() {
       <section className="py-20 bg-[#F5F5F5] border-t border-slate-200 text-left w-full">
         <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="space-y-3">
-            <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-widest block">
+            <span className="eyebrow block">
               LATEST ARTICLES
             </span>
             <h2 className="text-2xl sm:text-3xl font-black text-[#222222] tracking-tight leading-tight">
