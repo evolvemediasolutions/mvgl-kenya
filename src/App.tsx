@@ -8,14 +8,17 @@ import Solutions from './pages/Solutions'
 import Partners from './pages/Partners'
 import PartnerDetail from './pages/PartnerDetail'
 import Events from './pages/Events'
+import EventDetail from './pages/EventDetail'
 import Contact from './pages/Contact'
 import NotFound from './pages/NotFound'
 import Chairman from './pages/Chairman'
 import Sustainability from './pages/Sustainability'
 import Careers from './pages/Careers'
 import Insights from './pages/Insights'
+import InsightDetail from './pages/InsightDetail'
 import WhyMVGL from './pages/WhyMVGL'
 import OpenPositions from './pages/OpenPositions'
+import JobDetail from './pages/JobDetail'
 import AirGasSolutions from './pages/AirGasSolutions'
 import AutomationControlSolutions from './pages/AutomationControlSolutions'
 import RefrigerationHvacSolutions from './pages/RefrigerationHvacSolutions'
@@ -70,13 +73,16 @@ function App() {
           {/* Company & Content Pages */}
           <Route path="/industries" element={<Navigate to="/solutions" replace />} />
           <Route path="/events" element={<PageLayout><Events /></PageLayout>} />
+          <Route path="/events/:slug" element={<PageLayout><EventDetail /></PageLayout>} />
           <Route path="/contact" element={<PageLayout><Contact /></PageLayout>} />
           <Route path="/sustainability" element={<PageLayout><Sustainability /></PageLayout>} />
           <Route path="/careers" element={<PageLayout><Careers /></PageLayout>} />
           <Route path="/why-mvgl" element={<PageLayout><WhyMVGL /></PageLayout>} />
           <Route path="/why-3t" element={<Navigate to="/why-mvgl" replace />} />
           <Route path="/open-positions" element={<PageLayout><OpenPositions /></PageLayout>} />
+          <Route path="/open-positions/:slug" element={<PageLayout><JobDetail /></PageLayout>} />
           <Route path="/insights" element={<PageLayout><Insights /></PageLayout>} />
+          <Route path="/insights/:slug" element={<PageLayout><InsightDetail /></PageLayout>} />
 
           {/* Legacy Locale Redirects (e.g. /en/about -> /about, /ar/solutions -> /solutions) */}
           <Route path="/en/*" element={<LegacyLocaleRedirect />} />

@@ -1,10 +1,12 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { solutionsData } from '../data/solutions'
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
+import { fetchFromStrapi, getStrapiMediaUrl, extractStrapiText } from '../services/strapi'
 
 interface BlogPost {
-  id: number
+  id: string | number
+  slug: string
   tag: string
   title: string
   desc: string
@@ -12,11 +14,81 @@ interface BlogPost {
   image: string
 }
 
+const defaultFeaturedPost: BlogPost = {
+  id: 'building-resilient-industrial-supply-chains-in-east-africa',
+  slug: 'building-resilient-industrial-supply-chains-in-east-africa',
+  tag: 'SUPPLY CHAIN',
+  title: 'Building Resilient Industrial Supply Chains in East Africa',
+  desc: 'Strategies for securing critical OEM components, spare parts, and continuous technical support in a fast-moving regional market.',
+  date: 'June 25, 2026',
+  image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80'
+}
+
+const defaultPosts: BlogPost[] = [
+  {
+    id: 1,
+    slug: 'smart-technologies-for-manufacturing-optimization',
+    tag: 'DIGITALIZATION',
+    title: 'Smart Technologies for Manufacturing Optimization',
+    desc: 'How IoT telemetry and real-time process monitoring minimize unplanned equipment downtime.',
+    date: 'June 20, 2026',
+    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 2,
+    slug: 'modernizing-plant-control-with-connected-industrial-drives',
+    tag: 'AUTOMATION',
+    title: 'Modernizing Plant Control with Connected Industrial Drives',
+    desc: 'Integrating variable frequency drives and PLCs to maximize motor efficiency and torque control.',
+    date: 'June 15, 2026',
+    image: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 3,
+    slug: 'advanced-frp-grp-composites-in-corrosive-environments',
+    tag: 'MATERIALS',
+    title: 'Advanced FRP/GRP Composites in Corrosive Environments',
+    desc: 'Why non-metallic piping and storage tanks outlast traditional metals in chemical and coastal facilities.',
+    date: 'June 10, 2026',
+    image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 4,
+    slug: 'optimizing-industrial-cooling-for-regional-cold-chains',
+    tag: 'ENERGY',
+    title: 'Optimizing Industrial Cooling for Regional Cold Chains',
+    desc: 'High-efficiency industrial chiller configurations engineered for tropical and high-ambient climates.',
+    date: 'May 28, 2026',
+    image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 5,
+    slug: 'air-audit-best-practices-uncovering-hidden-energy-waste',
+    tag: 'COMPRESSION',
+    title: 'Air Audit Best Practices: Uncovering Hidden Energy Waste',
+    desc: 'Comprehensive system audits revealing pressure drops, leaks, and variable speed savings opportunities.',
+    date: 'May 15, 2026',
+    image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 6,
+    slug: 'nfpa-20-standards-in-containerized-fire-pump-systems',
+    tag: 'LIFE SAFETY',
+    title: 'NFPA 20 Standards in Containerized Fire Pump Systems',
+    desc: 'Ensuring turnkey compliance and rapid commissioning for industrial and commercial fire protection.',
+    date: 'May 02, 2026',
+    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80'
+  }
+]
+
 export default function Insights() {
   const [email, setEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const [scrollProgress, setScrollProgress] = useState(0)
+
+  const [featuredPost, setFeaturedPost] = useState<BlogPost>(defaultFeaturedPost)
+  const [posts, setPosts] = useState<BlogPost[]>(defaultPosts)
 
   const handleScroll = () => {
     if (scrollRef.current) {
@@ -64,64 +136,40 @@ export default function Insights() {
     }
   ]
 
-  const featuredPost = {
-    tag: 'SUPPLY CHAIN',
-    title: 'Building Resilient Industrial Supply Chains in East Africa',
-    desc: 'Strategies for securing critical OEM components, spare parts, and continuous technical support in a fast-moving regional market.',
-    date: 'June 25, 2026',
-    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80'
-  }
+  useEffect(() => {
+    async function loadInsights() {
+      try {
+        const strapiInsights = await fetchFromStrapi<any>('insights')
+        if (strapiInsights && strapiInsights.length > 0) {
+          const mapped: BlogPost[] = strapiInsights.map((item: any, idx: number) => {
+            const rawTitle = item.title || 'Untitled Insight'
+            const autoSlug = item.slug || rawTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `insight-${item.id}`
+            const defaultImg = defaultPosts[idx % defaultPosts.length]?.image || defaultFeaturedPost.image
+            const coverUrl = item.coverImage?.url ? getStrapiMediaUrl(item.coverImage.url) : defaultImg
+            const dateStr = item.publishedDate || (item.publishedAt ? new Date(item.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Recently Published')
 
-  const posts: BlogPost[] = [
-    {
-      id: 1,
-      tag: 'DIGITALIZATION',
-      title: 'Smart Technologies for Manufacturing Optimization',
-      desc: 'How IoT telemetry and real-time process monitoring minimize unplanned equipment downtime.',
-      date: 'June 20, 2026',
-      image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80'
-    },
-    {
-      id: 2,
-      tag: 'AUTOMATION',
-      title: 'Modernizing Plant Control with Connected Industrial Drives',
-      desc: 'Integrating variable frequency drives and PLCs to maximize motor efficiency and torque control.',
-      date: 'June 15, 2026',
-      image: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80'
-    },
-    {
-      id: 3,
-      tag: 'MATERIALS',
-      title: 'Advanced FRP/GRP Composites in Corrosive Environments',
-      desc: 'Why non-metallic piping and storage tanks outlast traditional metals in chemical and coastal facilities.',
-      date: 'June 10, 2026',
-      image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80'
-    },
-    {
-      id: 4,
-      tag: 'ENERGY',
-      title: 'Optimizing Industrial Cooling for Regional Cold Chains',
-      desc: 'High-efficiency industrial chiller configurations engineered for tropical and high-ambient climates.',
-      date: 'May 28, 2026',
-      image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80'
-    },
-    {
-      id: 5,
-      tag: 'COMPRESSION',
-      title: 'Air Audit Best Practices: Uncovering Hidden Energy Waste',
-      desc: 'Comprehensive system audits revealing pressure drops, leaks, and variable speed savings opportunities.',
-      date: 'May 15, 2026',
-      image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80'
-    },
-    {
-      id: 6,
-      tag: 'LIFE SAFETY',
-      title: 'NFPA 20 Standards in Containerized Fire Pump Systems',
-      desc: 'Ensuring turnkey compliance and rapid commissioning for industrial and commercial fire protection.',
-      date: 'May 02, 2026',
-      image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80'
+            return {
+              id: String(item.documentId || item.id),
+              slug: autoSlug,
+              tag: item.category || 'TECHNICAL INSIGHTS',
+              title: rawTitle,
+              desc: extractStrapiText(item.excerpt) || '',
+              date: dateStr,
+              image: coverUrl,
+              isFeatured: Boolean(item.isFeatured)
+            }
+          })
+
+          const feat = mapped.find(m => (m as any).isFeatured) || mapped[0]
+          setFeaturedPost(feat)
+          setPosts(mapped.filter(m => m.slug !== feat.slug))
+        }
+      } catch (err) {
+        console.warn('Error fetching insights from Strapi, using defaults', err)
+      }
     }
-  ]
+    loadInsights()
+  }, [])
 
   return (
     <div className="font-sans min-h-screen bg-white text-[#222222]">
@@ -177,29 +225,34 @@ export default function Insights() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
-          <div className="lg:col-span-7 h-72 sm:h-96 lg:h-full relative overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 group">
+          <Link to={`/insights/${featuredPost.slug}`} className="lg:col-span-7 h-72 sm:h-96 lg:h-full relative overflow-hidden block">
             <img
               src={featuredPost.image}
               alt={featuredPost.title}
-              className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
+              className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
             />
-          </div>
+          </Link>
           <div className="lg:col-span-5 p-8 sm:p-10 flex flex-col justify-center space-y-6 bg-white text-left">
             <span className="inline-flex px-3 py-1 bg-red-50 text-[#ED1C24] text-[10px] font-black rounded-md uppercase tracking-wider self-start border border-red-100">
               {featuredPost.tag}
             </span>
-            <h3 className="text-xl sm:text-2xl font-black text-[#222222] leading-snug">
-              {featuredPost.title}
+            <h3 className="text-xl sm:text-2xl font-black text-[#222222] leading-snug group-hover:text-[#ED1C24] transition-colors">
+              <Link to={`/insights/${featuredPost.slug}`}>
+                {featuredPost.title}
+              </Link>
             </h3>
             <p className="text-slate-600 text-sm leading-relaxed">
               {featuredPost.desc}
             </p>
             <div className="flex items-center justify-between pt-4 border-t border-slate-100">
               <span className="text-slate-400 text-xs font-semibold">{featuredPost.date}</span>
-              <span className="text-xs font-bold text-[#ED1C24] uppercase tracking-wider">
-                Full Brief
-              </span>
+              <Link
+                to={`/insights/${featuredPost.slug}`}
+                className="text-xs font-bold text-[#ED1C24] hover:text-[#D0171E] uppercase tracking-wider flex items-center gap-1 group-hover:translate-x-1 transition-transform"
+              >
+                Full Brief <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
           </div>
         </div>
@@ -223,30 +276,35 @@ export default function Insights() {
               className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-md hover:border-[#ED1C24] transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1 text-left"
             >
               <div>
-                <div className="h-52 overflow-hidden relative">
+                <Link to={`/insights/${post.slug}`} className="h-52 overflow-hidden relative block">
                   <img
                     src={post.image}
                     alt={post.title}
                     className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                   />
-                </div>
+                </Link>
                 <div className="p-6 sm:p-8 space-y-3">
                   <span className="inline-flex px-2.5 py-0.5 bg-red-50 text-[#ED1C24] text-[10px] font-black rounded uppercase tracking-wider border border-red-100">
                     {post.tag}
                   </span>
                   <h3 className="text-lg font-bold text-[#222222] leading-snug group-hover:text-[#ED1C24] transition-colors">
-                    {post.title}
+                    <Link to={`/insights/${post.slug}`}>
+                      {post.title}
+                    </Link>
                   </h3>
-                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed line-clamp-3">
                     {post.desc}
                   </p>
                 </div>
               </div>
               <div className="px-6 sm:px-8 pb-6 pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 font-semibold">
                 <span>{post.date}</span>
-                <span className="text-[#ED1C24] font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                <Link
+                  to={`/insights/${post.slug}`}
+                  className="text-[#ED1C24] hover:text-[#D0171E] font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform cursor-pointer"
+                >
                   Read <ArrowRight className="h-3 w-3" />
-                </span>
+                </Link>
               </div>
             </div>
           ))}

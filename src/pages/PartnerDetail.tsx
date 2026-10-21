@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { fetchProductsFromStrapi, type Product } from '../data/products'
 import { useParams, Link } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 import { partnersData } from '../data/partners'
 import IndustrialChallengeCTA from '../components/ui/IndustrialChallengeCTA'
+import ProductModal from '../components/ui/ProductModal'
 
 export default function PartnerDetail() {
   const { slug, partnerSlug, solutionSlug } = useParams<{ slug?: string; partnerSlug?: string; solutionSlug?: string }>()
@@ -14,6 +16,75 @@ export default function PartnerDetail() {
   const [eppFilter, setEppFilter] = useState('all')
   const [sppFilter, setSppFilter] = useState('all')
   const [prosoftFilter, setProsoftFilter] = useState('all')
+
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+
+  const handleOpenProductModal = (prod: any) => {
+    setSelectedProduct({
+      id: String(prod.id),
+      slug: prod.slug || '',
+      title: typeof prod.title === 'object' ? prod.title.en : prod.title,
+      tag: prod.tag || (partner ? partner.name.toUpperCase() : 'OEM PRODUCT'),
+      category: prod.category || 'all',
+      partner: partner ? partner.name : 'OEM Partner',
+      partnerSlug: partner ? partner.slug : '',
+      solution: prod.solution || 'Industrial Solutions',
+      shortDescription: typeof prod.desc === 'object' ? prod.desc.en : (prod.shortDescription || prod.desc || ''),
+      specs: typeof prod.specs === 'object' ? prod.specs.en : (prod.specs || ''),
+      image: prod.image,
+      exploreUrl: prod.exploreUrl || '',
+      brochure: prod.brochure || ''
+    })
+  }
+
+  const [strapiProducts, setStrapiProducts] = useState<Product[]>([])
+
+  useEffect(() => {
+    fetchProductsFromStrapi().then((res) => {
+      if (res && res.length > 0) {
+        setStrapiProducts(res)
+      }
+    })
+  }, [])
+
+  const mergePartnerProducts = (localList: any[], pSlug: string) => {
+    const fromStrapi = strapiProducts.filter(p => p.partnerSlug === pSlug)
+    if (fromStrapi.length === 0) {
+      return localList.map(p => ({
+        ...p,
+        exploreUrl: p.exploreUrl || '',
+        brochure: p.brochure || '',
+        slug: p.slug || (typeof p.title === 'object' ? p.title.en : p.title).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+      }))
+    }
+
+    const formattedStrapi = fromStrapi.map((p, idx) => ({
+      id: `strapi-${p.id || idx}`,
+      category: p.category || 'all',
+      tag: p.tag || p.partner.toUpperCase(),
+      title: { en: p.title },
+      desc: { en: p.shortDescription },
+      specs: p.specs ? { en: p.specs } : undefined,
+      image: p.image,
+      slug: p.slug,
+      exploreUrl: p.exploreUrl || '',
+      brochure: p.brochure || '',
+      solution: p.solution,
+      partner: p.partner,
+      partnerSlug: p.partnerSlug
+    }))
+
+    const strapiSlugs = new Set(fromStrapi.map(p => p.slug))
+    const formattedLocal = localList.map(p => ({
+      ...p,
+      exploreUrl: p.exploreUrl || '',
+      brochure: p.brochure || '',
+      slug: p.slug || (typeof p.title === 'object' ? p.title.en : p.title).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+    })).filter(p => !strapiSlugs.has(p.slug))
+
+    return [...formattedStrapi, ...formattedLocal]
+  }
+
 
   const activeSlug = partnerSlug || slug || ''
   const partner = partnersData.find((p) => p.slug === activeSlug)
@@ -329,7 +400,7 @@ export default function PartnerDetail() {
 
                 {/* 3. Product Cards Grid (Matching AIR & GAS SOLUTIONS UI) */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-4">
-                  {[
+                  {mergePartnerProducts([
                     {
                       id: 1,
                       category: 'controllers',
@@ -510,7 +581,7 @@ export default function PartnerDetail() {
                       },
                       image: '/AUTOMATION CONTROL/ROCKWELL AUTOMATION/Relays and Timers.png'
                     }
-                  ]
+                  ], 'rockwell-automation')
                     .filter((prod) => rockwellFilter === 'all' || prod.category === rockwellFilter)
                     .map((prod, idx) => (
                       <div
@@ -548,13 +619,14 @@ export default function PartnerDetail() {
                           </div>
 
                           <div className="pt-3 border-t border-slate-100">
-                            <Link
-                              to={localizedPath('/contact')}
-                              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-primary hover:text-brand-secondary transition-colors group-hover:translate-x-1 duration-200"
-                            >
-                              <span>View More</span>
-                              <span>&rarr;</span>
-                            </Link>
+                            <button
+                                type="button"
+                                onClick={() => handleOpenProductModal(prod)}
+                                className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-primary hover:text-brand-secondary transition-colors group-hover:translate-x-1 duration-200 cursor-pointer"
+                              >
+                                <span>View More</span>
+                                <span>&rarr;</span>
+                              </button>
                           </div>
                         </div>
                       </div>
@@ -600,7 +672,7 @@ export default function PartnerDetail() {
 
                 {/* 3. Product Cards Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 max-w-4xl mx-auto gap-8 pt-4">
-                  {[
+                  {mergePartnerProducts([
                     {
                       id: 1,
                       category: 'packaged-sets',
@@ -637,7 +709,7 @@ export default function PartnerDetail() {
                       },
                       image: '/PRODUCTS/SPP PUMPS/PRE-PACKAGED PUMP HOUSES.jpg'
                     }
-                  ]
+                  ], 'spp-pumps')
                     .filter((prod) => sppFilter === 'all' || prod.category === sppFilter)
                     .map((prod, idx) => (
                       <div
@@ -676,13 +748,14 @@ export default function PartnerDetail() {
                           </div>
 
                           <div className="pt-3 border-t border-slate-100">
-                            <Link
-                              to={localizedPath('/contact')}
-                              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-primary hover:text-brand-secondary transition-colors group-hover:translate-x-1 duration-200"
-                            >
-                              <span>View More</span>
-                              <span>&rarr;</span>
-                            </Link>
+                            <button
+                                type="button"
+                                onClick={() => handleOpenProductModal(prod)}
+                                className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-primary hover:text-brand-secondary transition-colors group-hover:translate-x-1 duration-200 cursor-pointer"
+                              >
+                                <span>View More</span>
+                                <span>&rarr;</span>
+                              </button>
                           </div>
                         </div>
                       </div>
@@ -729,7 +802,7 @@ export default function PartnerDetail() {
 
                 {/* 3. Product Cards Grid (Matching Screenshot & PDF) */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-4">
-                  {[
+                  {mergePartnerProducts([
                     {
                       id: 1,
                       category: 'screw',
@@ -838,7 +911,7 @@ export default function PartnerDetail() {
                       },
                       image: '/AIR & GAS SOLUTIONS/Screw Compressor Packages.png'
                     }
-                  ]
+                  ], 'kirloskar-pneumatic')
                     .filter((prod) => kirloskarFilter === 'all' || prod.category === kirloskarFilter)
                     .map((prod, idx) => (
                       <div
@@ -876,13 +949,14 @@ export default function PartnerDetail() {
                           </div>
 
                           <div className="pt-3 border-t border-slate-100">
-                            <Link
-                              to={localizedPath('/contact')}
-                              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-primary hover:text-brand-secondary transition-colors group-hover:translate-x-1 duration-200"
-                            >
-                              <span>View More</span>
-                              <span>&rarr;</span>
-                            </Link>
+                            <button
+                                type="button"
+                                onClick={() => handleOpenProductModal(prod)}
+                                className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-primary hover:text-brand-secondary transition-colors group-hover:translate-x-1 duration-200 cursor-pointer"
+                              >
+                                <span>View More</span>
+                                <span>&rarr;</span>
+                              </button>
                           </div>
                         </div>
                       </div>
@@ -930,7 +1004,7 @@ export default function PartnerDetail() {
 
                 {/* 3. Product Cards Grid (Matching Rockwell, Kirloskar Pneumatic & HMS UI) */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-4">
-                  {[
+                  {mergePartnerProducts([
                     {
                       id: 1,
                       category: 'centrifugal-chillers',
@@ -1069,7 +1143,7 @@ export default function PartnerDetail() {
                       },
                       image: '/PRODUCTS/KIRLOSKAR CHILLERS/Water to Water Heat Pumps.jpg'
                     }
-                  ]
+                  ], 'kirloskar-chillers')
                     .filter((prod) => chillersFilter === 'all' || prod.category === chillersFilter)
                     .map((prod, idx) => (
                       <div
@@ -1133,13 +1207,14 @@ export default function PartnerDetail() {
                           </div>
 
                           <div className="pt-3 border-t border-slate-100">
-                            <Link
-                              to={localizedPath('/contact')}
-                              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-primary hover:text-brand-secondary transition-colors group-hover:translate-x-1 duration-200"
-                            >
-                              <span>View More</span>
-                              <span>&rarr;</span>
-                            </Link>
+                            <button
+                                type="button"
+                                onClick={() => handleOpenProductModal(prod)}
+                                className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-primary hover:text-brand-secondary transition-colors group-hover:translate-x-1 duration-200 cursor-pointer"
+                              >
+                                <span>View More</span>
+                                <span>&rarr;</span>
+                              </button>
                           </div>
                         </div>
                       </div>
@@ -1187,7 +1262,7 @@ export default function PartnerDetail() {
 
                 {/* 3. Product Cards Grid (Matching Rockwell Automation & AIR & GAS SOLUTIONS UI) */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-4">
-                  {[
+                  {mergePartnerProducts([
                     {
                       id: 1,
                       category: 'gateways',
@@ -1314,7 +1389,7 @@ export default function PartnerDetail() {
                       },
                       image: '/AUTOMATION CONTROL/HMS/Redlion By HMS.png'
                     }
-                  ]
+                  ], 'hms-networks')
                     .filter((prod) => hmsFilter === 'all' || prod.category === hmsFilter)
                     .map((prod, idx) => (
                       <div
@@ -1352,13 +1427,14 @@ export default function PartnerDetail() {
                           </div>
 
                           <div className="pt-3 border-t border-slate-100">
-                            <Link
-                              to={localizedPath('/contact')}
-                              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-primary hover:text-brand-secondary transition-colors group-hover:translate-x-1 duration-200"
-                            >
-                              <span>View More</span>
-                              <span>&rarr;</span>
-                            </Link>
+                            <button
+                                type="button"
+                                onClick={() => handleOpenProductModal(prod)}
+                                className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-primary hover:text-brand-secondary transition-colors group-hover:translate-x-1 duration-200 cursor-pointer"
+                              >
+                                <span>View More</span>
+                                <span>&rarr;</span>
+                              </button>
                           </div>
                         </div>
                       </div>
@@ -1407,7 +1483,7 @@ export default function PartnerDetail() {
 
                 {/* 3. Product Cards Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-4">
-                  {[
+                  {mergePartnerProducts([
                     // --- GATEWAYS CATEGORY (from public/AUTOMATION CONTROL/PROSOFT/GATEWAYS/) ---
                     {
                       id: 1,
@@ -1741,7 +1817,7 @@ export default function PartnerDetail() {
                       },
                       image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80'
                     }
-                  ]
+                  ], 'prosoft-technology')
                     .filter((prod) => prosoftFilter === 'all' || prod.category === prosoftFilter)
                     .map((prod, idx) => (
                       <div
@@ -1780,13 +1856,14 @@ export default function PartnerDetail() {
                           </div>
 
                           <div className="pt-3 border-t border-slate-100">
-                            <Link
-                              to={localizedPath('/contact')}
-                              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-primary hover:text-brand-secondary transition-colors group-hover:translate-x-1 duration-200"
-                            >
-                              <span>View More</span>
-                              <span>&rarr;</span>
-                            </Link>
+                            <button
+                                type="button"
+                                onClick={() => handleOpenProductModal(prod)}
+                                className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-primary hover:text-brand-secondary transition-colors group-hover:translate-x-1 duration-200 cursor-pointer"
+                              >
+                                <span>View More</span>
+                                <span>&rarr;</span>
+                              </button>
                           </div>
                         </div>
                       </div>
@@ -1835,7 +1912,7 @@ export default function PartnerDetail() {
 
                 {/* 3. Product Cards Grid (Matching kirloskar-pneumatic & Rockwell UI) */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-4">
-                  {[
+                  {mergePartnerProducts([
                     {
                       id: 1,
                       category: 'piping',
@@ -1980,7 +2057,7 @@ export default function PartnerDetail() {
                       },
                       image: '/PRODUCTS/EPP COMPOSITE/Wind Turbine Components.jpg'
                     }
-                  ]
+                  ], 'epp-composites')
                     .filter((prod) => eppFilter === 'all' || prod.category === eppFilter)
                     .map((prod, idx) => (
                       <div
@@ -2019,13 +2096,14 @@ export default function PartnerDetail() {
                           </div>
 
                           <div className="pt-3 border-t border-slate-100">
-                            <Link
-                              to={localizedPath('/contact')}
-                              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-primary hover:text-brand-secondary transition-colors group-hover:translate-x-1 duration-200"
-                            >
-                              <span>View More</span>
-                              <span>&rarr;</span>
-                            </Link>
+                            <button
+                                type="button"
+                                onClick={() => handleOpenProductModal(prod)}
+                                className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-primary hover:text-brand-secondary transition-colors group-hover:translate-x-1 duration-200 cursor-pointer"
+                              >
+                                <span>View More</span>
+                                <span>&rarr;</span>
+                              </button>
                           </div>
                         </div>
                       </div>
@@ -2049,6 +2127,13 @@ export default function PartnerDetail() {
       </section>
 
       <IndustrialChallengeCTA bgImage="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1200&q=80" />
+
+      {/* Product Details Popup Modal */}
+      <ProductModal
+        product={selectedProduct}
+        isOpen={Boolean(selectedProduct)}
+        onClose={() => setSelectedProduct(null)}
+      />
 
     </div>
   )
