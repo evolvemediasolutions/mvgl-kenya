@@ -3,20 +3,25 @@
  * Fetches dynamic content from Strapi CMS on localhost (or Cloud URL in production).
  */
 
-const STRAPI_BASE_URL = import.meta.env.VITE_STRAPI_API_URL || ''
+const RAW_STRAPI_BASE_URL = (import.meta.env.VITE_STRAPI_API_URL || '').trim()
+const STRAPI_BASE_URL = RAW_STRAPI_BASE_URL.replace(/\/+$/, '')
 
 export function getStrapiMediaUrl(url: string | null | undefined): string {
   if (!url) return ''
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url
   }
-  return `${STRAPI_BASE_URL}${url}`
+  const cleanPath = url.startsWith('/') ? url : `/${url}`
+  return STRAPI_BASE_URL ? `${STRAPI_BASE_URL}${cleanPath}` : cleanPath
 }
 
 export async function fetchFromStrapi<T>(endpoint: string, queryParams: string = 'populate=*'): Promise<T[]> {
   try {
     const separator = endpoint.includes('?') ? '&' : '?'
-    const url = `${STRAPI_BASE_URL}/api/${endpoint}${queryParams ? `${separator}${queryParams}` : ''}`
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint
+    const url = STRAPI_BASE_URL 
+      ? `${STRAPI_BASE_URL}/api/${cleanEndpoint}${queryParams ? `${separator}${queryParams}` : ''}`
+      : `/api/${cleanEndpoint}${queryParams ? `${separator}${queryParams}` : ''}`
     
     const response = await fetch(url, {
       headers: {
@@ -25,7 +30,7 @@ export async function fetchFromStrapi<T>(endpoint: string, queryParams: string =
     })
 
     if (!response.ok) {
-      console.warn(`[Strapi] Failed to fetch ${endpoint} (${response.status})`)
+      console.warn(`[Strapi] Failed to fetch ${cleanEndpoint} (${response.status})`)
       return []
     }
 
@@ -40,7 +45,10 @@ export async function fetchFromStrapi<T>(endpoint: string, queryParams: string =
 export async function fetchOneFromStrapi<T>(endpoint: string, queryParams: string = 'populate=*'): Promise<T | null> {
   try {
     const separator = endpoint.includes('?') ? '&' : '?'
-    const url = `${STRAPI_BASE_URL}/api/${endpoint}${queryParams ? `${separator}${queryParams}` : ''}`
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint
+    const url = STRAPI_BASE_URL
+      ? `${STRAPI_BASE_URL}/api/${cleanEndpoint}${queryParams ? `${separator}${queryParams}` : ''}`
+      : `/api/${cleanEndpoint}${queryParams ? `${separator}${queryParams}` : ''}`
 
     const response = await fetch(url, {
       headers: {
