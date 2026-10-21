@@ -8,4 +8,18 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    host: true, // Listen on all local IP addresses (0.0.0.0)
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:1337',
+        changeOrigin: true
+      },
+      '/uploads': {
+        target: 'http://127.0.0.1:1337',
+        changeOrigin: true
+      }
+    }
+  }
 })

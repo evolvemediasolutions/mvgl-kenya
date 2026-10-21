@@ -1,0 +1,88 @@
+{
+  "kind": "collectionType",
+  "collectionName": "products",
+  "info": {
+    "singularName": "product",
+    "pluralName": "products",
+    "displayName": "Product",
+    "description": "Industrial products catalog for MVGL Kenya"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": false
+    },
+    "tag": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "partner": {
+      "type": "enumeration",
+      "enum": [
+        "Rockwell Automation",
+        "SPP Pumps",
+        "Kirloskar Pneumatic",
+        "Kirloskar Chillers",
+        "EPP Composites",
+        "HMS Networks",
+        "ProSoft Technology"
+      ],
+      "required": true
+    },
+    "solution": {
+      "type": "enumeration",
+      "enum": [
+        "Air & Gas Solutions",
+        "Refrigeration & HVAC Solutions",
+        "Automation & Control",
+        "Non Metallic Solutions",
+        "Fire Pump Solutions"
+      ],
+      "required": true
+    },
+    "specs": {
+      "type": "text"
+    },
+    "exploreUrl": {
+      "type": "string"
+    },
+    "shortDescription": {
+      "type": "text",
+      "required": false
+    },
+    "detailedDescription": {
+      "type": "richtext"
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "brochure": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "files"
+      ]
+    },
+    "isFeatured": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

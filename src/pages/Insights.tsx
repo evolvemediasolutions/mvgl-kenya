@@ -1,26 +1,94 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useLanguage } from '../context/LanguageContext'
 import { solutionsData } from '../data/solutions'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
+import { fetchFromStrapi, getStrapiMediaUrl, extractStrapiText } from '../services/strapi'
 
 interface BlogPost {
-  id: number
-  tag: { en: string; ar: string }
-  title: { en: string; ar: string }
-  desc: { en: string; ar: string }
-  date: { en: string; ar: string }
+  id: string | number
+  slug: string
+  tag: string
+  title: string
+  desc: string
+  date: string
   image: string
 }
 
+const defaultFeaturedPost: BlogPost = {
+  id: 'building-resilient-industrial-supply-chains-in-east-africa',
+  slug: 'building-resilient-industrial-supply-chains-in-east-africa',
+  tag: 'SUPPLY CHAIN',
+  title: 'Building Resilient Industrial Supply Chains in East Africa',
+  desc: 'Strategies for securing critical OEM components, spare parts, and continuous technical support in a fast-moving regional market.',
+  date: 'June 25, 2026',
+  image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80'
+}
+
+const defaultPosts: BlogPost[] = [
+  {
+    id: 1,
+    slug: 'smart-technologies-for-manufacturing-optimization',
+    tag: 'DIGITALIZATION',
+    title: 'Smart Technologies for Manufacturing Optimization',
+    desc: 'How IoT telemetry and real-time process monitoring minimize unplanned equipment downtime.',
+    date: 'June 20, 2026',
+    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 2,
+    slug: 'modernizing-plant-control-with-connected-industrial-drives',
+    tag: 'AUTOMATION',
+    title: 'Modernizing Plant Control with Connected Industrial Drives',
+    desc: 'Integrating variable frequency drives and PLCs to maximize motor efficiency and torque control.',
+    date: 'June 15, 2026',
+    image: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 3,
+    slug: 'advanced-frp-grp-composites-in-corrosive-environments',
+    tag: 'MATERIALS',
+    title: 'Advanced FRP/GRP Composites in Corrosive Environments',
+    desc: 'Why non-metallic piping and storage tanks outlast traditional metals in chemical and coastal facilities.',
+    date: 'June 10, 2026',
+    image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 4,
+    slug: 'optimizing-industrial-cooling-for-regional-cold-chains',
+    tag: 'ENERGY',
+    title: 'Optimizing Industrial Cooling for Regional Cold Chains',
+    desc: 'High-efficiency industrial chiller configurations engineered for tropical and high-ambient climates.',
+    date: 'May 28, 2026',
+    image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 5,
+    slug: 'air-audit-best-practices-uncovering-hidden-energy-waste',
+    tag: 'COMPRESSION',
+    title: 'Air Audit Best Practices: Uncovering Hidden Energy Waste',
+    desc: 'Comprehensive system audits revealing pressure drops, leaks, and variable speed savings opportunities.',
+    date: 'May 15, 2026',
+    image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 6,
+    slug: 'nfpa-20-standards-in-containerized-fire-pump-systems',
+    tag: 'LIFE SAFETY',
+    title: 'NFPA 20 Standards in Containerized Fire Pump Systems',
+    desc: 'Ensuring turnkey compliance and rapid commissioning for industrial and commercial fire protection.',
+    date: 'May 02, 2026',
+    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80'
+  }
+]
+
 export default function Insights() {
-  const { locale, dir } = useLanguage()
   const [email, setEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const [scrollProgress, setScrollProgress] = useState(0)
 
-  const localizedPath = (path: string) => `/${locale}${path === '/' ? '' : path}`
+  const [featuredPost, setFeaturedPost] = useState<BlogPost>(defaultFeaturedPost)
+  const [posts, setPosts] = useState<BlogPost[]>(defaultPosts)
 
   const handleScroll = () => {
     if (scrollRef.current) {
@@ -47,412 +115,323 @@ export default function Insights() {
 
   const solutions = [
     {
-      title: { en: 'Air & Gas Solutions', ar: 'حلول الهواء والغاز' },
-      desc: {
-        en: 'Delivering reliable compressed air and process gas systems engineered for critical industrial duty.',
-        ar: 'أنظمة موثوقة للهواء والغاز المضغوطين مصممة للعمليات الصناعية الحيوية.'
-      },
+      title: 'Air & Gas Solutions',
       slug: 'air-gas-solutions'
     },
     {
-      title: { en: 'Refrigeration & HVAC Solutions', ar: 'حلول التبريد والتكييف' },
-      desc: {
-        en: 'Industrial refrigeration compressors, chillers, and large-scale HVAC temperature control.',
-        ar: 'ضواغط التبريد الصناعي، والمبردات وأنظمة التكييف واسعة النطاق.'
-      },
+      title: 'Refrigeration & HVAC Solutions',
       slug: 'refrigeration-hvac-solutions'
     },
     {
-      title: { en: 'Automation & Control Solutions', ar: 'حلول الأتمتة والتحكم' },
-      desc: {
-        en: 'Intelligent automation, integrated PLCs/PACs, smart drives, and resilient industrial networking.',
-        ar: 'حلول الأتمتة الذكية، وأنظمة التحكم المتكاملة، والمحركات، والاتصالات الصناعية.'
-      },
+      title: 'Automation & Control Solutions',
       slug: 'automation-control'
     },
     {
-      title: { en: 'Non Metallic Solution', ar: 'حلول المواد غير المعدنية' },
-      desc: {
-        en: 'Advanced FRP/GRP composite piping, chemical storage tanks, and structural profiles for corrosion resistance.',
-        ar: 'أنظمة متكاملة من الأنابيب المركبة والخزانات والمقاطع المقاومة للتآكل.'
-      },
+      title: 'Non Metallic Solution',
       slug: 'non-metallic-solutions'
     },
     {
-      title: { en: 'Fire Pump Solutions', ar: 'حلول مضخات الحريق' },
-      desc: {
-        en: 'FM-Approved and UL-Listed packaged fire pumps and pre-packaged containerized pump houses.',
-        ar: 'مجموعات مضخات حريق معتمدة من FM/UL ومحطات ضخ مسبقة التجهيز.'
-      },
+      title: 'Fire Pump Solutions',
       slug: 'fire-pump-solutions'
     }
   ]
 
-  const featuredPost = {
-    tag: { en: 'SUPPLY CHAIN', ar: 'سلسلة الإمداد' },
-    title: { en: 'Building Resilient Industrial Supply Chains', ar: 'بناء سلاسل إمداد صناعية مرنة' },
-    desc: {
-      en: 'Strategies for securing raw materials and custom parts in a volatile global market.',
-      ar: 'استراتيجيات لتأمين المواد الخام والقطع المخصصة في ظل تقلبات السوق العالمية.'
-    },
-    date: { en: 'June 25, 2026', ar: '٢٥ يونيو ٢٠٢٦' },
-    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80'
-  }
+  useEffect(() => {
+    async function loadInsights() {
+      try {
+        const strapiInsights = await fetchFromStrapi<any>('insights')
+        if (strapiInsights && strapiInsights.length > 0) {
+          const mapped: BlogPost[] = strapiInsights.map((item: any, idx: number) => {
+            const rawTitle = item.title || 'Untitled Insight'
+            const autoSlug = item.slug || rawTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `insight-${item.id}`
+            const defaultImg = defaultPosts[idx % defaultPosts.length]?.image || defaultFeaturedPost.image
+            const coverUrl = item.coverImage?.url ? getStrapiMediaUrl(item.coverImage.url) : defaultImg
+            const dateStr = item.publishedDate || (item.publishedAt ? new Date(item.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Recently Published')
 
-  const posts: BlogPost[] = [
-    {
-      id: 1,
-      tag: { en: 'DIGITALIZATION', ar: 'التحول الرقمي' },
-      title: { en: 'Smart Technologies for the Transformation of Industry', ar: 'التقنيات الذكية لتحول القطاع الصناعي' },
-      desc: {
-        en: 'How IoT and advanced data analytics are optimizing production lines and minimizing downtime.',
-        ar: 'كيف يساهم إنترنت الأشياء وتحليلات البيانات المتقدمة في تحسين خطوط الإنتاج وتقليل وقت التوقف.'
-      },
-      date: { en: 'June 20, 2026', ar: '٢٠ يونيو ٢٠٢٦' },
-      image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80'
-    },
-    {
-      id: 2,
-      tag: { en: 'ROBOTICS', ar: 'الروبوتات' },
-      title: { en: 'Collaborative Robots: Shaping the Future of Manufacturing', ar: 'الروبوتات المتعاونة: صياغة مستقبل التصنيع' },
-      desc: {
-        en: 'The role of cobots in safe human-robot collaboration on the factory floor.',
-        ar: 'دور الروبوتات المتعاونة في تعزيز العمل المشترك الآمن بين البشر والآلات في المصانع.'
-      },
-      date: { en: 'June 15, 2026', ar: '١٥ يونيو ٢٠٢٦' },
-      image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=600&q=80'
-    },
-    {
-      id: 3,
-      tag: { en: 'AUTOMATION', ar: 'الأتمتة' },
-      title: { en: 'Advancing Control Systems through Connected Devices', ar: 'تطوير أنظمة التحكم من خلال الأجهزة المتصلة' },
-      desc: {
-        en: 'Integrating smart field devices to achieve real-time process monitoring and precision control.',
-        ar: 'دمج الأجهزة الحقلية الذكية لتحقيق المراقبة الفورية والتحكم الدقيق في العمليات.'
-      },
-      date: { en: 'June 10, 2026', ar: '١٠ يونيو ٢٠٢٦' },
-      image: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80'
-    },
-    {
-      id: 4,
-      tag: { en: 'MATERIALS', ar: 'المواد المتقدمة' },
-      title: { en: 'The Rise of Advanced Composites in Heavy Industry', ar: 'صعود المواد المركبة المتقدمة في الصناعات الثقيلة' },
-      desc: {
-        en: 'Why composite structures are replacing traditional metals for high-stress applications.',
-        ar: 'لماذا تستبدل الهياكل المركبة المعادن التقليدية في التطبيقات ذات الإجهاد العالي.'
-      },
-      date: { en: 'May 28, 2026', ar: '٢٨ مايو ٢٠٢٦' },
-      image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80'
-    },
-    {
-      id: 5,
-      tag: { en: 'ENERGY', ar: 'كفاءة الطاقة' },
-      title: { en: 'Optimizing Cooling Systems for Energy Efficiency', ar: 'تحسين أنظمة التبريد لكفاءة استهلاك الطاقة' },
-      desc: {
-        en: 'Innovative chiller configurations that lower power consumption in large facilities.',
-        ar: 'تكوينات المبردات المبتكرة التي تقلل من استهلاك الطاقة في المنشآت الكبيرة.'
-      },
-      date: { en: 'May 15, 2026', ar: '١٥ مايو ٢٠٢٦' },
-      image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80'
-    },
-    {
-      id: 6,
-      tag: { en: 'LOGISTICS', ar: 'الخدمات اللوجستية' },
-      title: { en: 'Navigating Global Trade and Port Performance', ar: 'توجيه التجارة العالمية وأداء الموانئ' },
-      desc: {
-        en: 'Understanding recent supply chain patterns to optimize shipping and port turnarounds.',
-        ar: 'فهم أنماط سلاسل الإمداد الأخيرة لتحسين عمليات الشحن وأوقات دوران الموانئ.'
-      },
-      date: { en: 'May 02, 2026', ar: '٠٢ مايو ٢٠٢٦' },
-      image: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=600&q=80'
+            return {
+              id: String(item.documentId || item.id),
+              slug: autoSlug,
+              tag: item.category || 'TECHNICAL INSIGHTS',
+              title: rawTitle,
+              desc: extractStrapiText(item.excerpt) || '',
+              date: dateStr,
+              image: coverUrl,
+              isFeatured: Boolean(item.isFeatured)
+            }
+          })
+
+          const feat = mapped.find(m => (m as any).isFeatured) || mapped[0]
+          setFeaturedPost(feat)
+          setPosts(mapped.filter(m => m.slug !== feat.slug))
+        }
+      } catch (err) {
+        console.warn('Error fetching insights from Strapi, using defaults', err)
+      }
     }
-  ]
+    loadInsights()
+  }, [])
 
   return (
-    <div className="font-sans min-h-screen bg-slate-50 text-slate-800">
+    <div className="font-sans min-h-screen bg-white text-[#222222]">
 
-      {/* 1. Hero Banner (Containerized Layout) */}
+      {/* 1. Hero Banner */}
       <div className="pt-28 sm:pt-32 pb-6 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
-        <section className="relative w-full h-[450px] rounded-3xl overflow-hidden bg-slate-900 text-white flex items-center justify-center">
+        <section className="relative w-full h-[450px] rounded-3xl overflow-hidden bg-[#222222] text-white flex items-center justify-center">
           <div className="absolute inset-0 bg-black/70 z-10"></div>
           <img
             src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80"
-            alt=""
+            alt="MVGL Kenya Insights"
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="max-w-4xl mx-auto px-6 relative z-20 text-center space-y-6">
-            <span className="text-xs font-bold uppercase tracking-widest text-slate-300">
-              {locale === 'ar' ? 'الرئيسية / المدونة والآراء' : 'HOME / INSIGHTS'}
+            <span className="eyebrow block">
+              HOME / INSIGHTS &amp; PERSPECTIVES
             </span>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
-              {locale === 'ar' ? 'الآراء والأفكار' : 'Insights'}
+              Engineering Insights &amp; Perspectives
             </h1>
-            <p className="text-slate-300 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-              {locale === 'ar'
-                ? 'ابقَ على اطلاع بأحدث اتجاهات الصناعة والتطورات التقنية ووجهات نظر الخبراء في مجالات التصنيع والأتمتة والربط الصناعي وتبريد العمليات.'
-                : 'Stay informed with the latest industry trends, technology advancements, expert perspectives, and business insights targeting the domains of manufacturing, automation, industrial connectivity, process cooling, and more.'}
+            <p className="text-slate-200 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+              Stay informed with industry trends, engineering advancements, and expert analyses across manufacturing, automation, compressed air, and process cooling in Kenya.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
               <a
                 href="#featured"
-                className="px-6 py-3 bg-brand-primary hover:bg-brand-secondary text-white font-bold rounded-lg text-xs uppercase tracking-wider transition-colors duration-200"
+                className="px-6 py-3 bg-[#ED1C24] hover:bg-[#D0171E] text-white font-bold rounded-lg text-xs uppercase tracking-wider transition-colors duration-200 shadow-md"
               >
-                {locale === 'ar' ? 'استكشف المقالات' : 'Explore Insights'}
+                Explore Insights
               </a>
-              <a
-                href="#subscribe"
+              <Link
+                to="/contact"
                 className="px-6 py-3 border border-white hover:bg-white/10 text-white font-bold rounded-lg text-xs uppercase tracking-wider transition-colors duration-200"
               >
-                {locale === 'ar' ? 'تواصل معنا' : 'Contact Us'}
-              </a>
+                Talk to an Expert
+              </Link>
             </div>
           </div>
         </section>
       </div>
 
       {/* 2. Featured Post Section */}
-      <section id="featured" className="py-16 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 text-start">
+      <section id="featured" className="py-16 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 text-left">
         <div className="space-y-2 mb-10">
-          <span className="text-xs font-bold text-brand-primary uppercase tracking-widest block">
-            {locale === 'ar' ? 'مقالات مميزة' : 'FEATURED INSIGHT'}
+          <span className="eyebrow block">
+            FEATURED INSIGHT
           </span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight leading-tight">
-            {locale === 'ar' ? 'اكتشف الأفكار التي تقود الابتكار الصناعي' : 'Discover the ideas Driving Industrial Innovation'}
+          <h2 className="text-2xl sm:text-3xl font-black text-[#222222] tracking-tight leading-tight">
+            Ideas Driving Industrial Efficiency
           </h2>
-          <p className="text-slate-550 text-sm max-w-2xl">
-            {locale === 'ar'
-              ? 'تصفح رؤى ودروس مهندسينا وخبراء الصناعة لمساعدتك في مواكبة المشهد التقني سريع التطور.'
-              : 'Explore thoughts from our engineers and industrial experts, and stay ahead in a fast-evolving technical landscape.'}
+          <p className="text-slate-600 text-sm max-w-2xl">
+            Explore technical notes from our engineering team to stay ahead in a fast-evolving East African industrial landscape.
           </p>
         </div>
 
-        {/* Featured Card */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
-          <div className="lg:col-span-7 h-72 sm:h-96 lg:h-full relative overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 group">
+          <Link to={`/insights/${featuredPost.slug}`} className="lg:col-span-7 h-72 sm:h-96 lg:h-full relative overflow-hidden block">
             <img
               src={featuredPost.image}
-              alt={featuredPost.title[locale]}
-              className="w-full h-full object-cover transform hover:scale-102 transition-transform duration-700"
+              alt={featuredPost.title}
+              className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
             />
-          </div>
-          <div className="lg:col-span-5 p-8 sm:p-10 flex flex-col justify-center space-y-6 bg-white">
-            <span className="inline-flex px-3 py-1 bg-brand-light text-brand-primary text-[10px] font-extrabold rounded-md uppercase tracking-wider self-start">
-              {featuredPost.tag[locale]}
+          </Link>
+          <div className="lg:col-span-5 p-8 sm:p-10 flex flex-col justify-center space-y-6 bg-white text-left">
+            <span className="inline-flex px-3 py-1 bg-red-50 text-[#ED1C24] text-[10px] font-black rounded-md uppercase tracking-wider self-start border border-red-100">
+              {featuredPost.tag}
             </span>
-            <h3 className="text-xl sm:text-2xl font-bold text-slate-950 leading-snug">
-              {featuredPost.title[locale]}
+            <h3 className="text-xl sm:text-2xl font-black text-[#222222] leading-snug group-hover:text-[#ED1C24] transition-colors">
+              <Link to={`/insights/${featuredPost.slug}`}>
+                {featuredPost.title}
+              </Link>
             </h3>
-            <p className="text-slate-500 text-sm leading-relaxed">
-              {featuredPost.desc[locale]}
+            <p className="text-slate-600 text-sm leading-relaxed">
+              {featuredPost.desc}
             </p>
             <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-              <span className="text-slate-400 text-xs font-semibold">{featuredPost.date[locale]}</span>
-              <button className="px-5 py-2.5 bg-brand-primary hover:bg-brand-secondary text-white font-bold rounded-lg text-[10px] uppercase tracking-wider transition-colors duration-200">
-                {locale === 'ar' ? 'اقرأ المزيد' : 'Read More'}
-              </button>
+              <span className="text-slate-400 text-xs font-semibold">{featuredPost.date}</span>
+              <Link
+                to={`/insights/${featuredPost.slug}`}
+                className="text-xs font-bold text-[#ED1C24] hover:text-[#D0171E] uppercase tracking-wider flex items-center gap-1 group-hover:translate-x-1 transition-transform"
+              >
+                Full Brief <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3. Latest Articles Grid */}
-      <section className="py-16 bg-[#f8fafc] border-t border-b border-slate-100 w-full text-start">
-        <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="space-y-2 mb-12">
-            <span className="text-xs font-bold text-brand-primary uppercase tracking-widest block">
-              {locale === 'ar' ? 'آخر المقالات' : 'LATEST PERSPECTIVES'}
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight leading-tight">
-              {locale === 'ar' ? 'المقالات الأخيرة والآراء الصناعية' : 'Latest Articles & Industry Perspectives'}
-            </h2>
-            <p className="text-slate-500 text-sm max-w-2xl">
-              {locale === 'ar'
-                ? 'ابق على اطلاع بالتحليلات والمقالات المفصلة حول أحدث أساليب الإنتاج والأتمتة والتقنيات الناشئة.'
-                : 'Stay up to date with the latest advancements in industrial automation, digital transformation, process optimization, and emerging technologies.'}
-            </p>
-          </div>
+      {/* 3. Articles Grid */}
+      <section className="py-16 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 text-left">
+        <div className="space-y-2 mb-10">
+          <span className="eyebrow block">
+            ALL PERSPECTIVES
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black text-[#222222] tracking-tight leading-tight">
+            Latest Industry Articles
+          </h2>
+        </div>
 
-          {/* Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((post) => (
-              <div
-                key={post.id}
-                className="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col group hover:-translate-y-1"
-              >
-                <div className="h-48 overflow-hidden relative">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {posts.map((post) => (
+            <div
+              key={post.id}
+              className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-md hover:border-[#ED1C24] transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1 text-left"
+            >
+              <div>
+                <Link to={`/insights/${post.slug}`} className="h-52 overflow-hidden relative block">
                   <img
                     src={post.image}
-                    alt={post.title[locale]}
+                    alt={post.title}
                     className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                   />
-                </div>
-                <div className="p-6 flex-grow flex flex-col justify-between space-y-6">
-                  <div className="space-y-3">
-                    <span className="inline-flex px-2.5 py-0.5 bg-brand-light text-brand-primary text-[9px] font-extrabold rounded uppercase tracking-wider">
-                      {post.tag[locale]}
-                    </span>
-                    <h3 className="text-base sm:text-lg font-bold text-slate-950 leading-snug">
-                      {post.title[locale]}
-                    </h3>
-                    <p className="text-slate-500 text-xs sm:text-sm leading-relaxed line-clamp-3">
-                      {post.desc[locale]}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-50">
-                    <span className="text-slate-400 text-2xs font-semibold">{post.date[locale]}</span>
-                    <button className="px-4 py-2 bg-brand-primary hover:bg-brand-secondary text-white font-bold rounded-lg text-[10px] uppercase tracking-wider transition-colors duration-200">
-                      {locale === 'ar' ? 'اقرأ المزيد' : 'Read More'}
-                    </button>
-                  </div>
+                </Link>
+                <div className="p-6 sm:p-8 space-y-3">
+                  <span className="inline-flex px-2.5 py-0.5 bg-red-50 text-[#ED1C24] text-[10px] font-black rounded uppercase tracking-wider border border-red-100">
+                    {post.tag}
+                  </span>
+                  <h3 className="text-lg font-bold text-[#222222] leading-snug group-hover:text-[#ED1C24] transition-colors">
+                    <Link to={`/insights/${post.slug}`}>
+                      {post.title}
+                    </Link>
+                  </h3>
+                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed line-clamp-3">
+                    {post.desc}
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
+              <div className="px-6 sm:px-8 pb-6 pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 font-semibold">
+                <span>{post.date}</span>
+                <Link
+                  to={`/insights/${post.slug}`}
+                  className="text-[#ED1C24] hover:text-[#D0171E] font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform cursor-pointer"
+                >
+                  Read <ArrowRight className="h-3 w-3" />
+                </Link>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* 4. Solutions Section (Slider style matching user screenshot) */}
-      <section className="py-20 px-4 max-w-[1360px] mx-auto my-10 font-sans text-start">
-        <div className="flex flex-col lg:flex-row gap-8 items-stretch">
-          
-          {/* Left Solid Card */}
-          <div className="w-full lg:w-[320px] bg-brand-primary text-white rounded-3xl p-8 flex flex-col justify-between items-start shadow-lg flex-shrink-0 min-h-[420px]">
-            <div className="space-y-4">
-              <span className="text-xs font-bold uppercase tracking-widest text-slate-200 block">
-                {locale === 'ar' ? 'القدرات الصناعية' : 'INDUSTRIAL CAPABILITIES'}
-              </span>
-              <h2 className="text-3xl font-extrabold tracking-tight leading-tight">
-                {locale === 'ar' 
-                  ? 'حلول هندسية للعمليات الصناعية الحيوية' 
-                  : 'Engineering Solutions for Critical Industrial Operations'}
-              </h2>
-              <p className="text-slate-200 text-sm leading-relaxed">
-                {locale === 'ar'
-                  ? 'نقدم تقنيات الأتمتة والمرافق والروبوتات والعمليات التي تدعم العمليات الصناعية الفعالة والمستقبلية.'
-                  : 'Delivering automation, utilities, robotics, and process technologies that support efficient and future-ready industrial operations.'}
-              </p>
+      {/* 4. Solutions Slider Section */}
+      <section className="py-20 bg-[#F5F5F5] border-t border-b border-slate-200/70">
+        <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row gap-8 items-stretch">
+            
+            <div className="w-full lg:w-[320px] bg-[#222222] text-white rounded-3xl p-8 flex flex-col justify-between items-start shadow-xl flex-shrink-0 min-h-[400px]">
+              <div className="space-y-4">
+                <span className="eyebrow block">DISCOVER</span>
+                <h2 className="text-2xl sm:text-3xl font-black tracking-tight leading-tight">
+                  Applied Engineering Across Disciplines
+                </h2>
+                <p className="text-slate-300 text-sm leading-relaxed">
+                  Delivering proven technology packages engineered for optimal uptime and durability in demanding conditions.
+                </p>
+              </div>
+              <Link
+                to="/solutions"
+                className="px-6 py-2.5 bg-[#ED1C24] text-white font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-[#D0171E] transition-colors shadow-md"
+              >
+                View Solutions
+              </Link>
             </div>
-            <Link
-              to={localizedPath('/solutions')}
-              className="mt-6 px-6 py-2.5 bg-white text-brand-primary font-bold text-sm rounded-lg hover:bg-slate-50 transition-colors"
-            >
-              {locale === 'ar' ? 'عرض المزيد' : 'View More'}
-            </Link>
-          </div>
 
-          {/* Right Scrollable Row of Solutions */}
-          <div className="flex-1 flex flex-col justify-between overflow-hidden">
-            <div 
-              ref={scrollRef}
-              onScroll={handleScroll}
-              className="flex gap-6 overflow-x-auto pb-4 scrollbar-none snap-x snap-mandatory scroll-smooth"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-              {solutions.map((sol) => {
-                // Find solution image from solutionsData
-                const solData = solutionsData.find(s => s.slug === sol.slug)
-                const bgImage = solData ? solData.image : 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80'
+            <div className="flex-1 flex flex-col justify-between overflow-hidden">
+              <div 
+                ref={scrollRef}
+                onScroll={handleScroll}
+                className="flex gap-6 overflow-x-auto pb-4 scrollbar-none snap-x snap-mandatory scroll-smooth"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                {solutions.map((sol) => {
+                  const solData = solutionsData.find(s => s.slug === sol.slug)
+                  const bgImage = solData ? solData.image : 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80'
 
-                return (
-                  <Link
-                    key={sol.slug}
-                    to={localizedPath(`/solutions/${sol.slug}`)}
-                    className="w-[280px] sm:w-[300px] h-[340px] rounded-3xl overflow-hidden relative shadow-md hover:shadow-xl transition-shadow flex-shrink-0 snap-start block group"
+                  return (
+                    <Link
+                      key={sol.slug}
+                      to={`/solutions/${sol.slug}`}
+                      className="w-[280px] sm:w-[300px] h-[340px] rounded-3xl overflow-hidden relative shadow-md hover:shadow-xl transition-all flex-shrink-0 snap-start block group cursor-pointer"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent z-10"></div>
+                      <img 
+                        src={bgImage} 
+                        alt={sol.title} 
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                      />
+                      <div className="absolute bottom-6 left-6 right-6 z-20 text-left">
+                        <h3 className="text-xl font-bold text-white tracking-tight leading-snug">
+                          {sol.title}
+                        </h3>
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
+
+              <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-200">
+                <div className="flex-1 max-w-xs bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                  <div 
+                    className="bg-[#ED1C24] h-full transition-all duration-300 rounded-full"
+                    style={{ width: `${Math.max(10, scrollProgress * 100)}%` }}
+                  ></div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => scrollSlider('left')}
+                    className="p-2 border border-slate-300 rounded-lg bg-white text-[#222222] hover:border-[#ED1C24] hover:text-[#ED1C24] transition-colors cursor-pointer"
+                    aria-label="Scroll left"
                   >
-                    {/* Hover indicator arrow on the card */}
-                    <div className="absolute top-4 right-4 z-20 h-8 w-8 bg-white/20 hover:bg-white/45 backdrop-blur-md rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      {dir === 'rtl' ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                    </div>
-                    
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10 z-10"></div>
-                    <img 
-                      src={bgImage} 
-                      alt={sol.title[locale]} 
-                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                    />
-                    
-                    <div className="absolute bottom-6 left-6 right-6 z-20 text-start">
-                      <h3 className="text-xl font-bold text-white tracking-tight leading-snug">
-                        {sol.title[locale]}
-                      </h3>
-                    </div>
-                  </Link>
-                )
-              })}
-            </div>
-
-            {/* Slider Navigation & Progress (Screenshot Style) */}
-            <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100">
-              {/* Progress Line */}
-              <div className="flex-1 max-w-xs bg-slate-200 h-1 rounded-full overflow-hidden">
-                <div 
-                  className="bg-brand-primary h-full transition-all duration-300 rounded-full animate-pulse"
-                  style={{ width: `${Math.max(10, scrollProgress * 100)}%` }}
-                ></div>
-              </div>
-
-              {/* Arrow controls */}
-              <div className="flex items-center gap-2">
-                <button 
-                  onClick={() => scrollSlider('left')}
-                  className="p-2 border border-slate-200 rounded-full hover:border-brand-primary hover:text-brand-primary transition-colors cursor-pointer"
-                  aria-label="Scroll left"
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-                <button 
-                  onClick={() => scrollSlider('right')}
-                  className="p-2 border border-slate-200 rounded-full hover:border-brand-primary hover:text-brand-primary transition-colors cursor-pointer"
-                  aria-label="Scroll right"
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </button>
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  <button 
+                    onClick={() => scrollSlider('right')}
+                    className="p-2 border border-slate-300 rounded-lg bg-white text-[#222222] hover:border-[#ED1C24] hover:text-[#ED1C24] transition-colors cursor-pointer"
+                    aria-label="Scroll right"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </div>
               </div>
             </div>
+
           </div>
-
         </div>
       </section>
 
-      {/* 5. Newsletter Subscription Banner (Matches Hero Container Width) */}
+      {/* 5. Newsletter Banner */}
       <section id="subscribe" className="py-16 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-brand-primary text-white rounded-3xl py-16 sm:py-24 px-8 sm:px-12 relative overflow-hidden shadow-lg text-center space-y-6 w-full">
-          {/* Subtle design overlays */}
-          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/5 pointer-events-none"></div>
-          <div className="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-white/5 pointer-events-none"></div>
-
+        <div className="bg-[#ED1C24] text-white rounded-3xl py-16 sm:py-20 px-8 sm:px-12 relative overflow-hidden shadow-xl text-center space-y-6 w-full">
           <div className="max-w-4xl mx-auto space-y-6 relative z-10">
             <div className="space-y-3">
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-                {locale === 'ar' ? 'ابق على اطلاع مع آراء 3T السعودية' : 'Stay Ahead with 3T Saudi Insights'}
+              <span className="eyebrow block !text-white/80">TECHNICAL UPDATES</span>
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
+                Stay Ahead with MVGL Kenya Insights
               </h2>
-              <p className="text-slate-100/90 text-sm max-w-xl mx-auto">
-                {locale === 'ar'
-                  ? 'ابتكارات مدفوعة بالمعرفة. اشترك لتصلك آخر المستجدات والحلول الفنية التي تشكل مستقبل الصناعة.'
-                  : 'Knowledge-driven innovation. Subscribe to receive updates on new technologies and technical solutions shaping the future of industry.'}
+              <p className="text-white/90 text-sm max-w-xl mx-auto">
+                Knowledge-driven innovation. Subscribe to receive periodic briefs on emerging industrial equipment technologies, energy efficiency tips, and engineering best practices in Kenya.
               </p>
             </div>
 
             <form onSubmit={handleSubscribe} className="max-w-md mx-auto flex flex-col sm:flex-row gap-3 pt-2">
               {subscribed ? (
-                <div className="w-full py-3 px-4 bg-white/10 rounded-lg text-sm font-semibold text-white">
-                  {locale === 'ar' ? '✓ تم الاشتراك بنجاح! شكرًا لك.' : '✓ Subscribed successfully! Thank you.'}
+                <div className="w-full py-3 px-4 bg-white/20 rounded-lg text-sm font-bold text-white border border-white/30">
+                  ✓ Subscribed successfully! Thank you for connecting with MVGL Kenya.
                 </div>
               ) : (
                 <>
                   <input 
                     type="email" 
                     required
-                    placeholder={locale === 'ar' ? 'عنوان بريدك الإلكتروني' : 'Enter your email address'}
+                    placeholder="Enter your work email address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="flex-grow px-4 py-3 bg-white text-slate-900 placeholder-slate-400 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-light"
+                    className="flex-grow px-4 py-3 bg-white text-[#222222] placeholder-slate-400 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-white"
                   />
                   <button 
                     type="submit"
-                    className="px-6 py-3 bg-brand-secondary hover:bg-slate-950 text-white font-bold rounded-lg text-xs uppercase tracking-wider transition-colors duration-200"
+                    className="px-6 py-3 bg-[#222222] hover:bg-[#333333] text-white font-bold rounded-lg text-xs uppercase tracking-wider transition-colors shadow-md cursor-pointer"
                   >
-                    {locale === 'ar' ? 'اشترك الآن' : 'Subscribe'}
+                    Subscribe
                   </button>
                 </>
               )}

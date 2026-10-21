@@ -1,0 +1,73 @@
+{
+  "kind": "collectionType",
+  "collectionName": "careers",
+  "info": {
+    "singularName": "career",
+    "pluralName": "careers",
+    "displayName": "Career",
+    "description": "Job openings and career opportunities at MVGL Kenya"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "jobTitle": {
+      "type": "string",
+      "required": true
+    },
+    "title": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "jobTitle",
+      "required": false
+    },
+    "jobCode": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string",
+      "required": true,
+      "default": "Engineering & Technical"
+    },
+    "location": {
+      "type": "string",
+      "required": true,
+      "default": "Nairobi, Kenya"
+    },
+    "jobType": {
+      "type": "enumeration",
+      "enum": [
+        "Full-time",
+        "Contract",
+        "Part-time",
+        "Internship"
+      ],
+      "default": "Full-time"
+    },
+    "experienceLevel": {
+      "type": "string",
+      "required": true,
+      "default": "3+ Years Exp"
+    },
+    "summary": {
+      "type": "text",
+      "required": true
+    },
+    "responsibilities": {
+      "type": "richtext"
+    },
+    "requirements": {
+      "type": "richtext"
+    },
+    "deadline": {
+      "type": "date"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

@@ -1,56 +1,52 @@
 import { Link } from 'react-router-dom'
-import { useLanguage } from '../../context/LanguageContext'
 import { solutionsData } from '../../data/solutions'
 import { partnersData } from '../../data/partners'
 
 export default function Footer() {
-  const { locale, t } = useLanguage()
-
-  const localizedPath = (path: string) => {
-    return `/${locale}${path === '/' ? '' : path}`
-  }
-
   const quickLinks = [
-    { label: t('nav.ourStory'), path: '/about#story' },
-    { label: t('nav.visionMission'), path: '/about#vision-mission' },
-    { label: t('nav.chairmanMessage'), path: '/chairman' },
-    { label: t('nav.ourCulture'), path: '/about#culture' },
-    { label: t('nav.events'), path: '/events' },
-    { label: t('nav.contact'), path: '/contact' }
+    { label: 'Our Story', path: '/about#story' },
+    { label: 'Vision & Mission', path: '/about#vision-mission' },
+    { label: "Chairman's Message", path: '/chairman' },
+    { label: 'Our Culture', path: '/about#culture' },
+    { label: 'Events & Expos', path: '/events' },
+    { label: 'Contact Us', path: '/contact' }
   ]
 
   return (
-    <footer className="bg-brand-secondary text-slate-300 py-16 px-4 font-sans border-t border-white/10">
+    <footer className="bg-[#222222] text-slate-300 py-16 px-4 font-sans border-t border-white/10">
       <div className="max-w-[1360px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
         
         {/* Branding & Logo */}
         <div className="space-y-4">
-          <Link to={localizedPath('/')} className="inline-flex items-center">
+          <Link to="/" className="inline-flex items-center bg-white px-3.5 py-2 rounded-xl shadow-xs hover:opacity-95 transition-opacity">
             <img 
-              src="/LOGO/3T-Saudi.jpg" 
-              alt="3T Saudi Logo" 
-              className="h-10 w-auto object-contain rounded-md bg-white p-1"
+              src="/NEW LOGO/logo2.png" 
+              alt="MVGL Kenya Logo" 
+              className="h-11 w-auto object-contain"
             />
           </Link>
           <p className="text-sm leading-relaxed text-slate-300">
-            {t('footer.tagline')}
+            Engineering Solutions That Keep Kenya's Industries Moving. Delivering global technology partnerships and critical industrial solutions across East Africa.
           </p>
           <div className="text-xs text-slate-400 pt-4">
-            &copy; {new Date().getFullYear()} 3T Saudi. {t('footer.rights')}
+            &copy; {new Date().getFullYear()} MVGL Kenya. All rights reserved.
           </div>
         </div>
 
         {/* Solutions Links */}
         <div>
-          <h3 className="text-white font-bold text-sm tracking-widest uppercase mb-6">{t('footer.solutions')}</h3>
+          <h3 className="text-white font-bold text-sm tracking-widest uppercase mb-6 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#ED1C24]"></span>
+            SOLUTIONS
+          </h3>
           <ul className="space-y-3 text-sm">
             {solutionsData.map((sol) => (
               <li key={sol.id}>
                 <Link
-                  to={localizedPath(`/solutions/${sol.slug}`)}
-                  className="hover:text-white transition-colors"
+                  to={`/solutions/${sol.slug}`}
+                  className="hover:text-[#ED1C24] transition-colors"
                 >
-                  {sol.title[locale]}
+                  {sol.title.en}
                 </Link>
               </li>
             ))}
@@ -59,11 +55,14 @@ export default function Footer() {
 
         {/* Company Links */}
         <div>
-          <h3 className="text-white font-bold text-sm tracking-widest uppercase mb-6">{t('footer.company')}</h3>
+          <h3 className="text-white font-bold text-sm tracking-widest uppercase mb-6 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#ED1C24]"></span>
+            COMPANY
+          </h3>
           <ul className="space-y-3 text-sm">
             {quickLinks.map((link, idx) => (
               <li key={idx}>
-                <Link to={localizedPath(link.path)} className="hover:text-white transition-colors">
+                <Link to={link.path} className="hover:text-[#ED1C24] transition-colors">
                   {link.label}
                 </Link>
               </li>
@@ -73,13 +72,16 @@ export default function Footer() {
 
         {/* Partners Links */}
         <div>
-          <h3 className="text-white font-bold text-sm tracking-widest uppercase mb-6">{t('footer.partners')}</h3>
+          <h3 className="text-white font-bold text-sm tracking-widest uppercase mb-6 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#ED1C24]"></span>
+            PARTNERS
+          </h3>
           <ul className="space-y-3 text-sm">
             {partnersData.map((partner) => (
               <li key={partner.id}>
                 <Link
-                  to={localizedPath(`/partners/${partner.slug}`)}
-                  className="hover:text-white transition-colors"
+                  to={`/partners/${partner.slug}`}
+                  className="hover:text-[#ED1C24] transition-colors"
                 >
                   {partner.name}
                 </Link>

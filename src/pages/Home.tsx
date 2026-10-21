@@ -1,24 +1,57 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useLanguage } from '../context/LanguageContext'
-import { ArrowRight, ArrowLeft, Shield, Lightbulb, Users, RefreshCw, ChevronLeft, ChevronRight, Cpu, Settings } from 'lucide-react'
-import { industriesData } from '../data/industries'
+import { ArrowRight, Shield, Lightbulb, Users, RefreshCw, ChevronLeft, ChevronRight, Cpu, Settings } from 'lucide-react'
 import { solutionsData } from '../data/solutions'
 import IndustrialChallengeCTA from '../components/ui/IndustrialChallengeCTA'
 
 export default function Home() {
-  const { locale, dir } = useLanguage()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [scrollProgress, setScrollProgress] = useState(0)
-  const [activeIndustryIndex, setActiveIndustryIndex] = useState(0)
+  const [currentSlide, setCurrentSlide] = useState(0)
+
+  const slides = [
+    {
+      eyebrow: 'INDUSTRIAL ENGINEERING SOLUTIONS',
+      title: "Engineering Solutions That Keep Kenya's Industries Moving",
+      desc: 'Delivering world-class industrial equipment, precision engineering expertise, and dependable regional technical support across East Africa.',
+      image: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=1600&q=80',
+      primaryBtn: { text: 'Explore Solutions', path: '/solutions' },
+      secondaryBtn: { text: 'Contact Our Team', path: '/contact' }
+    },
+    {
+      eyebrow: 'COMPREHENSIVE UTILITIES & COOLING',
+      title: 'Reliable Compressed Air, Process Gas & Industrial HVAC',
+      desc: 'High-efficiency screw compressors, specialized gas systems, and industrial chiller packages engineered for peak uptime and harsh operating environments.',
+      image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1600&q=80',
+      primaryBtn: { text: 'Air & Gas Solutions', path: '/solutions/air-gas-solutions' },
+      secondaryBtn: { text: 'Refrigeration & HVAC', path: '/solutions/refrigeration-hvac-solutions' }
+    },
+    {
+      eyebrow: 'INTELLIGENT AUTOMATION & COMPOSITES',
+      title: 'Next-Gen Industrial Automation & Advanced Composites',
+      desc: 'Empowering East African manufacturers with certified Rockwell Automation controls, resilient industrial networks, and corrosion-resistant FRP/GRP composite piping.',
+      image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1600&q=80',
+      primaryBtn: { text: 'Automation & Control', path: '/solutions/automation-control' },
+      secondaryBtn: { text: 'Our Principal Partners', path: '/partners' }
+    }
+  ]
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length)
+    }, 6500)
+    return () => clearInterval(timer)
+  }, [slides.length])
+
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length)
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)
 
   const handleScroll = () => {
     if (scrollRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current
       const totalScroll = scrollWidth - clientWidth
       if (totalScroll > 0) {
-        // Compute relative progress absolute because scrollLeft can be negative in RTL
-        setScrollProgress(Math.abs(scrollLeft) / totalScroll)
+        setScrollProgress(scrollLeft / totalScroll)
       }
     }
   }
@@ -27,143 +60,81 @@ export default function Home() {
     if (scrollRef.current) {
       const scrollAmount = 340 // card width + gap
       const dirFactor = direction === 'left' ? -1 : 1
-      // If document is RTL, flip the direction factor
-      const actualFactor = dir === 'rtl' ? -dirFactor : dirFactor
-      scrollRef.current.scrollBy({ left: scrollAmount * actualFactor, behavior: 'smooth' })
+      scrollRef.current.scrollBy({ left: scrollAmount * dirFactor, behavior: 'smooth' })
     }
   }
 
-  const slides = [
-    {
-      title: {
-        en: 'Engineering Solutions That Keep Industries Moving',
-        ar: 'حلول هندسية تدفع الصناعة إلى الأمام'
-      },
-      eyebrow: {
-        en: 'INDUSTRIAL ENGINEERING SOLUTIONS',
-        ar: 'حلول هندسية صناعية'
-      },
-      desc: {
-        en: 'Delivering world-class industrial products, engineering expertise and dependable support to businesses across Saudi Arabia.',
-        ar: 'نقدم منتجات صناعية عالمية المستوى، وخبرات هندسية، ودعماً موثوقاً للمنشآت والقطاعات الصناعية في المملكة العربية السعودية.'
-      },
-      image: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=1600&q=80'
-    }
-  ]
-
   const solutions = [
     {
-      title: { en: 'Air & Gas Solutions', ar: 'حلول الهواء والغاز' },
-      desc: {
-        en: 'Delivering reliable compressed air and process gas systems engineered for critical industrial duty.',
-        ar: 'أنظمة موثوقة للهواء والغاز المضغوطين مصممة للعمليات الصناعية الحيوية.'
-      },
+      title: 'Air & Gas Solutions',
+      desc: 'Delivering reliable compressed air and process gas systems engineered for critical industrial duty.',
       slug: 'air-gas-solutions'
     },
     {
-      title: { en: 'Refrigeration & HVAC Solutions', ar: 'حلول التبريد والتكييف' },
-      desc: {
-        en: 'Industrial refrigeration compressors, chillers, and large-scale HVAC temperature control.',
-        ar: 'ضواغط التبريد الصناعي، والمبردات وأنظمة التكييف واسعة النطاق.'
-      },
+      title: 'Refrigeration & HVAC Solutions',
+      desc: 'Industrial refrigeration compressors, chillers, and large-scale HVAC temperature control.',
       slug: 'refrigeration-hvac-solutions'
     },
     {
-      title: { en: 'Automation & Control Solutions', ar: 'حلول الأتمتة والتحكم' },
-      desc: {
-        en: 'Intelligent automation, integrated PLCs/PACs, smart drives, and resilient industrial networking.',
-        ar: 'حلول الأتمتة الذكية، وأنظمة التحكم المتكاملة، والمحركات، والاتصالات الصناعية.'
-      },
+      title: 'Automation & Control Solutions',
+      desc: 'Intelligent automation, integrated PLCs/PACs, smart drives, and resilient industrial networking.',
       slug: 'automation-control'
     },
     {
-      title: { en: 'Non Metallic Solution', ar: 'حلول المواد غير المعدنية' },
-      desc: {
-        en: 'Advanced FRP/GRP composite piping, chemical storage tanks, and structural profiles for corrosion resistance.',
-        ar: 'أنظمة متكاملة من الأنابيب المركبة والخزانات والمقاطع المقاومة للتآكل.'
-      },
+      title: 'Non Metallic Solution',
+      desc: 'Advanced FRP/GRP composite piping, chemical storage tanks, and structural profiles for corrosion resistance.',
       slug: 'non-metallic-solutions'
     },
     {
-      title: { en: 'Fire Pump Solutions', ar: 'حلول مضخات الحريق' },
-      desc: {
-        en: 'FM-Approved and UL-Listed packaged fire pumps and pre-packaged containerized pump houses.',
-        ar: 'مجموعات مضخات حريق معتمدة من FM/UL ومحطات ضخ مسبقة التجهيز.'
-      },
+      title: 'Fire Pump Solutions',
+      desc: 'FM-Approved and UL-Listed packaged fire pumps and pre-packaged containerized pump houses.',
       slug: 'fire-pump-solutions'
     }
   ]
 
   const principles = [
     {
-      title: { en: 'Integrity', ar: 'النزاهة والشفافية' },
-      desc: {
-        en: 'Doing business responsibly and maintaining transparency.',
-        ar: 'العمل بمسؤولية والحفاظ على الشفافية المطلقة.'
-      },
-      icon: <Shield className="h-6 w-6" />
+      title: 'Integrity',
+      desc: 'Doing business responsibly, delivering transparent engineering advice and accountable service.',
+      icon: <Shield className="h-6 w-6 text-[#ED1C24]" />
     },
     {
-      title: { en: 'Engineering Excellence', ar: 'التميز الهندسي' },
-      desc: {
-        en: 'Delivering solutions built around performance and reliability.',
-        ar: 'تقديم حلول هندسية متطورة مبنية على الأداء والموثوقية.'
-      },
-      icon: <Lightbulb className="h-6 w-6" />
+      title: 'Engineering Excellence',
+      desc: 'Delivering precision solutions built around operating efficiency, durability, and OEM compliance.',
+      icon: <Lightbulb className="h-6 w-6 text-[#ED1C24]" />
     },
     {
-      title: { en: 'Customer Partnership', ar: 'الشراكة مع العميل' },
-      desc: {
-        en: 'Building lasting relationships through responsive support.',
-        ar: 'بناء علاقات دائمة ومثمرة من خلال الدعم السريع والمسؤول.'
-      },
-      icon: <Users className="h-6 w-6" />
+      title: 'Customer Partnership',
+      desc: 'Building enduring relationships through responsive regional support and proactive lifecycle care.',
+      icon: <Users className="h-6 w-6 text-[#ED1C24]" />
     },
     {
-      title: { en: 'Continuous Improvement', ar: 'التطوير المستمر' },
-      desc: {
-        en: 'Strengthening our capabilities alongside our principal partners.',
-        ar: 'تعزيز وتطوير قدراتنا جنباً إلى جنب مع شركائنا الرئيسيين.'
-      },
-      icon: <RefreshCw className="h-6 w-6" />
+      title: 'Continuous Improvement',
+      desc: 'Strengthening regional capabilities alongside our global principal manufacturing partners.',
+      icon: <RefreshCw className="h-6 w-6 text-[#ED1C24]" />
     }
   ]
 
   const events = [
     {
-      title: { en: 'Engage to Excel', ar: 'التواصل للتميز' },
-      desc: {
-        en: 'Bringing teams and industry stakeholders together to exchange knowledge and strengthen collaboration.',
-        ar: 'الجمع بين الفرق والشركاء في قطاع الصناعة لتبادل المعرفة وتعزيز التعاون.'
-      }
+      title: 'Engage to Excel',
+      desc: 'Bringing plant managers and engineering stakeholders together to exchange technical insights.'
     },
     {
-      title: { en: 'Partnering for Success', ar: 'الشراكة من أجل النجاح' },
-      desc: {
-        en: 'Building stronger relationships with our technology partners and customers.',
-        ar: 'بناء علاقات أقوى مع شركائنا التقنيين وعملائنا.'
-      }
+      title: 'Partnering for Success',
+      desc: 'Building strong alliances between regional industries and global OEM technology leaders.'
     },
     {
-      title: { en: 'V Connect', ar: 'في كونكت' },
-      desc: {
-        en: 'Connecting expertise, technology and industry opportunities.',
-        ar: 'ربط الخبرات والتكنولوجيا والفرص الصناعية في السوق المحلي.'
-      }
+      title: 'V-Connect Kenya',
+      desc: 'Connecting manufacturing expertise, automation technologies, and East African industrial opportunities.'
     },
     {
-      title: { en: 'Technology Day', ar: 'يوم التكنولوجيا' },
-      desc: {
-        en: 'Showcasing technologies and engineering solutions for modern industry.',
-        ar: 'عرض التقنيات والحلول الهندسية للصناعة الحديثة.'
-      }
+      title: 'Technology Day',
+      desc: 'Hands-on demonstrations of energy-saving compressors, industrial IoT, and smart controls.'
     },
     {
-      title: { en: 'Industry Expos', ar: 'المعارض الصناعية' },
-      desc: {
-        en: 'Participating in specialized exhibitions including Intersec and non-metallic industry events.',
-        ar: 'المشاركة في المعارض المتخصصة بما في ذلك معرض إنترسك وفعاليات قطاع الصناعات غير المعدنية.'
-      }
+      title: 'East Africa Industrial Expos',
+      desc: 'Participating in specialized trade exhibitions highlighting advanced composites and utility solutions.'
     }
   ]
 
@@ -180,110 +151,148 @@ export default function Home() {
     { name: 'Lifecycle IQ Services', image: '/PARTNERS LOGO/LIFECYCLE IQ SERVICES.webp', slug: 'rockwell-automation', scale: 'scale-115' }
   ]
 
-  const localizedPath = (path: string) => `/${locale}${path === '/' ? '' : path}`
-
   return (
-    <div className="font-sans min-h-screen bg-slate-50 overflow-x-hidden">
+    <div className="font-sans min-h-screen bg-white text-[#222222] overflow-x-hidden">
       
-      {/* 1. Hero Section */}
-      <section className="relative w-full h-screen overflow-hidden bg-slate-900 text-white">
-        <div className="absolute inset-0 bg-black/60 z-10"></div>
-        <img
-          src={slides[0].image}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 z-20 flex items-center">
-          <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
-            <div className="max-w-3xl space-y-6">
-              <span className="inline-block text-xs font-bold uppercase tracking-widest text-brand-accent bg-brand-accent/10 px-3 py-1 rounded border border-brand-accent/25">
-                {slides[0].eyebrow[locale]}
-              </span>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
-                {slides[0].title[locale]}
-              </h1>
-              <p className="text-lg text-slate-300 max-w-2xl leading-relaxed">
-                {slides[0].desc[locale]}
-              </p>
-              <div className="pt-4 flex flex-wrap gap-4">
-                <Link
-                  to={localizedPath('/solutions')}
-                  className="px-6 py-3.5 bg-brand-accent hover:bg-brand-accent/90 text-white font-bold rounded-lg shadow-lg transition-colors"
-                >
-                  {locale === 'ar' ? 'استكشف الحلول' : 'Explore Solutions'}
-                </Link>
-                <Link
-                  to={localizedPath('/contact')}
-                  className="px-6 py-3.5 bg-transparent border border-white hover:bg-white/10 text-white font-bold rounded-lg transition-colors"
-                >
-                  {locale === 'ar' ? 'تواصل مع فريقنا' : 'Contact Our Team'}
-                </Link>
+      {/* 1. Hero Section Slider (3 Slides) */}
+      <section className="relative w-full h-screen overflow-hidden bg-[#222222] text-white select-none">
+        {slides.map((slide, idx) => (
+          <div
+            key={idx}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+              idx === currentSlide ? 'opacity-100 z-10 pointer-events-auto' : 'opacity-0 z-0 pointer-events-none'
+            }`}
+          >
+            <div className="absolute inset-0 bg-black/65 z-10"></div>
+            <img
+              src={slide.image}
+              alt={slide.title}
+              className={`absolute inset-0 w-full h-full object-cover transition-transform duration-[7000ms] ease-out ${
+                idx === currentSlide ? 'scale-105' : 'scale-100'
+              }`}
+            />
+            <div className="absolute inset-0 z-20 flex items-center">
+              <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                <div className="max-w-3xl space-y-6 text-left">
+                  <span className="eyebrow block">
+                    {slide.eyebrow}
+                  </span>
+                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
+                    {slide.title}
+                  </h1>
+                  <p className="text-lg text-slate-200 max-w-2xl leading-relaxed">
+                    {slide.desc}
+                  </p>
+                  <div className="pt-4 flex flex-wrap gap-4">
+                    <Link
+                      to={slide.primaryBtn.path}
+                      className="px-8 py-3.5 bg-[#ED1C24] hover:bg-[#D0171E] text-white font-bold rounded-lg shadow-lg hover:shadow-red-500/20 transition-all uppercase tracking-wider text-xs"
+                    >
+                      {slide.primaryBtn.text}
+                    </Link>
+                    <Link
+                      to={slide.secondaryBtn.path}
+                      className="px-8 py-3.5 bg-transparent border border-white hover:bg-white/10 text-white font-bold rounded-lg transition-colors uppercase tracking-wider text-xs"
+                    >
+                      {slide.secondaryBtn.text}
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+        ))}
+
+        {/* Carousel Prev/Next Arrows */}
+        <button
+          onClick={prevSlide}
+          className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-30 h-12 w-12 rounded-full bg-black/40 hover:bg-[#ED1C24] text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer"
+          aria-label="Previous slide"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </button>
+        <button
+          onClick={nextSlide}
+          className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-30 h-12 w-12 rounded-full bg-black/40 hover:bg-[#ED1C24] text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer"
+          aria-label="Next slide"
+        >
+          <ChevronRight className="h-6 w-6" />
+        </button>
+
+        {/* Slide Indicators / Dots */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3">
+          {slides.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentSlide(idx)}
+              className={`transition-all duration-300 rounded-full cursor-pointer ${
+                idx === currentSlide
+                  ? 'w-10 h-2.5 bg-[#ED1C24]'
+                  : 'w-2.5 h-2.5 bg-white/50 hover:bg-white'
+              }`}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
+          ))}
         </div>
       </section>
 
       {/* 2. Workplace / Leadership Stats Section */}
       <section className="py-24 bg-white font-sans text-center w-full">
         <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="space-y-4 mb-16">
-            <span className="text-xs uppercase font-bold text-brand-primary tracking-widest block">
-              {locale === 'ar' ? 'التميز الهندسي' : 'ENGINEERING EXCELLENCE'}
+          <div className="space-y-4 mb-16 text-center">
+            <span className="eyebrow block">
+              ENGINEERING EXCELLENCE
             </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
-              {locale === 'ar' ? 'خلق القيمة من خلال الخبرة الهندسية' : 'Creating Value Through Engineering Expertise'}
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#222222] tracking-tight">
+              Creating Value Through Engineering Expertise
             </h2>
-            <p className="text-slate-555 max-w-3xl mx-auto text-base sm:text-lg leading-relaxed">
-              {locale === 'ar' 
-                ? 'تجمع شركة 3T السعودية بين الشراكات التقنية العالمية، والخبرة الصناعية، والدعم الذي يركز على العميل لتقديم حلول هندسية موثوقة. وتتأسس منهجيتنا على التميز التشغيلي، والشفافية، والنجاح المستدام لعملائنا.'
-                : '3T Saudi brings together global technology partnerships, industrial expertise, and customer-focused support to deliver reliable engineering solutions. Our approach is built around operational excellence, transparency, and long-term customer success.'}
+            <p className="text-slate-600 max-w-3xl mx-auto text-base sm:text-lg leading-relaxed">
+              MVGL Kenya brings together global technology partnerships, industrial expertise, and customer-focused support to deliver reliable engineering solutions across East Africa.
             </p>
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-start">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
             {/* Card 1 */}
-            <div className="bg-[#f3f7fc] border border-[#e4ecf5] rounded-3xl p-8 space-y-6 relative overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:bg-gradient-to-b hover:from-brand-primary/30 hover:to-[#f3f7fc]">
-              <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-brand-primary text-white">
+            <div className="bg-[#F5F5F5] border border-slate-200/80 rounded-3xl p-8 space-y-6 transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:border-[#ED1C24]">
+              <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-[#ED1C24] text-white shadow-sm">
                 <ArrowRight className="h-6 w-6 transform -rotate-45" />
               </div>
               <div className="space-y-2">
-                <p className="text-4xl sm:text-5xl font-extrabold text-slate-950 tracking-tight">7</p>
-                <p className="text-slate-550 text-sm font-semibold leading-normal">
-                  {locale === 'ar' ? 'شركاء رئيسيون' : 'Principal Partners'}
+                <p className="text-4xl sm:text-5xl font-black text-[#222222] tracking-tight">7+</p>
+                <p className="text-slate-600 text-sm font-semibold">
+                  Global Principal Partners
                 </p>
               </div>
             </div>
 
             {/* Card 2 */}
-            <div className="bg-[#f3f7fc] border border-[#e4ecf5] rounded-3xl p-8 space-y-6 relative overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:bg-gradient-to-b hover:from-brand-primary/30 hover:to-[#f3f7fc]">
-              <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-brand-primary text-white">
-                {/* Draw a thick circle similar to screenshot */}
+            <div className="bg-[#F5F5F5] border border-slate-200/80 rounded-3xl p-8 space-y-6 transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:border-[#ED1C24]">
+              <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-[#ED1C24] text-white shadow-sm">
                 <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="8"></circle>
                 </svg>
               </div>
               <div className="space-y-2">
-                <p className="text-4xl sm:text-5xl font-extrabold text-slate-950 tracking-tight">15+</p>
-                <p className="text-slate-550 text-sm font-semibold leading-normal">
-                  {locale === 'ar' ? 'قطاعات صناعية' : 'Industrial Markets'}
+                <p className="text-4xl sm:text-5xl font-black text-[#222222] tracking-tight">15+</p>
+                <p className="text-slate-600 text-sm font-semibold">
+                  Industrial Sectors Served
                 </p>
               </div>
             </div>
 
             {/* Card 3 */}
-            <div className="bg-[#f3f7fc] border border-[#e4ecf5] rounded-3xl p-8 space-y-6 relative overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:bg-gradient-to-b hover:from-brand-primary/30 hover:to-[#f3f7fc]">
-              <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-brand-primary text-white">
+            <div className="bg-[#F5F5F5] border border-slate-200/80 rounded-3xl p-8 space-y-6 transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:border-[#ED1C24]">
+              <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-[#ED1C24] text-white shadow-sm">
                 <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="12" y1="5" x2="12" y2="19"></line>
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
               </div>
               <div className="space-y-2">
-                <p className="text-4xl sm:text-5xl font-extrabold text-slate-950 tracking-tight">5</p>
-                <p className="text-slate-550 text-sm font-semibold leading-normal">
-                  {locale === 'ar' ? 'مجالات الحلول' : 'Solution Areas'}
+                <p className="text-4xl sm:text-5xl font-black text-[#222222] tracking-tight">5</p>
+                <p className="text-slate-600 text-sm font-semibold">
+                  Core Solution Disciplines
                 </p>
               </div>
             </div>
@@ -292,68 +301,62 @@ export default function Home() {
       </section>
 
       {/* 3. Engineering Capabilities Section */}
-      <section className="py-24 bg-slate-50 font-sans text-start w-full border-t border-b border-slate-100">
+      <section className="py-24 bg-[#F5F5F5] font-sans text-left w-full border-t border-b border-slate-200/70">
         <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl space-y-4 mb-16">
-            <span className="text-xs uppercase font-bold text-brand-primary tracking-widest block">
-              {locale === 'ar' ? 'القدرات الهندسية' : 'ENGINEERING CAPABILITIES'}
+            <span className="eyebrow block">
+              ENGINEERING CAPABILITIES
             </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
-              {locale === 'ar' ? 'حلول مخصصة للصناعة' : 'Solutions Built for Industry'}
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#222222] tracking-tight">
+              Solutions Built for Modern Industry
             </h2>
-            <p className="text-slate-550 text-base sm:text-lg leading-relaxed">
-              {locale === 'ar' 
-                ? 'تقدم شركة 3T حلولاً هندسية متكاملة تلبي متطلبات التطبيقات الصناعية الصعبة، بدءاً من الأتمتة والاتصال وصولاً إلى الضغط والتبريد والضخ والمواد المركبة المتقدمة.'
-                : 'From automation and connectivity to compression, cooling, pumping and advanced composites, 3T delivers engineering solutions for demanding industrial applications.'}
+            <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
+              From automation and industrial connectivity to gas compression, process cooling, fluid pumping, and advanced composites, MVGL Kenya delivers dependable engineering for demanding environments.
             </p>
           </div>
 
           {/* Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Card 1 */}
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-md space-y-6 flex flex-col transition-all duration-300 hover:shadow-lg">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 flex flex-col transition-all duration-300 hover:shadow-md hover:border-[#ED1C24]">
               <div className="h-64 overflow-hidden rounded-2xl relative">
                 <img 
                   src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80" 
-                  alt={locale === 'ar' ? 'الأتمتة والاتصال' : 'Automation & Connectivity'} 
-                  className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
+                  alt="Automation & Connectivity" 
+                  className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
                 />
               </div>
               <div className="space-y-4 flex-grow flex flex-col justify-start">
-                <div className="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-brand-primary text-white">
+                <div className="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-[#ED1C24] text-white">
                   <Cpu className="h-5 w-5" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-950">
-                  {locale === 'ar' ? 'الأتمتة والاتصال' : 'Automation & Connectivity'}
+                <h3 className="text-xl font-bold text-[#222222]">
+                  Automation & Connectivity
                 </h3>
-                <p className="text-slate-500 text-sm leading-relaxed">
-                  {locale === 'ar' 
-                    ? 'حلول متكاملة للأتمتة وأنظمة التحكم والاتصالات الصناعية للمساعدة في تحسين الاتصال والإنتاجية والأداء التشغيلي.'
-                    : 'Integrated automation, control and industrial communication solutions that help improve connectivity, productivity and operational performance.'}
+                <p className="text-slate-600 text-sm leading-relaxed">
+                  Integrated automation, smart PLCs, motor control centers, and industrial communication protocols that enhance machine connectivity, uptime, and operational performance.
                 </p>
               </div>
             </div>
 
             {/* Card 2 */}
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-md space-y-6 flex flex-col transition-all duration-300 hover:shadow-lg">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 flex flex-col transition-all duration-300 hover:shadow-md hover:border-[#ED1C24]">
               <div className="h-64 overflow-hidden rounded-2xl relative">
                 <img 
                   src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80" 
-                  alt={locale === 'ar' ? 'الحلول الميكانيكية والعمليات' : 'Mechanical & Process Solutions'} 
-                  className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
+                  alt="Mechanical & Process Solutions" 
+                  className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
                 />
               </div>
               <div className="space-y-4 flex-grow flex flex-col justify-start">
-                <div className="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-brand-primary text-white">
+                <div className="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-[#ED1C24] text-white">
                   <Settings className="h-5 w-5" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-950">
-                  {locale === 'ar' ? 'الحلول الميكانيكية والعمليات' : 'Mechanical & Process Solutions'}
+                <h3 className="text-xl font-bold text-[#222222]">
+                  Mechanical & Process Solutions
                 </h3>
-                <p className="text-slate-500 text-sm leading-relaxed">
-                  {locale === 'ar' 
-                    ? 'تقنيات هندسية متطورة لتطبيقات الضغط، والتبريد، والضخ في العمليات الصناعية الحرجة.'
-                    : 'Engineered technologies for compression, refrigeration, cooling and pumping applications across critical industrial operations.'}
+                <p className="text-slate-600 text-sm leading-relaxed">
+                  Engineered technologies for compressed air, process gas compression, industrial refrigeration, chiller packages, and certified fire protection pump houses.
                 </p>
               </div>
             </div>
@@ -361,30 +364,26 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. Partner Logo Strip (Infinite scrolling marquee) */}
+      {/* 4. Partner Logo Strip */}
       <section className="bg-white py-16 border-b border-slate-100 my-10 overflow-hidden font-sans">
-        <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-          <span className="text-xs uppercase font-bold text-brand-primary tracking-widest block">
-            {locale === 'ar' ? 'تقنيات عالمية. خبرات محلية.' : 'GLOBAL TECHNOLOGY. LOCAL EXPERTISE.'}
+        <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+          <span className="eyebrow block">
+            GLOBAL TECHNOLOGY. REGIONAL EXPERTISE.
           </span>
-          <p className="text-slate-500 max-w-2xl mx-auto text-sm">
-            {locale === 'ar'
-              ? 'نتعاون مع شركات ومصنّعين عالميين لتقديم تقنيات موثوقة وحلول هندسية تلبي متطلبات التطبيقات الصناعية المختلفة.'
-              : 'Working with globally recognized manufacturers to deliver reliable technologies and engineering solutions for demanding industrial applications.'}
+          <p className="text-slate-600 max-w-2xl mx-auto text-sm">
+            Partnering with world-renowned manufacturers to deliver certified engineering technologies for Kenya's manufacturing and infrastructure sectors.
           </p>
         </div>
 
-        {/* Marquee Wrapper with side fade overlays */}
-        <div className="relative mt-10 w-full overflow-hidden py-4 bg-slate-50/50">
+        <div className="relative mt-10 w-full overflow-hidden py-4 bg-[#F5F5F5]/60">
           <div className="absolute left-0 top-0 bottom-0 w-20 sm:w-40 bg-gradient-to-r from-white to-transparent z-20 pointer-events-none"></div>
           <div className="absolute right-0 top-0 bottom-0 w-20 sm:w-40 bg-gradient-to-l from-white to-transparent z-20 pointer-events-none"></div>
 
-          <div className={dir === 'rtl' ? 'animate-marquee-rtl' : 'animate-marquee-ltr'}>
-            {/* Render logos list twice for seamless infinite looping */}
+          <div className="animate-marquee-ltr">
             {[...partnerLogos, ...partnerLogos].map((logo, idx) => (
               <Link
                 key={idx}
-                to={localizedPath(`/partners/${logo.slug}`)}
+                to={`/partners/${logo.slug}`}
                 className={`mx-5 sm:mx-8 flex items-center justify-center h-16 w-28 sm:w-32 filter grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-300 flex-shrink-0 ${logo.scale || ''}`}
               >
                 <img
@@ -398,65 +397,57 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. About 3T (Redesigned Split Layout) */}
+      {/* 5. About MVGL Kenya */}
       <section className="py-24 px-4 max-w-[1360px] mx-auto my-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           
-          {/* Image Side with decorative accents */}
+          {/* Image Side */}
           <div className="relative group">
-            {/* Background accent block */}
-            <div className="absolute -inset-4 bg-brand-light rounded-3xl -z-10 transform -rotate-1 group-hover:rotate-0 transition-transform duration-500"></div>
-            <div className="absolute -bottom-6 -right-6 h-32 w-32 bg-brand-accent/10 rounded-full blur-xl -z-10"></div>
+            <div className="absolute -inset-4 bg-red-50 rounded-3xl -z-10 transform -rotate-1 group-hover:rotate-0 transition-transform duration-500"></div>
+            <div className="absolute -bottom-6 -right-6 h-32 w-32 bg-red-200/50 rounded-full blur-xl -z-10"></div>
             
-            <div className="relative h-[480px] rounded-2xl overflow-hidden shadow-2xl border border-slate-100">
+            <div className="relative h-[480px] rounded-2xl overflow-hidden shadow-xl border border-slate-100">
               <img
                 src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1000&q=80"
-                alt="3T Saudi industrial expertise"
+                alt="MVGL Kenya industrial expertise"
                 className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
               />
-              <div className="absolute bottom-6 left-6 bg-slate-900/90 backdrop-blur-md px-6 py-4 rounded-xl border border-slate-800 text-white z-20">
-                <p className="text-brand-accent text-2xl font-black">15+</p>
-                <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">
-                  {locale === 'ar' ? 'سنة من الخبرة المشتركة' : 'Years Combined Expertise'}
+              <div className="absolute bottom-6 left-6 bg-[#222222]/90 backdrop-blur-md px-6 py-4 rounded-xl border border-white/10 text-white z-20">
+                <p className="text-[#ED1C24] text-2xl font-black">15+</p>
+                <p className="text-slate-300 text-xs font-bold uppercase tracking-wider">
+                  Years Engineering Expertise
                 </p>
               </div>
             </div>
           </div>
 
           {/* Content Side */}
-          <div className="space-y-6">
+          <div className="space-y-6 text-left">
             <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <span className="h-1.5 w-10 bg-brand-accent rounded-full"></span>
-                <span className="text-xs font-bold text-brand-primary uppercase tracking-widest">
-                  {locale === 'ar' ? 'عن 3T السعودية' : 'ABOUT 3T SAUDI'}
-                </span>
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight leading-tight">
-                {locale === 'ar' ? 'نصنع قيمة حقيقية لعملائنا' : 'Creating Value for Our Customers'}
+              <span className="eyebrow block">
+                ABOUT MVGL KENYA
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-black text-[#222222] tracking-tight leading-tight">
+                Creating Measurable Value for Our Customers
               </h2>
             </div>
             
-            <div className="space-y-6 text-slate-600 leading-relaxed text-base">
+            <div className="space-y-5 text-slate-600 leading-relaxed text-base">
               <p>
-                {locale === 'ar'
-                  ? 'من محادثة ودية بين صديقين إلى أن أصبحنا مزوداً راسخاً للحلول الصناعية في المملكة العربية السعودية، قامت 3T ببناء أعمالها حول الخبرة الهندسية والمنتجات الموثوقة ودعم العملاء المستمر والسريع.'
-                  : 'From a conversation between two friends to becoming an established industrial solutions provider in Saudi Arabia, 3T has built its business around engineering expertise, dependable products and responsive customer support.'}
+                As an established industrial solutions provider in Kenya and East Africa, MVGL delivers world-class equipment, engineering design, and responsive after-sales support to critical manufacturing facilities.
               </p>
               <p>
-                {locale === 'ar'
-                  ? 'وتشمل قدراتنا الهواء المضغوط، والتبريد الصناعي، وضغط غازات العمليات، وأنظمة التكييف وتبريد العمليات، ومضخات المياه، والأتمتة، والاتصالات الصناعية.'
-                  : 'Our capabilities span compressed air, industrial refrigeration, process gas compression, HVAC and chilled-water solutions, industrial pumps, automation and industrial communication.'}
+                Our comprehensive capabilities cover oil-injected and oil-free compressed air, industrial refrigeration packages, chilled-water HVAC solutions, process gas packages, certified fire pumps, smart automation, and corrosion-resistant composites.
               </p>
             </div>
 
             <div className="pt-4">
               <Link
-                to={localizedPath('/about')}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-brand-secondary hover:bg-brand-primary text-white font-bold rounded-lg shadow hover:shadow-brand-primary/10 transition-all duration-300"
+                to="/about"
+                className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#ED1C24] hover:bg-[#D0171E] text-white font-bold rounded-lg shadow-md hover:shadow-red-500/20 transition-all text-xs uppercase tracking-wider"
               >
-                {locale === 'ar' ? 'اكتشف قصتنا' : 'Discover Our Story'}
-                {dir === 'rtl' ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+                Discover Our Story
+                <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           </div>
@@ -464,33 +455,30 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. Solutions Section (Slider style matching user screenshot) */}
+      {/* 6. Solutions Slider Section */}
       <section className="py-20 px-4 max-w-[1360px] mx-auto my-10 font-sans">
         <div className="flex flex-col lg:flex-row gap-8 items-stretch">
           
-          {/* Left Solid Blue Card */}
-          <div className="w-full lg:w-[320px] bg-brand-primary text-white rounded-3xl p-8 flex flex-col justify-between items-start shadow-lg flex-shrink-0 min-h-[420px]">
+          {/* Left Red Card */}
+          <div className="w-full lg:w-[320px] bg-[#ED1C24] text-white rounded-3xl p-8 flex flex-col justify-between items-start shadow-xl flex-shrink-0 min-h-[420px]">
             <div className="space-y-4">
-              <h2 className="text-3xl font-extrabold tracking-tight leading-tight">
-                {locale === 'ar' 
-                  ? 'حلول هندسية للعمليات الصناعية الحيوية' 
-                  : 'Engineering Solutions for Critical Industrial Operations'}
+              <span className="eyebrow block !text-white/80">PORTFOLIO</span>
+              <h2 className="text-3xl font-black tracking-tight leading-tight">
+                Engineering Solutions for Critical Operations
               </h2>
-              <p className="text-slate-200 text-sm leading-relaxed">
-                {locale === 'ar'
-                  ? 'نقدم تقنيات الأتمتة والمرافق والروبوتات والعمليات التي تدعم العمليات الصناعية الفعالة والمستقبلية.'
-                  : 'Delivering automation, utilities, robotics, and process technologies that support efficient and future-ready industrial operations.'}
+              <p className="text-white/90 text-sm leading-relaxed">
+                Delivering automation, utilities, robotics, and process technologies that support efficient, reliable, and future-ready industrial operations.
               </p>
             </div>
             <Link
-              to={localizedPath('/solutions')}
-              className="mt-6 px-6 py-2.5 bg-white text-brand-primary font-bold text-sm rounded-lg hover:bg-slate-50 transition-colors"
+              to="/solutions"
+              className="mt-6 px-6 py-3 bg-white text-[#ED1C24] font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-slate-50 transition-colors shadow-md"
             >
-              {locale === 'ar' ? 'عرض المزيد' : 'View More'}
+              View All Solutions
             </Link>
           </div>
 
-          {/* Right Scrollable Row of Solutions */}
+          {/* Right Scrollable Row */}
           <div className="flex-1 flex flex-col justify-between overflow-hidden">
             <div 
               ref={scrollRef}
@@ -499,60 +487,59 @@ export default function Home() {
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {solutions.map((sol) => {
-                // Find solution image from solutionsData
                 const solData = solutionsData.find(s => s.slug === sol.slug)
                 const bgImage = solData ? solData.image : 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80'
 
                 return (
                   <Link
                     key={sol.slug}
-                    to={localizedPath(`/solutions/${sol.slug}`)}
-                    className="w-[280px] sm:w-[300px] h-[340px] rounded-3xl overflow-hidden relative shadow-md hover:shadow-xl transition-shadow flex-shrink-0 snap-start block group"
+                    to={`/solutions/${sol.slug}`}
+                    className="w-[280px] sm:w-[300px] h-[340px] rounded-3xl overflow-hidden relative shadow-md hover:shadow-xl transition-all flex-shrink-0 snap-start block group"
                   >
-                    {/* Hover indicator arrow on the card */}
                     <div className="absolute top-4 right-4 z-20 h-8 w-8 bg-white/20 hover:bg-white/45 backdrop-blur-md rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      {dir === 'rtl' ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                      <ChevronRight className="h-4 w-4" />
                     </div>
                     
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10 z-10"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent z-10"></div>
                     <img 
                       src={bgImage} 
-                      alt={sol.title[locale]} 
+                      alt={sol.title} 
                       className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                     />
                     
-                    <div className="absolute bottom-6 left-6 right-6 z-20 text-start">
+                    <div className="absolute bottom-6 left-6 right-6 z-20 text-left">
                       <h3 className="text-xl font-bold text-white tracking-tight leading-snug">
-                        {sol.title[locale]}
+                        {sol.title}
                       </h3>
+                      <p className="text-xs text-slate-300 line-clamp-2 mt-2">
+                        {sol.desc}
+                      </p>
                     </div>
                   </Link>
                 )
               })}
             </div>
 
-            {/* Slider Navigation & Progress (Screenshot Style) */}
+            {/* Slider Navigation */}
             <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100">
-              {/* Progress Line */}
-              <div className="flex-1 max-w-xs bg-slate-200 h-1 rounded-full overflow-hidden">
+              <div className="flex-1 max-w-xs bg-slate-200 h-1.5 rounded-full overflow-hidden">
                 <div 
-                  className="bg-brand-primary h-full transition-all duration-300 rounded-full animate-pulse"
+                  className="bg-[#ED1C24] h-full transition-all duration-300 rounded-full"
                   style={{ width: `${Math.max(10, scrollProgress * 100)}%` }}
                 ></div>
               </div>
 
-              {/* Arrow controls */}
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => scrollSlider('left')}
-                  className="h-10 w-10 bg-brand-primary text-white hover:bg-brand-secondary active:scale-95 rounded-lg flex items-center justify-center transition-all shadow-sm cursor-pointer"
+                  className="h-10 w-10 bg-[#222222] text-white hover:bg-[#ED1C24] active:scale-95 rounded-lg flex items-center justify-center transition-all shadow-sm cursor-pointer"
                   aria-label="Previous solution"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
                 <button
                   onClick={() => scrollSlider('right')}
-                  className="h-10 w-10 bg-brand-primary text-white hover:bg-brand-secondary active:scale-95 rounded-lg flex items-center justify-center transition-all shadow-sm cursor-pointer"
+                  className="h-10 w-10 bg-[#222222] text-white hover:bg-[#ED1C24] active:scale-95 rounded-lg flex items-center justify-center transition-all shadow-sm cursor-pointer"
                   aria-label="Next solution"
                 >
                   <ChevronRight className="h-5 w-5" />
@@ -565,165 +552,69 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. Industries Section (Redesigned matching user locations style screenshot) */}
-      <section className="py-24 bg-brand-secondary text-white my-12 font-sans relative overflow-hidden">
-        {/* Subtle dotted watermark pattern container */}
-        <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
-        
-        <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            
-            {/* Left side: Heading, Description, CTA, and Navigation controls */}
-            <div className="lg:col-span-5 space-y-6 text-start">
-              <span className="text-xs font-bold text-brand-accent uppercase tracking-widest block">
-                {locale === 'ar' ? 'القطاعات التي نخدمها' : 'INDUSTRIES WE SERVE'}
-              </span>
-              <h2 className="text-4xl font-extrabold tracking-tight">
-                {locale === 'ar' ? 'خبرات هندسية لمختلف القطاعات' : 'Engineering Expertise Across Industry'}
-              </h2>
-              <p className="text-slate-350 leading-relaxed text-sm">
-                {locale === 'ar'
-                  ? 'ندعم المنشآت والعمليات الصناعية في المملكة بمنتجات عالية الجودة متوافقة مع المعايير العالمية لمختلف القطاعات.'
-                  : 'Delivering robust engineering support, utility configurations, and standard-compliant products tailored for Saudi Arabia\'s core industrial markets.'}
-              </p>
-              
-              <div className="pt-2 flex flex-wrap items-center gap-4">
-                <Link
-                  to={localizedPath('/industries')}
-                  className="px-6 py-2.5 bg-white text-brand-secondary hover:bg-slate-50 font-bold text-sm rounded-lg transition-colors shadow"
-                >
-                  {locale === 'ar' ? 'استكشف القطاعات' : 'Explore Industries'}
-                </Link>
-                
-                {/* Arrow navigation triggers */}
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setActiveIndustryIndex((prev) => (prev - 1 + industriesData.length) % industriesData.length)}
-                    className="h-10 w-10 border border-white/20 text-white hover:bg-white/10 active:scale-95 rounded-lg flex items-center justify-center transition-all cursor-pointer"
-                    aria-label="Previous industry"
-                  >
-                    <ChevronLeft className="h-5 w-5" />
-                  </button>
-                  <span className="text-xs font-mono text-slate-400">
-                    {String(activeIndustryIndex + 1).padStart(2, '0')} / {String(industriesData.length).padStart(2, '0')}
-                  </span>
-                  <button
-                    onClick={() => setActiveIndustryIndex((prev) => (prev + 1) % industriesData.length)}
-                    className="h-10 w-10 border border-white/20 text-white hover:bg-white/10 active:scale-95 rounded-lg flex items-center justify-center transition-all cursor-pointer"
-                    aria-label="Next industry"
-                  >
-                    <ChevronRight className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Right side: White card containing active industry preview (mimics screenshot card style) */}
-            <div className="lg:col-span-7">
-              <div className="bg-white text-slate-900 rounded-3xl p-8 shadow-2xl border border-slate-100/50 space-y-6">
-                
-                <div className="space-y-2 text-start">
-                  <h3 className="text-2xl font-extrabold text-slate-950 tracking-tight">
-                    {locale === 'ar' 
-                      ? industriesData[activeIndustryIndex]?.name.ar 
-                      : industriesData[activeIndustryIndex]?.name.en}
-                  </h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">
-                    {locale === 'ar' 
-                      ? industriesData[activeIndustryIndex]?.description.ar 
-                      : industriesData[activeIndustryIndex]?.description.en}
-                  </p>
-                </div>
-
-                <div className="h-64 sm:h-80 rounded-2xl overflow-hidden relative shadow-sm border border-slate-100">
-                  <img
-                    src={industriesData[activeIndustryIndex]?.image || industriesData[0].image}
-                    alt=""
-                    className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* 6. Vision / Mission Section (Redesigned with premium image backgrounds and overlays) */}
+      {/* 7. Vision / Mission Section */}
       <section className="py-20 px-4 max-w-[1360px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 my-12 font-sans">
         
         {/* Vision Card */}
         <div className="relative rounded-3xl overflow-hidden shadow-xl min-h-[300px] flex flex-col justify-end p-8 sm:p-10 group border border-slate-800">
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/85 to-brand-secondary/40 z-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-[#222222]/40 z-10"></div>
           <img
             src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80"
-            alt=""
+            alt="MVGL Kenya Vision"
             className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
           />
-          <div className="relative z-20 space-y-3 text-start">
-            <span className="text-xs font-bold text-brand-accent uppercase tracking-widest block">
-              {locale === 'ar' ? 'رؤيتنا' : 'OUR VISION'}
+          <div className="relative z-20 space-y-3 text-left">
+            <span className="eyebrow block">
+              OUR VISION
             </span>
-            <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              {locale === 'ar' ? 'نضع معايير جديدة للتميز' : 'Setting the Benchmark'}
+            <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              Setting the Regional Benchmark
             </h3>
             <p className="text-slate-200 leading-relaxed text-sm max-w-xl">
-              {locale === 'ar'
-                ? 'أن نصبح رواداً في خدمة ودعم العملاء من خلال توفير الوصول إلى منتجات وخدمات عالمية المستوى تمثل الجودة والابتكار.'
-                : 'To become a leader in customer service and support by providing access to world-class products and services representing quality and innovation.'}
+              To become East Africa's leader in customer service and technical support by providing direct access to world-class OEM products representing verified quality and operational efficiency.
             </p>
           </div>
-          {/* Subtle top brand accent line */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-brand-accent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+          <div className="absolute top-0 left-0 right-0 h-1 bg-[#ED1C24] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
         </div>
 
         {/* Mission Card */}
         <div className="relative rounded-3xl overflow-hidden shadow-xl min-h-[300px] flex flex-col justify-end p-8 sm:p-10 group border border-slate-800">
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/85 to-brand-secondary/40 z-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-[#222222]/40 z-10"></div>
           <img
             src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80"
-            alt=""
+            alt="MVGL Kenya Mission"
             className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
           />
-          <div className="relative z-20 space-y-3 text-start">
-            <span className="text-xs font-bold text-brand-accent uppercase tracking-widest block">
-              {locale === 'ar' ? 'رسالتنا' : 'OUR MISSION'}
+          <div className="relative z-20 space-y-3 text-left">
+            <span className="eyebrow block">
+              OUR MISSION
             </span>
-            <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              {locale === 'ar' ? 'قيمة مستدامة لعملائنا' : 'Creating Sustainable Customer Value'}
+            <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              Creating Sustainable Customer Value
             </h3>
             <p className="text-slate-200 leading-relaxed text-sm max-w-xl">
-              {locale === 'ar'
-                ? 'خلق قيمة لعملائنا من خلال حلول هندسية عالمية المستوى وخدمات دعم متميزة تتميز بالموثوقية والاستدامة والجدوى الاقتصادية.'
-                : 'To create value for our customers through world-class engineering solutions and outstanding support services that are reliable, sustainable and cost-effective.'}
+              To create enduring value for our customers through dependable engineering solutions, reliable equipment packages, and responsive technical services across Kenya and East Africa.
             </p>
           </div>
-          {/* Subtle top brand accent line */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-brand-accent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+          <div className="absolute top-0 left-0 right-0 h-1 bg-[#ED1C24] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
         </div>
 
       </section>
 
-      {/* 7. Core Principles Section (Redesigned with Brand Secondary and Dotted Watermark) */}
-      <section className="bg-brand-secondary text-white py-20 px-4 my-10 relative overflow-hidden font-sans">
-        {/* Subtle dotted watermark pattern container */}
-        <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
-
+      {/* 8. Core Principles Section */}
+      <section className="bg-[#222222] text-white py-20 px-4 my-10 relative overflow-hidden font-sans">
         <div className="max-w-[1360px] mx-auto space-y-16 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            <div className="lg:col-span-7 space-y-3 text-start">
-              <span className="text-xs font-bold text-brand-accent uppercase tracking-widest block">
-                {locale === 'ar' ? 'نهج 3T' : 'THE 3T WAY'}
+            <div className="lg:col-span-7 space-y-3 text-left">
+              <span className="eyebrow block">
+                THE MVGL WAY
               </span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-                {locale === 'ar' ? 'التميز التشغيلي. والشفافية في كل خطوة.' : 'Operational Excellence. Built on Transparency.'}
+              <h2 className="text-3xl sm:text-4xl font-black tracking-tight">
+                Operational Excellence. Built on Transparency.
               </h2>
             </div>
-            <p className="lg:col-span-5 text-slate-300 text-base leading-relaxed text-start lg:max-w-sm lg:justify-self-end">
-              {locale === 'ar'
-                ? 'يرتكز نهجنا على مبدأين أساسيين: التميز التشغيلي والشفافية. يوجهان طريقة عملنا - بدءاً من الاستفسار الأول للعميل وحتى تسليم الحلول والدعم المستمر.'
-                : 'Our approach is anchored by two principles: operational excellence and transparency. They guide how we work—from the first customer enquiry through solution delivery and ongoing support.'}
+            <p className="lg:col-span-5 text-slate-300 text-base leading-relaxed text-left lg:max-w-sm lg:justify-self-end">
+              Our approach is anchored by two core principles: operational excellence and total transparency. They guide how we work from initial consultation to installation and lifecycle maintenance.
             </p>
           </div>
 
@@ -731,48 +622,48 @@ export default function Home() {
             {principles.map((pr, idx) => (
               <div 
                 key={idx} 
-                className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm space-y-4 hover:-translate-y-1.5 hover:bg-white/10 hover:border-brand-accent transition-all duration-300 shadow-md hover:shadow-xl cursor-pointer group text-start"
+                className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm space-y-4 hover:-translate-y-1.5 hover:bg-white/10 hover:border-[#ED1C24] transition-all duration-300 shadow-md hover:shadow-xl cursor-pointer group text-left"
               >
-                <div className="text-brand-accent transform group-hover:scale-110 transition-transform duration-300">{pr.icon}</div>
-                <h3 className="text-lg font-bold text-white group-hover:text-brand-accent transition-colors">{pr.title[locale]}</h3>
-                <p className="text-xs text-slate-300 leading-relaxed">{pr.desc[locale]}</p>
+                <div className="transform group-hover:scale-110 transition-transform duration-300">{pr.icon}</div>
+                <h3 className="text-lg font-bold text-white group-hover:text-[#ED1C24] transition-colors">{pr.title}</h3>
+                <p className="text-xs text-slate-300 leading-relaxed">{pr.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 8. Events Section */}
+      {/* 9. Events Section */}
       <section className="py-20 px-4 max-w-[1360px] mx-auto my-10">
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <span className="text-xs font-bold text-brand-primary uppercase tracking-widest block">
-            {locale === 'ar' ? 'فعاليات 3T' : '3T EVENTS'}
+          <span className="eyebrow block">
+            MVGL EVENTS & EXPOS
           </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            {locale === 'ar' ? 'نتواصل. نتعاون. نبتكر.' : 'Connect. Collaborate. Innovate.'}
+          <h2 className="text-3xl sm:text-4xl font-black text-[#222222] tracking-tight">
+            Connect. Collaborate. Innovate.
           </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {events.map((ev, idx) => (
-            <div key={idx} className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow space-y-3">
-              <h3 className="text-lg font-bold text-slate-950">{ev.title[locale]}</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">{ev.desc[locale]}</p>
+            <div key={idx} className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-[#ED1C24] transition-all space-y-3 text-left">
+              <h3 className="text-lg font-bold text-[#222222]">{ev.title}</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">{ev.desc}</p>
             </div>
           ))}
         </div>
 
         <div className="text-center mt-12">
           <Link
-            to={localizedPath('/events')}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-brand-secondary hover:bg-brand-primary text-white font-bold rounded-lg transition-colors"
+            to="/events"
+            className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#ED1C24] hover:bg-[#D0171E] text-white font-bold rounded-lg transition-colors shadow-md text-xs uppercase tracking-wider"
           >
-            {locale === 'ar' ? 'استكشف الفعاليات' : 'Explore Events'}
+            Explore Events & Exhibitions
           </Link>
         </div>
       </section>
 
-      {/* 9. Final CTA */}
+      {/* 10. Final CTA */}
       <IndustrialChallengeCTA bgImage="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80" />
 
     </div>

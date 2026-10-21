@@ -1,0 +1,16 @@
+# Node modules
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+build/
+dist/
+.cache/
+.strapi/
+
+# Local Environment & SQLite Database
+.env
+.tmp/
+
