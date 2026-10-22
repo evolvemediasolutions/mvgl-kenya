@@ -174,6 +174,10 @@ export default function EventDetail() {
           <img
             src={event.image}
             alt={event.title}
+            onError={(e) => {
+              e.currentTarget.onerror = null
+              e.currentTarget.src = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1400&q=80'
+            }}
             className="absolute inset-0 w-full h-full object-cover"
           />
 
@@ -426,7 +430,15 @@ export default function EventDetail() {
                   className="bg-[#F8FAFC] border border-slate-200/90 rounded-2xl overflow-hidden hover:shadow-md hover:border-[#ED1C24] transition-all flex flex-col justify-between group"
                 >
                   <div className="h-44 overflow-hidden relative">
-                    <img src={oe.image} alt={oe.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <img 
+                      src={oe.image} 
+                      alt={oe.title} 
+                      onError={(e) => {
+                        e.currentTarget.onerror = null
+                        e.currentTarget.src = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80'
+                      }}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                    />
                     <span className="absolute top-3 left-3 bg-slate-900/80 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase">
                       {oe.eventStatus}
                     </span>

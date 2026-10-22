@@ -47,6 +47,12 @@ export default function PartnerDetail() {
     })
   }, [])
 
+  const handleProductImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.onerror = null
+    e.currentTarget.src = '/NEW LOGO/logo2.png'
+    e.currentTarget.classList.add('opacity-40', 'p-8')
+  }
+
   const mergePartnerProducts = (localList: any[], pSlug: string) => {
     const fromStrapi = strapiProducts.filter(p => p.partnerSlug === pSlug)
     if (fromStrapi.length === 0) {
@@ -593,6 +599,7 @@ export default function PartnerDetail() {
                           <img
                             src={prod.image}
                             alt={prod.title[locale]}
+                            onError={handleProductImageError}
                             className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                           />
                         </div>
@@ -721,6 +728,7 @@ export default function PartnerDetail() {
                           <img
                             src={prod.image}
                             alt={prod.title[locale]}
+                            onError={handleProductImageError}
                             className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                           />
                         </div>
@@ -923,6 +931,7 @@ export default function PartnerDetail() {
                           <img
                             src={prod.image}
                             alt={prod.title[locale]}
+                            onError={handleProductImageError}
                             className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                           />
                         </div>
@@ -1155,6 +1164,7 @@ export default function PartnerDetail() {
                           <img
                             src={prod.image}
                             alt={prod.title[locale]}
+                            onError={handleProductImageError}
                             className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                           />
                         </div>
@@ -1401,6 +1411,7 @@ export default function PartnerDetail() {
                           <img
                             src={prod.image}
                             alt={prod.title[locale]}
+                            onError={handleProductImageError}
                             className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                           />
                         </div>
@@ -1829,6 +1840,7 @@ export default function PartnerDetail() {
                           <img
                             src={prod.image}
                             alt={prod.title[locale]}
+                            onError={handleProductImageError}
                             className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                           />
                         </div>
@@ -2069,6 +2081,7 @@ export default function PartnerDetail() {
                           <img
                             src={prod.image}
                             alt={prod.title[locale]}
+                            onError={handleProductImageError}
                             className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                           />
                         </div>

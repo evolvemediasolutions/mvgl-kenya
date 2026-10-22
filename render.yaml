@@ -6,6 +6,7 @@ services:
     plan: free
     region: frankfurt # or oregon / singapore
     rootDir: cms
+    autoDeploy: true
     buildCommand: npm install && npm run build
     startCommand: npm run start
     healthCheckPath: /_health
@@ -39,6 +40,12 @@ services:
       - key: CLOUDINARY_KEY
         sync: false
       - key: CLOUDINARY_SECRET
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
         sync: false
 
 databases:

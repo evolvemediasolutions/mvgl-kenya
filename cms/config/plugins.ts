@@ -24,9 +24,16 @@ const deniedTypes = [
 ];
 
 const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin => {
-  const hasCloudinary = Boolean(
-    env('CLOUDINARY_NAME') && env('CLOUDINARY_KEY') && env('CLOUDINARY_SECRET')
-  );
+  const cloudinaryName = env('CLOUDINARY_NAME') || env('CLOUDINARY_CLOUD_NAME');
+  const cloudinaryKey = env('CLOUDINARY_KEY') || env('CLOUDINARY_API_KEY');
+  const cloudinarySecret = env('CLOUDINARY_SECRET') || env('CLOUDINARY_API_SECRET');
+  const hasCloudinary = Boolean(cloudinaryName && cloudinaryKey && cloudinarySecret);
+
+  if (hasCloudinary) {
+    console.log('[Strapi Media] Cloudinary provider ENABLED with cloud_name:', cloudinaryName);
+  } else {
+    console.warn('[Strapi Media] Cloudinary credentials missing or incomplete. Falling back to local storage.');
+  }
 
   return {
     'users-permissions': {
@@ -43,12 +50,13 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
           ? {
               provider: 'cloudinary',
               providerOptions: {
-                cloud_name: env('CLOUDINARY_NAME'),
-                api_key: env('CLOUDINARY_KEY'),
-                api_secret: env('CLOUDINARY_SECRET'),
+                cloud_name: cloudinaryName,
+                api_key: cloudinaryKey,
+                api_secret: cloudinarySecret,
               },
               actionOptions: {
                 upload: {},
+                uploadStream: {},
                 delete: {},
               },
             }
