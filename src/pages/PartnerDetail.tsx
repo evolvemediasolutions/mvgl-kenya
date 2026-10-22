@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { fetchProductsFromStrapi, type Product } from '../data/products'
+import { fetchProductsFromStrapi, getInitialStrapiProducts, type Product } from '../data/products'
 import { useParams, Link } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 import { partnersData } from '../data/partners'
@@ -37,7 +37,7 @@ export default function PartnerDetail() {
     })
   }
 
-  const [strapiProducts, setStrapiProducts] = useState<Product[]>([])
+  const [strapiProducts, setStrapiProducts] = useState<Product[]>(getInitialStrapiProducts)
 
   useEffect(() => {
     fetchProductsFromStrapi().then((res) => {

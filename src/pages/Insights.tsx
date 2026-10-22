@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { solutionsData } from '../data/solutions'
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
-import { fetchFromStrapi, getStrapiMediaUrl, extractStrapiText } from '../services/strapi'
+import { fetchFromStrapi, getStrapiMediaUrl, extractStrapiText, getCachedStrapiData, setCachedStrapiData } from '../services/strapi'
 
 interface BlogPost {
   id: string | number
@@ -87,8 +87,16 @@ export default function Insights() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [scrollProgress, setScrollProgress] = useState(0)
 
-  const [featuredPost, setFeaturedPost] = useState<BlogPost>(defaultFeaturedPost)
-  const [posts, setPosts] = useState<BlogPost[]>(defaultPosts)
+  const initialInsights = getCachedStrapiData<BlogPost>('insights_list_mapped')
+  const initialFeat = initialInsights && initialInsights.length > 0
+    ? (initialInsights.find(m => (m as any).isFeatured) || initialInsights[0])
+    : defaultFeaturedPost
+  const initialPosts = initialInsights && initialInsights.length > 0
+    ? initialInsights.filter(m => m.slug !== initialFeat.slug)
+    : defaultPosts
+
+  const [featuredPost, setFeaturedPost] = useState<BlogPost>(initialFeat)
+  const [posts, setPosts] = useState<BlogPost[]>(initialPosts)
 
   const handleScroll = () => {
     if (scrollRef.current) {
@@ -160,6 +168,7 @@ export default function Insights() {
             }
           })
 
+          setCachedStrapiData('insights_list_mapped', mapped)
           const feat = mapped.find(m => (m as any).isFeatured) || mapped[0]
           setFeaturedPost(feat)
           setPosts(mapped.filter(m => m.slug !== feat.slug))

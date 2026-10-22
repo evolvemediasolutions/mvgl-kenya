@@ -1,4 +1,4 @@
-import { fetchFromStrapi, getStrapiMediaUrl, extractStrapiText } from '../services/strapi'
+import { fetchFromStrapi, getStrapiMediaUrl, extractStrapiText, getCachedStrapiData, setCachedStrapiData } from '../services/strapi'
 
 export interface Product {
   id: string
@@ -773,12 +773,18 @@ export const partnerSlugMap: Record<string, string> = {
   'ProSoft Technology': 'prosoft-technology'
 }
 
+export function getInitialStrapiProducts(): Product[] {
+  return getCachedStrapiData<Product>('products_mapped') || []
+}
+
 export async function fetchProductsFromStrapi(): Promise<Product[]> {
   try {
     const strapiData = await fetchFromStrapi<any>('products')
-    if (!strapiData || strapiData.length === 0) return []
+    if (!strapiData || strapiData.length === 0) {
+      return getCachedStrapiData<Product>('products_mapped') || []
+    }
 
-    return strapiData.map((item: any) => {
+    const mapped = strapiData.map((item: any) => {
       const title = item.title || 'Untitled Product'
       const autoSlug = item.slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `product-${item.id}`
       
@@ -813,9 +819,14 @@ export async function fetchProductsFromStrapi(): Promise<Product[]> {
         isFeatured: Boolean(item.isFeatured)
       }
     })
+
+    if (mapped.length > 0) {
+      setCachedStrapiData('products_mapped', mapped)
+    }
+    return mapped
   } catch (err) {
     console.warn('[Products] Error loading products from Strapi:', err)
-    return []
+    return getCachedStrapiData<Product>('products_mapped') || []
   }
 }
 

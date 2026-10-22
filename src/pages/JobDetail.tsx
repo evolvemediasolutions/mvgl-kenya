@@ -6,7 +6,7 @@ import {
   CheckCircle2, UploadCloud, X, Check, FileText, ChevronRight
 } from 'lucide-react'
 import IndustrialChallengeCTA from '../components/ui/IndustrialChallengeCTA'
-import { fetchFromStrapi, parseStrapiList, extractStrapiText } from '../services/strapi'
+import { fetchFromStrapi, parseStrapiList, extractStrapiText, getCachedStrapiData, setCachedStrapiData } from '../services/strapi'
 
 interface JobPosition {
   id: string
@@ -167,9 +167,20 @@ const fallbackPositions: JobPosition[] = [
 
 export default function JobDetail() {
   const { slug } = useParams<{ slug: string }>()
-  const [job, setJob] = useState<JobPosition | null>(null)
-  const [otherJobs, setOtherJobs] = useState<JobPosition[]>([])
-  const [loading, setLoading] = useState(true)
+  // Instant 0ms initial lookup from cache or fallback
+  const targetSlug = (slug || '').toLowerCase()
+  const cachedJobs = getCachedStrapiData<JobPosition>('careers_mapped') || []
+  const initialFound = 
+    cachedJobs.find(j => j.slug.toLowerCase() === targetSlug || j.id.toLowerCase() === targetSlug) ||
+    fallbackPositions.find(j => j.slug.toLowerCase() === targetSlug || j.id.toLowerCase() === targetSlug) ||
+    null
+
+  const [job, setJob] = useState<JobPosition | null>(initialFound)
+  const [otherJobs, setOtherJobs] = useState<JobPosition[]>(() => {
+    const pool = cachedJobs.length > 0 ? cachedJobs : fallbackPositions
+    return pool.filter(j => j.slug !== (initialFound ? initialFound.slug : slug)).slice(0, 3)
+  })
+  const [loading, setLoading] = useState(!initialFound)
   const [copied, setCopied] = useState(false)
 
   // Apply Modal state
@@ -185,7 +196,6 @@ export default function JobDetail() {
 
   useEffect(() => {
     async function loadJob() {
-      setLoading(true)
       try {
         const strapiCareers = await fetchFromStrapi<any>('careers')
         let allJobs: JobPosition[] = []
@@ -209,6 +219,7 @@ export default function JobDetail() {
             }
           })
           allJobs = mapped
+          setCachedStrapiData('careers_mapped', mapped)
         } else {
           allJobs = fallbackPositions
         }
@@ -229,14 +240,6 @@ export default function JobDetail() {
         setOtherJobs(pool.filter(j => j.slug !== (found ? found.slug : slug)).slice(0, 3))
       } catch (err) {
         console.warn('Error fetching career details, using fallback', err)
-        const target = (slug || '').toLowerCase()
-        const found = fallbackPositions.find(j => 
-          j.slug.toLowerCase() === target ||
-          j.id.toLowerCase() === target ||
-          j.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') === target
-        ) || null
-        setJob(found)
-        setOtherJobs(fallbackPositions.filter(j => j.slug !== (found ? found.slug : slug)).slice(0, 3))
       } finally {
         setLoading(false)
       }

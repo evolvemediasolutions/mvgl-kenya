@@ -15,10 +15,43 @@ export function getStrapiMediaUrl(url: string | null | undefined): string {
   return STRAPI_BASE_URL ? `${STRAPI_BASE_URL}${cleanPath}` : cleanPath
 }
 
+// In-memory cache + localStorage persistence for INSTANT (0ms) loads
+const memoryCache: Record<string, any> = {}
+
+export function getCachedStrapiData<T>(key: string): T[] | null {
+  if (memoryCache[key]) {
+    return memoryCache[key] as T[]
+  }
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem(`mvgl_cache_${key}`)
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        memoryCache[key] = parsed
+        return parsed as T[]
+      }
+    } catch {
+      // ignore
+    }
+  }
+  return null
+}
+
+export function setCachedStrapiData<T>(key: string, data: T[]): void {
+  memoryCache[key] = data
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(`mvgl_cache_${key}`, JSON.stringify(data))
+    } catch {
+      // ignore
+    }
+  }
+}
+
 export async function fetchFromStrapi<T>(endpoint: string, queryParams: string = 'populate=*'): Promise<T[]> {
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint
   try {
     const separator = endpoint.includes('?') ? '&' : '?'
-    const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint
     const url = STRAPI_BASE_URL 
       ? `${STRAPI_BASE_URL}/api/${cleanEndpoint}${queryParams ? `${separator}${queryParams}` : ''}`
       : `/api/${cleanEndpoint}${queryParams ? `${separator}${queryParams}` : ''}`
@@ -31,14 +64,18 @@ export async function fetchFromStrapi<T>(endpoint: string, queryParams: string =
 
     if (!response.ok) {
       console.warn(`[Strapi] Failed to fetch ${cleanEndpoint} (${response.status})`)
-      return []
+      return getCachedStrapiData<T>(cleanEndpoint) || []
     }
 
     const json = await response.json()
-    return json.data || []
+    const result = json.data || []
+    if (Array.isArray(result) && result.length > 0) {
+      setCachedStrapiData(cleanEndpoint, result)
+    }
+    return result
   } catch (error) {
     console.warn(`[Strapi] Could not connect to CMS endpoint: ${endpoint}`, error)
-    return []
+    return getCachedStrapiData<T>(cleanEndpoint) || []
   }
 }
 

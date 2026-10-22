@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Calendar, MapPin, ArrowLeft, Share2, CheckCircle2, Building, ExternalLink } from 'lucide-react'
 import IndustrialChallengeCTA from '../components/ui/IndustrialChallengeCTA'
-import { fetchFromStrapi, getStrapiMediaUrl } from '../services/strapi'
+import { fetchFromStrapi, getStrapiMediaUrl, getCachedStrapiData, setCachedStrapiData } from '../services/strapi'
 import { eventsData } from '../data/events'
 
 interface EventDetailData {
@@ -23,9 +23,34 @@ interface EventDetailData {
 
 export default function EventDetail() {
   const { slug } = useParams<{ slug: string }>()
-  const [event, setEvent] = useState<EventDetailData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [otherEvents, setOtherEvents] = useState<EventDetailData[]>([])
+  const targetSlug = (slug || '').toLowerCase()
+  const cachedEvents = getCachedStrapiData<EventDetailData>('events_mapped') || []
+  const initialFound: EventDetailData | null = 
+    cachedEvents.find(e => e.slug.toLowerCase() === targetSlug || e.id.toLowerCase() === targetSlug) ||
+    (() => {
+      const local = eventsData.find(e => e.id.toLowerCase() === targetSlug)
+      if (local) {
+        return {
+          id: local.id,
+          slug: local.id,
+          title: local.title.en,
+          eventType: 'Industrial Expo',
+          eventStatus: 'UPCOMING',
+          dateDisplay: local.date.en,
+          location: local.location.en,
+          boothNumber: 'Stand B12',
+          description: local.description.en,
+          image: local.image
+        }
+      }
+      return null
+    })()
+
+  const [event, setEvent] = useState<EventDetailData | null>(initialFound)
+  const [loading, setLoading] = useState(!initialFound)
+  const [otherEvents, setOtherEvents] = useState<EventDetailData[]>(() => {
+    return cachedEvents.filter(e => e.slug !== slug).slice(0, 3)
+  })
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
@@ -53,6 +78,10 @@ export default function EventDetail() {
             : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80',
           registrationUrl: e.registrationUrl
         }))
+
+        if (mappedEvents.length > 0) {
+          setCachedStrapiData('events_mapped', mappedEvents)
+        }
 
         // Match by slug, ID, or normalized title slug
         const targetSlug = (slug || '').toLowerCase()

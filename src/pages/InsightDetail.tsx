@@ -6,7 +6,7 @@ import {
   Zap, Cpu, Activity, Gauge, Layers, Sparkles, Wrench, FileText
 } from 'lucide-react'
 import IndustrialChallengeCTA from '../components/ui/IndustrialChallengeCTA'
-import { fetchFromStrapi, getStrapiMediaUrl, extractStrapiText } from '../services/strapi'
+import { fetchFromStrapi, getStrapiMediaUrl, extractStrapiText, getCachedStrapiData, setCachedStrapiData } from '../services/strapi'
 
 interface InsightArticle {
   id: string
@@ -347,15 +347,24 @@ function getPillarIcon(title: string = '', idx: number) {
 
 export default function InsightDetail() {
   const { slug } = useParams<{ slug: string }>()
-  const [article, setArticle] = useState<InsightArticle | null>(null)
-  const [allArticles, setAllArticles] = useState<InsightArticle[]>([])
-  const [otherArticles, setOtherArticles] = useState<InsightArticle[]>([])
-  const [loading, setLoading] = useState(true)
+  const targetSlug = (slug || '').toLowerCase()
+  const cachedInsights = getCachedStrapiData<InsightArticle>('insights_mapped') || []
+  const initialFound = 
+    cachedInsights.find(a => a.slug.toLowerCase() === targetSlug || a.id.toLowerCase() === targetSlug) ||
+    fallbackInsights.find(a => a.slug.toLowerCase() === targetSlug || a.id.toLowerCase() === targetSlug) ||
+    null
+
+  const [article, setArticle] = useState<InsightArticle | null>(initialFound)
+  const [allArticles, setAllArticles] = useState<InsightArticle[]>(cachedInsights.length > 0 ? cachedInsights : fallbackInsights)
+  const [otherArticles, setOtherArticles] = useState<InsightArticle[]>(() => {
+    const pool = cachedInsights.length > 0 ? cachedInsights : fallbackInsights
+    return pool.filter(a => a.slug !== (initialFound ? initialFound.slug : slug)).slice(0, 3)
+  })
+  const [loading, setLoading] = useState(!initialFound)
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     async function loadInsight() {
-      setLoading(true)
       try {
         const strapiInsights = await fetchFromStrapi<any>('insights')
         let allInsights: InsightArticle[] = []
@@ -382,6 +391,7 @@ export default function InsightDetail() {
             }
           })
           allInsights = mapped
+          setCachedStrapiData('insights_mapped', mapped)
         } else {
           allInsights = fallbackInsights
         }
@@ -404,15 +414,6 @@ export default function InsightDetail() {
         setOtherArticles(pool.filter(a => a.slug !== (found ? found.slug : slug)).slice(0, 3))
       } catch (err) {
         console.warn('Error loading insight article from Strapi, using fallback', err)
-        const target = (slug || '').toLowerCase()
-        const found = fallbackInsights.find(a => 
-          a.slug.toLowerCase() === target ||
-          a.id.toLowerCase() === target ||
-          a.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') === target
-        ) || null
-        setArticle(found)
-        setAllArticles(fallbackInsights)
-        setOtherArticles(fallbackInsights.filter(a => a.slug !== (found ? found.slug : slug)).slice(0, 3))
       } finally {
         setLoading(false)
       }

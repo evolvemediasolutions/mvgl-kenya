@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, MapPin, Briefcase, ChevronDown, SlidersHorizontal, RefreshCw } from 'lucide-react'
 import IndustrialChallengeCTA from '../components/ui/IndustrialChallengeCTA'
-import { fetchFromStrapi, parseStrapiList, extractStrapiText } from '../services/strapi'
+import { fetchFromStrapi, parseStrapiList, extractStrapiText, getCachedStrapiData, setCachedStrapiData } from '../services/strapi'
 
 export interface JobPosition {
   id: string
@@ -160,8 +160,10 @@ const defaultPositions: JobPosition[] = [
 ]
 
 export default function OpenPositions() {
-  const [positions, setPositions] = useState<JobPosition[]>(defaultPositions)
-  const [loading, setLoading] = useState(true)
+  const [positions, setPositions] = useState<JobPosition[]>(() => {
+    const cached = getCachedStrapiData<JobPosition>('careers_mapped')
+    return (cached && cached.length > 0) ? cached : defaultPositions
+  })
   const [searchKeyword, setSearchKeyword] = useState('')
   const [selectedDesignation, setSelectedDesignation] = useState('all')
   const [selectedLocation, setSelectedLocation] = useState('all')
@@ -189,12 +191,11 @@ export default function OpenPositions() {
             }
           })
 
+          setCachedStrapiData('careers_mapped', mapped)
           setPositions(mapped)
         }
       } catch (err) {
         console.warn('Error loading careers from Strapi, using defaults.', err)
-      } finally {
-        setLoading(false)
       }
     }
     loadCareers()
@@ -374,12 +375,7 @@ export default function OpenPositions() {
         </div>
 
         {/* Job Cards (Horizontal Rows Matching Screenshot 1) */}
-        {loading ? (
-          <div className="py-20 text-center space-y-3">
-            <div className="w-8 h-8 border-3 border-[#ED1C24] border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="text-slate-400 text-xs font-semibold">Loading open positions...</p>
-          </div>
-        ) : filteredPositions.length === 0 ? (
+        {filteredPositions.length === 0 ? (
           <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center space-y-4 shadow-xs">
             <SlidersHorizontal className="h-10 w-10 text-slate-300 mx-auto" />
             <h3 className="text-xl font-bold text-slate-800">No positions found</h3>

@@ -1,4 +1,7 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { fetchFromStrapi } from './services/strapi'
+import { fetchProductsFromStrapi } from './data/products'
 import { LanguageProvider } from './context/LanguageContext'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
@@ -42,6 +45,14 @@ function LegacyLocaleRedirect() {
 }
 
 function App() {
+  // Pre-fetch all Strapi collections in parallel in background for 0ms instant page transitions
+  useEffect(() => {
+    fetchProductsFromStrapi().catch(() => {})
+    fetchFromStrapi('careers').catch(() => {})
+    fetchFromStrapi('insights').catch(() => {})
+    fetchFromStrapi('events').catch(() => {})
+  }, [])
+
   return (
     <LanguageProvider>
       <BrowserRouter>

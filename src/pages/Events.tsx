@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, ArrowRight, ChevronDown, MapPin, SlidersHorizontal, RefreshCw } from 'lucide-react'
 import IndustrialChallengeCTA from '../components/ui/IndustrialChallengeCTA'
-import { fetchFromStrapi, getStrapiMediaUrl } from '../services/strapi'
+import { fetchFromStrapi, getStrapiMediaUrl, getCachedStrapiData, setCachedStrapiData } from '../services/strapi'
 
 export interface UnifiedItem {
   id: string
@@ -101,8 +101,10 @@ const defaultUnifiedItems: UnifiedItem[] = [
 ]
 
 export default function Events() {
-  const [items, setItems] = useState<UnifiedItem[]>(defaultUnifiedItems)
-  const [loading, setLoading] = useState(true)
+  const [items, setItems] = useState<UnifiedItem[]>(() => {
+    const cached = getCachedStrapiData<UnifiedItem>('events_unified_mapped')
+    return (cached && cached.length > 0) ? cached : defaultUnifiedItems
+  })
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedType, setSelectedType] = useState<'all' | 'article' | 'event'>('all')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
@@ -170,12 +172,12 @@ export default function Events() {
           const articlesToUse = dynamicArticles.length > 0
             ? dynamicArticles
             : defaultUnifiedItems.filter(d => d.type === 'article')
-          setItems([...eventsToUse, ...articlesToUse])
+          const combined = [...eventsToUse, ...articlesToUse]
+          setCachedStrapiData('events_unified_mapped', combined)
+          setItems(combined)
         }
       } catch (err) {
         console.warn('[Events] Error loading Strapi content, using default data.', err)
-      } finally {
-        setLoading(false)
       }
     }
 
@@ -409,12 +411,7 @@ export default function Events() {
         </div>
 
         {/* 3. Cards Grid (3 Columns on Desktop, Responsive) */}
-        {loading ? (
-          <div className="py-20 text-center space-y-3">
-            <div className="w-8 h-8 border-3 border-[#ED1C24] border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="text-slate-400 text-xs font-semibold">Loading events &amp; articles...</p>
-          </div>
-        ) : filteredItems.length === 0 ? (
+        {filteredItems.length === 0 ? (
           <div className="bg-white border border-slate-200 rounded-3xl p-12 text-center space-y-4 shadow-xs">
             <SlidersHorizontal className="h-10 w-10 text-slate-300 mx-auto" />
             <h3 className="text-xl font-bold text-slate-800">No matching items found</h3>
