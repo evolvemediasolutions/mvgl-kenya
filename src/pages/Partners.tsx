@@ -59,10 +59,16 @@ export default function Partners() {
                     return '/PARTNERS LOGO/EPP.jpg'
                   case 'spp-pumps':
                     return '/PARTNERS LOGO/SPP.jpg'
+                  case 'kirloskar-powergen':
+                    return '/PARTNERS LOGO/KIRLOSKAR POWERGEN.svg'
                   case 'kirloskar-pneumatic':
                     return '/PARTNERS LOGO/KIRLOSKAR PNEUMATIC.jpg'
                   case 'kirloskar-chillers':
                     return '/PARTNERS LOGO/KCPL.jpg'
+                  case 'fuji-electronics':
+                    return '/PARTNERS LOGO/FUJI ELECTRONICS.svg'
+                  case 'xoog':
+                    return '/PARTNERS LOGO/XOOG.svg'
                   case 'hms-networks':
                     return '/LOGO/HMS_logo.png'
                   case 'prosoft-technology':

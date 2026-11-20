@@ -2,7 +2,14 @@ import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { solutionsData } from '../data/solutions'
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
-import { fetchFromStrapi, getStrapiMediaUrl, extractStrapiText, getCachedStrapiData, setCachedStrapiData } from '../services/strapi'
+import { 
+  fetchGraphQL, 
+  GET_POSTS_QUERY, 
+  getMediaUrl, 
+  stripHtml, 
+  getCachedData, 
+  setCachedData 
+} from '../services/wordpress'
 
 interface BlogPost {
   id: string | number
@@ -87,7 +94,7 @@ export default function Insights() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [scrollProgress, setScrollProgress] = useState(0)
 
-  const initialInsights = getCachedStrapiData<BlogPost>('insights_list_mapped')
+  const initialInsights = getCachedData<BlogPost>('insights_list_mapped')
   const initialFeat = initialInsights && initialInsights.length > 0
     ? (initialInsights.find(m => (m as any).isFeatured) || initialInsights[0])
     : defaultFeaturedPost
@@ -122,59 +129,49 @@ export default function Insights() {
   }
 
   const solutions = [
-    {
-      title: 'Air & Gas Solutions',
-      slug: 'air-gas-solutions'
-    },
-    {
-      title: 'Refrigeration & HVAC Solutions',
-      slug: 'refrigeration-hvac-solutions'
-    },
-    {
-      title: 'Automation & Control Solutions',
-      slug: 'automation-control'
-    },
-    {
-      title: 'Non Metallic Solution',
-      slug: 'non-metallic-solutions'
-    },
-    {
-      title: 'Fire Pump Solutions',
-      slug: 'fire-pump-solutions'
-    }
+    { title: 'Power Generation', slug: 'power-generation' },
+    { title: 'Air & Gas', slug: 'air-gas' },
+    { title: 'Industrial Refrigeration', slug: 'industrial-refrigeration' },
+    { title: 'HVAC & Process Cooling', slug: 'hvac-process-cooling' },
+    { title: 'Industrial Pumping', slug: 'industrial-pumping' },
+    { title: 'Industrial Automation', slug: 'industrial-automation' },
+    { title: 'Power Electronics', slug: 'power-electronics' },
+    { title: 'Warehouse & Material Handling', slug: 'warehouse-material-handling' }
   ]
 
   useEffect(() => {
     async function loadInsights() {
       try {
-        const strapiInsights = await fetchFromStrapi<any>('insights')
-        if (strapiInsights && strapiInsights.length > 0) {
-          const mapped: BlogPost[] = strapiInsights.map((item: any, idx: number) => {
-            const rawTitle = item.title || 'Untitled Insight'
-            const autoSlug = item.slug || rawTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `insight-${item.id}`
+        const res = await fetchGraphQL<{ posts?: { nodes?: any[] } }>(GET_POSTS_QUERY)
+        const wpPosts = res?.posts?.nodes || []
+        if (wpPosts && wpPosts.length > 0) {
+          const mapped: BlogPost[] = wpPosts.map((item: any, idx: number) => {
+            const rawTitle = (item.title?.rendered || item.title || 'Untitled Insight').trim()
+            const autoSlug = item.slug || rawTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `insight-${item.databaseId || item.id}`
             const defaultImg = defaultPosts[idx % defaultPosts.length]?.image || defaultFeaturedPost.image
-            const coverUrl = item.coverImage?.url ? getStrapiMediaUrl(item.coverImage.url) : defaultImg
-            const dateStr = item.publishedDate || (item.publishedAt ? new Date(item.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Recently Published')
+            const coverUrl = item.featuredImage?.node?.sourceUrl ? getMediaUrl(item.featuredImage.node.sourceUrl) : defaultImg
+            const dateStr = item.date ? new Date(item.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Recently Published'
+            const tag = item.categories?.nodes?.[0]?.name || item.acf?.category || 'TECHNICAL INSIGHTS'
 
             return {
-              id: String(item.documentId || item.id),
+              id: String(item.databaseId || item.id),
               slug: autoSlug,
-              tag: item.category || 'TECHNICAL INSIGHTS',
+              tag: tag.toUpperCase(),
               title: rawTitle,
-              desc: extractStrapiText(item.excerpt) || '',
+              desc: stripHtml(item.excerpt || item.content || ''),
               date: dateStr,
               image: coverUrl,
-              isFeatured: Boolean(item.isFeatured)
+              isFeatured: Boolean(item.acf?.isFeatured)
             }
           })
 
-          setCachedStrapiData('insights_list_mapped', mapped)
+          setCachedData('insights_list_mapped', mapped)
           const feat = mapped.find(m => (m as any).isFeatured) || mapped[0]
           setFeaturedPost(feat)
           setPosts(mapped.filter(m => m.slug !== feat.slug))
         }
       } catch (err) {
-        console.warn('Error fetching insights from Strapi, using defaults', err)
+        console.warn('Error fetching insights from WordPress GraphQL, using defaults', err)
       }
     }
     loadInsights()

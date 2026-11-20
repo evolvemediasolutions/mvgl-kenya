@@ -2,7 +2,14 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Calendar, MapPin, ArrowLeft, Share2, CheckCircle2, Building, ExternalLink } from 'lucide-react'
 import IndustrialChallengeCTA from '../components/ui/IndustrialChallengeCTA'
-import { fetchFromStrapi, getStrapiMediaUrl, getCachedStrapiData, setCachedStrapiData } from '../services/strapi'
+import { 
+  fetchGraphQL, 
+  GET_EVENTS_QUERY, 
+  getMediaUrl, 
+  stripHtml, 
+  getCachedData, 
+  setCachedData 
+} from '../services/wordpress'
 import { eventsData } from '../data/events'
 
 interface EventDetailData {
@@ -24,7 +31,7 @@ interface EventDetailData {
 export default function EventDetail() {
   const { slug } = useParams<{ slug: string }>()
   const targetSlug = (slug || '').toLowerCase()
-  const cachedEvents = getCachedStrapiData<EventDetailData>('events_mapped') || []
+  const cachedEvents = getCachedData<EventDetailData>('events_mapped') || []
   const initialFound: EventDetailData | null = 
     cachedEvents.find(e => e.slug.toLowerCase() === targetSlug || e.id.toLowerCase() === targetSlug) ||
     (() => {
@@ -57,41 +64,48 @@ export default function EventDetail() {
     async function loadEvent() {
       setLoading(true)
       try {
-        // 1. Try to fetch from Strapi
-        const strapiEvents = await fetchFromStrapi<any>('events')
+        const eventsDataRes = await fetchGraphQL<{ events?: { nodes?: any[] } }>(GET_EVENTS_QUERY)
+        const wpEvents = eventsDataRes?.events?.nodes || []
         
         let foundEvent: EventDetailData | null = null
-        const mappedEvents: EventDetailData[] = (strapiEvents || []).map((e: any) => ({
-          id: String(e.documentId || e.id),
-          slug: e.slug || `event-${e.id}`,
-          title: e.title || 'Untitled Event',
-          eventType: e.eventType || 'Industrial Expo',
-          eventStatus: (e.eventStatus || 'Upcoming').toUpperCase(),
-          dateDisplay: e.dateDisplay || e.startDate || 'Upcoming',
-          startDate: e.startDate,
-          endDate: e.endDate,
-          location: e.location || 'Nairobi, Kenya',
-          boothNumber: e.boothNumber || 'MVGL Stand',
-          description: e.description || '',
-          image: e.coverImage?.url
-            ? getStrapiMediaUrl(e.coverImage.url)
-            : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80',
-          registrationUrl: e.registrationUrl
-        }))
+        const mappedEvents: EventDetailData[] = wpEvents.map((e: any) => {
+          const acf = e.acf || e.eventFields || e
+          const rawTitle = (e.title?.rendered || e.title || 'Untitled Event').trim()
+          const autoSlug = e.slug || rawTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `event-${e.databaseId || e.id}`
+          const imgUrl = e.featuredImage?.node?.sourceUrl 
+            ? getMediaUrl(e.featuredImage.node.sourceUrl) 
+            : (acf.coverImage?.sourceUrl || acf.coverImage?.url ? getMediaUrl(acf.coverImage.sourceUrl || acf.coverImage.url) : '')
+
+          return {
+            id: String(e.databaseId || e.id),
+            slug: autoSlug,
+            title: rawTitle,
+            eventType: acf.eventType || 'Industrial Expo',
+            eventStatus: (acf.eventStatus || 'Upcoming').toUpperCase(),
+            dateDisplay: acf.dateDisplay || acf.startDate || 'Upcoming',
+            startDate: acf.startDate,
+            endDate: acf.endDate,
+            location: acf.location || 'Nairobi, Kenya',
+            boothNumber: acf.boothNumber || 'MVGL Stand',
+            description: stripHtml(acf.description || e.excerpt || e.content || ''),
+            image: imgUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80',
+            registrationUrl: acf.registrationUrl
+          }
+        })
 
         if (mappedEvents.length > 0) {
-          setCachedStrapiData('events_mapped', mappedEvents)
+          setCachedData('events_mapped', mappedEvents)
         }
 
         // Match by slug, ID, or normalized title slug
-        const targetSlug = (slug || '').toLowerCase()
+        const target = (slug || '').toLowerCase()
         foundEvent = mappedEvents.find(e => 
-          e.slug.toLowerCase() === targetSlug || 
-          e.id.toLowerCase() === targetSlug ||
-          e.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') === targetSlug
+          e.slug.toLowerCase() === target || 
+          e.id.toLowerCase() === target ||
+          e.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') === target
         ) || null
 
-        // If not found in Strapi, check fallback local data
+        // If not found in WordPress, check fallback local data
         if (!foundEvent) {
           const local = eventsData.find(e => e.id === slug)
           if (local) {

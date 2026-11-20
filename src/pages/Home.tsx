@@ -66,29 +66,44 @@ export default function Home() {
 
   const solutions = [
     {
-      title: 'Air & Gas Solutions',
-      desc: 'Delivering reliable compressed air and process gas systems engineered for critical industrial duty.',
-      slug: 'air-gas-solutions'
+      title: 'Power Generation',
+      desc: 'Heavy-duty prime and standby generator packages engineered with Kirloskar Powergen for continuous industrial duty.',
+      slug: 'power-generation'
     },
     {
-      title: 'Refrigeration & HVAC Solutions',
-      desc: 'Industrial refrigeration compressors, chillers, and large-scale HVAC temperature control.',
-      slug: 'refrigeration-hvac-solutions'
+      title: 'Air & Gas',
+      desc: 'Delivering reliable compressed air and process gas systems engineered with Kirloskar Pneumatic.',
+      slug: 'air-gas'
     },
     {
-      title: 'Automation & Control Solutions',
-      desc: 'Intelligent automation, integrated PLCs/PACs, smart drives, and resilient industrial networking.',
-      slug: 'automation-control'
+      title: 'Industrial Refrigeration',
+      desc: 'Industrial screw compressors, cold storage, and ammonia refrigeration packages with Kirloskar Pneumatic.',
+      slug: 'industrial-refrigeration'
     },
     {
-      title: 'Non Metallic Solution',
-      desc: 'Advanced FRP/GRP composite piping, chemical storage tanks, and structural profiles for corrosion resistance.',
-      slug: 'non-metallic-solutions'
+      title: 'HVAC & Process Cooling',
+      desc: 'Engineered chillers, tropical process cooling, and heat rejection with Kirloskar Chillers.',
+      slug: 'hvac-process-cooling'
     },
     {
-      title: 'Fire Pump Solutions',
-      desc: 'FM-Approved and UL-Listed packaged fire pumps and pre-packaged containerized pump houses.',
-      slug: 'fire-pump-solutions'
+      title: 'Industrial Pumping',
+      desc: 'FM-Approved / UL-Listed fire pumps and heavy industrial fluid handling packages from SPP Pumps.',
+      slug: 'industrial-pumping'
+    },
+    {
+      title: 'Industrial Automation',
+      desc: 'Intelligent automation, integrated PLCs/PACs, smart drives, and FactoryTalk software powered by Rockwell Automation.',
+      slug: 'industrial-automation'
+    },
+    {
+      title: 'Power Electronics',
+      desc: 'Advanced inverters, vector drives, dynamic UPS architectures, and power quality conditioning with Fuji Electronics.',
+      slug: 'power-electronics'
+    },
+    {
+      title: 'Warehouse & Material Handling',
+      desc: 'Autonomous mobile robots (AMRs), smart pallet conveying, and robotic logistics automation engineered with Xoog.',
+      slug: 'warehouse-material-handling'
     }
   ]
 
@@ -139,13 +154,16 @@ export default function Home() {
   ]
 
   const partnerLogos = [
+    { name: 'Kirloskar Powergen', image: '/PARTNERS LOGO/KIRLOSKAR POWERGEN.svg', slug: 'kirloskar-powergen', scale: 'scale-105' },
+    { name: 'Kirloskar Pneumatic', image: '/PARTNERS LOGO/KIRLOSKAR PNEUMATIC.jpg', slug: 'kirloskar-pneumatic', scale: 'scale-100' },
+    { name: 'Kirloskar Chillers', image: '/PARTNERS LOGO/KCPL.jpg', slug: 'kirloskar-chillers', scale: 'scale-100' },
+    { name: 'SPP Pumps', image: '/PARTNERS LOGO/SPP.jpg', slug: 'spp-pumps', scale: 'scale-100' },
     { name: 'Rockwell Automation', image: '/PARTNERS LOGO/ROCKWELL AUTOMATION.png', slug: 'rockwell-automation', scale: 'scale-[1.45]' },
+    { name: 'Fuji Electronics', image: '/PARTNERS LOGO/FUJI ELECTRONICS.svg', slug: 'fuji-electronics', scale: 'scale-105' },
+    { name: 'Xoog', image: '/PARTNERS LOGO/XOOG.svg', slug: 'xoog', scale: 'scale-105' },
     { name: 'Allen Bradley', image: '/PARTNERS LOGO/ALLEN BRADLEY.png', slug: 'rockwell-automation', scale: 'scale-[1.45]' },
     { name: 'FactoryTalk', image: '/PARTNERS LOGO/FACTORY TALK.png', slug: 'rockwell-automation', scale: 'scale-115' },
     { name: 'EPP Composites', image: '/PARTNERS LOGO/EPP.jpg', slug: 'epp-composites', scale: 'scale-100' },
-    { name: 'SPP Pumps', image: '/PARTNERS LOGO/SPP.jpg', slug: 'spp-pumps', scale: 'scale-100' },
-    { name: 'Kirloskar Pneumatic', image: '/PARTNERS LOGO/KIRLOSKAR PNEUMATIC.jpg', slug: 'kirloskar-pneumatic', scale: 'scale-100' },
-    { name: 'Kirloskar Chillers', image: '/PARTNERS LOGO/KCPL.jpg', slug: 'kirloskar-chillers', scale: 'scale-100' },
     { name: 'HMS Networks', image: '/LOGO/HMS_logo.png', slug: 'hms-networks', scale: 'scale-90' },
     { name: 'ProSoft Technology', image: '/PARTNERS LOGO/PROSOFT TECHNOLOGIES.png', slug: 'prosoft-technology', scale: 'scale-120' },
     { name: 'Lifecycle IQ Services', image: '/PARTNERS LOGO/LIFECYCLE IQ SERVICES.webp', slug: 'rockwell-automation', scale: 'scale-115' }

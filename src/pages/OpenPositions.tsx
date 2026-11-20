@@ -2,7 +2,14 @@ import { useEffect, useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, MapPin, Briefcase, ChevronDown, SlidersHorizontal, RefreshCw } from 'lucide-react'
 import IndustrialChallengeCTA from '../components/ui/IndustrialChallengeCTA'
-import { fetchFromStrapi, parseStrapiList, extractStrapiText, getCachedStrapiData, setCachedStrapiData } from '../services/strapi'
+import { 
+  fetchGraphQL, 
+  GET_CAREERS_QUERY, 
+  stripHtml, 
+  parseList, 
+  getCachedData, 
+  setCachedData 
+} from '../services/wordpress'
 
 export interface JobPosition {
   id: string
@@ -161,7 +168,7 @@ const defaultPositions: JobPosition[] = [
 
 export default function OpenPositions() {
   const [positions, setPositions] = useState<JobPosition[]>(() => {
-    const cached = getCachedStrapiData<JobPosition>('careers_mapped')
+    const cached = getCachedData<JobPosition>('careers_mapped')
     return (cached && cached.length > 0) ? cached : defaultPositions
   })
   const [searchKeyword, setSearchKeyword] = useState('')
@@ -171,31 +178,33 @@ export default function OpenPositions() {
   useEffect(() => {
     async function loadCareers() {
       try {
-        const strapiCareers = await fetchFromStrapi<any>('careers')
-        if (strapiCareers && strapiCareers.length > 0) {
-          const mapped: JobPosition[] = strapiCareers.map((c: any, idx: number) => {
-            const rawTitle = c.jobTitle || c.title || 'Untitled Position'
-            const autoSlug = c.slug || rawTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `career-${c.id}`
+        const res = await fetchGraphQL<{ careers?: { nodes?: any[] } }>(GET_CAREERS_QUERY)
+        const wpCareers = res?.careers?.nodes || []
+        if (wpCareers && wpCareers.length > 0) {
+          const mapped: JobPosition[] = wpCareers.map((c: any, idx: number) => {
+            const acf = c.acf || c.careerFields || c
+            const rawTitle = (acf.jobTitle || c.title?.rendered || c.title || 'Untitled Position').trim()
+            const autoSlug = c.slug || rawTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `career-${c.databaseId || c.id}`
             return {
-              id: String(c.documentId || c.id),
+              id: String(c.databaseId || c.id),
               slug: autoSlug,
               title: rawTitle,
-              department: c.department || 'Engineering & Technical',
-              location: c.location || 'Nairobi, Kenya',
-              experience: c.experienceLevel || '3+ Years Exp',
-              jobType: c.jobType || 'Full-time',
-              jobCode: c.jobCode || `VM${153 - idx}`,
-              summary: extractStrapiText(c.summary) || '',
-              responsibilities: parseStrapiList(c.responsibilities),
-              requirements: parseStrapiList(c.requirements)
+              department: acf.department || 'Engineering & Technical',
+              location: acf.location || 'Nairobi, Kenya',
+              experience: acf.experienceLevel || '3+ Years Exp',
+              jobType: acf.jobType || 'Full-time',
+              jobCode: acf.jobCode || `VM${153 - idx}`,
+              summary: stripHtml(acf.summary || c.excerpt || ''),
+              responsibilities: parseList(acf.responsibilities || c.content),
+              requirements: parseList(acf.requirements)
             }
           })
 
-          setCachedStrapiData('careers_mapped', mapped)
+          setCachedData('careers_mapped', mapped)
           setPositions(mapped)
         }
       } catch (err) {
-        console.warn('Error loading careers from Strapi, using defaults.', err)
+        console.warn('Error loading careers from WordPress GraphQL, using defaults.', err)
       }
     }
     loadCareers()

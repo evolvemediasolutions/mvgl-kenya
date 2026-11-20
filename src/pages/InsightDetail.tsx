@@ -6,7 +6,14 @@ import {
   Zap, Cpu, Activity, Gauge, Layers, Sparkles, Wrench, FileText
 } from 'lucide-react'
 import IndustrialChallengeCTA from '../components/ui/IndustrialChallengeCTA'
-import { fetchFromStrapi, getStrapiMediaUrl, extractStrapiText, getCachedStrapiData, setCachedStrapiData } from '../services/strapi'
+import { 
+  fetchGraphQL, 
+  GET_POSTS_QUERY, 
+  getMediaUrl, 
+  stripHtml, 
+  getCachedData, 
+  setCachedData 
+} from '../services/wordpress'
 
 interface InsightArticle {
   id: string
@@ -22,7 +29,7 @@ interface InsightArticle {
   isFeatured?: boolean
 }
 
-// Fallback articles to guarantee rich content if Strapi is offline
+// Fallback articles to guarantee rich content if CMS is offline
 const fallbackInsights: InsightArticle[] = [
   {
     id: 'building-resilient-industrial-supply-chains-in-east-africa',
@@ -348,7 +355,7 @@ function getPillarIcon(title: string = '', idx: number) {
 export default function InsightDetail() {
   const { slug } = useParams<{ slug: string }>()
   const targetSlug = (slug || '').toLowerCase()
-  const cachedInsights = getCachedStrapiData<InsightArticle>('insights_mapped') || []
+  const cachedInsights = getCachedData<InsightArticle>('insights_mapped') || []
   const initialFound = 
     cachedInsights.find(a => a.slug.toLowerCase() === targetSlug || a.id.toLowerCase() === targetSlug) ||
     fallbackInsights.find(a => a.slug.toLowerCase() === targetSlug || a.id.toLowerCase() === targetSlug) ||
@@ -366,32 +373,37 @@ export default function InsightDetail() {
   useEffect(() => {
     async function loadInsight() {
       try {
-        const strapiInsights = await fetchFromStrapi<any>('insights')
+        const res = await fetchGraphQL<{ posts?: { nodes?: any[] } }>(GET_POSTS_QUERY)
+        const wpPosts = res?.posts?.nodes || []
         let allInsights: InsightArticle[] = []
 
-        if (strapiInsights && strapiInsights.length > 0) {
-          const mapped: InsightArticle[] = strapiInsights.map((item: any, idx: number) => {
-            const rawTitle = item.title || 'Untitled Insight'
-            const autoSlug = item.slug || rawTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `insight-${item.id}`
+        if (wpPosts && wpPosts.length > 0) {
+          const mapped: InsightArticle[] = wpPosts.map((item: any, idx: number) => {
+            const rawTitle = (item.title?.rendered || item.title || 'Untitled Insight').trim()
+            const autoSlug = item.slug || rawTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `insight-${item.databaseId || item.id}`
             const defaultImg = fallbackInsights[idx % fallbackInsights.length]?.image || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80'
-            const coverUrl = item.coverImage?.url ? getStrapiMediaUrl(item.coverImage.url) : defaultImg
+            const coverUrl = item.featuredImage?.node?.sourceUrl ? getMediaUrl(item.featuredImage.node.sourceUrl) : defaultImg
+            const categoryName = item.categories?.nodes?.[0]?.name || item.acf?.category || 'Technical Insights'
+            const authorName = item.author?.node?.name || 'MVGL Kenya Editorial'
+            const readTime = item.acf?.readTime || '5 min read'
+            const dateStr = item.date ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently Published'
 
             return {
-              id: String(item.documentId || item.id),
+              id: String(item.databaseId || item.id),
               slug: autoSlug,
               title: rawTitle,
-              category: item.category || 'Technical Insights',
-              publishedDate: item.publishedDate || item.publishedAt ? new Date(item.publishedDate || item.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently Published',
-              author: item.author || 'MVGL Kenya Editorial',
-              readTime: item.readTime || '5 min read',
-              excerpt: extractStrapiText(item.excerpt) || '',
-              content: extractStrapiText(item.content) || '',
+              category: categoryName,
+              publishedDate: dateStr,
+              author: authorName,
+              readTime,
+              excerpt: stripHtml(item.excerpt || ''),
+              content: stripHtml(item.content || ''),
               image: coverUrl,
-              isFeatured: Boolean(item.isFeatured)
+              isFeatured: Boolean(item.acf?.isFeatured)
             }
           })
           allInsights = mapped
-          setCachedStrapiData('insights_mapped', mapped)
+          setCachedData('insights_mapped', mapped)
         } else {
           allInsights = fallbackInsights
         }
@@ -413,7 +425,7 @@ export default function InsightDetail() {
         const pool = allInsights.length > 1 ? allInsights : fallbackInsights
         setOtherArticles(pool.filter(a => a.slug !== (found ? found.slug : slug)).slice(0, 3))
       } catch (err) {
-        console.warn('Error loading insight article from Strapi, using fallback', err)
+        console.warn('Error loading insight article from WordPress GraphQL, using fallback', err)
       } finally {
         setLoading(false)
       }

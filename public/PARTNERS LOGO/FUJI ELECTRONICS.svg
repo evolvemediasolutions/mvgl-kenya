@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" fill="none">
+  <g transform="translate(15, 12)">
+    <rect width="56" height="56" rx="14" fill="#E60012"/>
+    <circle cx="28" cy="28" r="16" fill="white"/>
+    <circle cx="28" cy="28" r="9" fill="#0047BA"/>
+    <path d="M28 14 L28 42 M17 28 L39 28" stroke="white" stroke-width="2.5"/>
+  </g>
+  <text x="86" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="23" font-weight="800" fill="#0F172A" letter-spacing="-0.5">Fuji Electric</text>
+  <text x="87" y="56" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="#E60012" letter-spacing="2.5">ELECTRONICS</text>
+</svg>
+

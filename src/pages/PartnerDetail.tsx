@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { fetchProductsFromStrapi, getInitialStrapiProducts, type Product } from '../data/products'
+import { fetchProductsFromWordPress, getInitialWordPressProducts, productsData, type Product } from '../data/products'
 import { useParams, Link } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 import { partnersData } from '../data/partners'
@@ -37,12 +37,12 @@ export default function PartnerDetail() {
     })
   }
 
-  const [strapiProducts, setStrapiProducts] = useState<Product[]>(getInitialStrapiProducts)
+  const [wpProducts, setWpProducts] = useState<Product[]>(getInitialWordPressProducts)
 
   useEffect(() => {
-    fetchProductsFromStrapi().then((res) => {
+    fetchProductsFromWordPress().then((res) => {
       if (res && res.length > 0) {
-        setStrapiProducts(res)
+        setWpProducts(res)
       }
     })
   }, [])
@@ -54,8 +54,8 @@ export default function PartnerDetail() {
   }
 
   const mergePartnerProducts = (localList: any[], pSlug: string) => {
-    const fromStrapi = strapiProducts.filter(p => p.partnerSlug === pSlug)
-    if (fromStrapi.length === 0) {
+    const fromWp = wpProducts.filter(p => p.partnerSlug === pSlug)
+    if (fromWp.length === 0) {
       return localList.map(p => ({
         ...p,
         exploreUrl: p.exploreUrl || '',
@@ -64,8 +64,8 @@ export default function PartnerDetail() {
       }))
     }
 
-    const formattedStrapi = fromStrapi.map((p, idx) => ({
-      id: `strapi-${p.id || idx}`,
+    const formattedWp = fromWp.map((p, idx) => ({
+      id: `wp-${p.id || idx}`,
       category: p.category || 'all',
       tag: p.tag || p.partner.toUpperCase(),
       title: { en: p.title },
@@ -80,15 +80,15 @@ export default function PartnerDetail() {
       partnerSlug: p.partnerSlug
     }))
 
-    const strapiSlugs = new Set(fromStrapi.map(p => p.slug))
+    const wpSlugs = new Set(fromWp.map(p => p.slug))
     const formattedLocal = localList.map(p => ({
       ...p,
       exploreUrl: p.exploreUrl || '',
       brochure: p.brochure || '',
       slug: p.slug || (typeof p.title === 'object' ? p.title.en : p.title).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-    })).filter(p => !strapiSlugs.has(p.slug))
+    })).filter(p => !wpSlugs.has(p.slug))
 
-    return [...formattedStrapi, ...formattedLocal]
+    return [...formattedWp, ...formattedLocal]
   }
 
 
@@ -115,16 +115,29 @@ export default function PartnerDetail() {
   const localizedPath = (path: string) => path
 
 
+  const isPowerGenPartner =
+    solutionSlug === 'power-generation' || activeSlug === 'kirloskar-powergen'
+
   const isRefrigerationPartner =
     solutionSlug === 'refrigeration-hvac-solutions' ||
-    solutionSlug === 'refrigeration-hvac'
+    solutionSlug === 'refrigeration-hvac' ||
+    solutionSlug === 'industrial-refrigeration' ||
+    solutionSlug === 'hvac-process-cooling'
 
   const isAirGasPartner =
-    solutionSlug === 'air-gas-solutions'
+    solutionSlug === 'air-gas-solutions' ||
+    solutionSlug === 'air-gas'
 
   const isAutomationPartner =
     solutionSlug === 'automation-control' ||
+    solutionSlug === 'industrial-automation' ||
     ['rockwell-automation', 'hms-networks', 'prosoft-technology'].includes(activeSlug)
+
+  const isPowerElectronicsPartner =
+    solutionSlug === 'power-electronics' || activeSlug === 'fuji-electronics'
+
+  const isWarehousePartner =
+    solutionSlug === 'warehouse-material-handling' || activeSlug === 'xoog'
 
   const isNonMetallicPartner =
     solutionSlug === 'non-metallic-solutions' ||
@@ -135,6 +148,7 @@ export default function PartnerDetail() {
   const isFirePumpPartner =
     solutionSlug === 'fire-pump-solutions' ||
     solutionSlug === 'fire-pump-solution' ||
+    solutionSlug === 'industrial-pumping' ||
     solutionSlug === 'pumping' ||
     activeSlug === 'spp-pumps'
 
@@ -194,6 +208,8 @@ export default function PartnerDetail() {
 
   const getPartnerLogo = (slug: string) => {
     switch (slug) {
+      case 'kirloskar-powergen':
+        return '/PARTNERS LOGO/KIRLOSKAR POWERGEN.svg'
       case 'rockwell-automation':
         return '/PARTNERS LOGO/ROCKWELL AUTOMATION.png'
       case 'epp-composites':
@@ -208,6 +224,10 @@ export default function PartnerDetail() {
         return '/LOGO/HMS_logo.png'
       case 'prosoft-technology':
         return '/PARTNERS LOGO/PROSOFT TECHNOLOGIES.png'
+      case 'fuji-electronics':
+        return '/PARTNERS LOGO/FUJI ELECTRONICS.svg'
+      case 'xoog':
+        return '/PARTNERS LOGO/XOOG.svg'
       default:
         return partner?.logo || ''
     }
@@ -227,12 +247,18 @@ export default function PartnerDetail() {
           />
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 text-center space-y-4">
             <span className="eyebrow block">
-              {isRefrigerationPartner
+              {isPowerGenPartner
+                ? `HOME / INDUSTRIAL SOLUTIONS / POWER GENERATION / ${partner.name.toUpperCase()}`
+                : isRefrigerationPartner
                 ? `HOME / INDUSTRIAL SOLUTIONS / REFRIGERATION & HVAC SOLUTIONS / ${partner.name.toUpperCase()}`
                 : isAirGasPartner
                 ? `HOME / INDUSTRIAL SOLUTIONS / AIR & GAS SOLUTIONS / ${partner.name.toUpperCase()}`
                 : isAutomationPartner
                 ? `HOME / INDUSTRIAL SOLUTIONS / AUTOMATION & CONTROL / ${partner.name.toUpperCase()}`
+                : isPowerElectronicsPartner
+                ? `HOME / INDUSTRIAL SOLUTIONS / POWER ELECTRONICS / ${partner.name.toUpperCase()}`
+                : isWarehousePartner
+                ? `HOME / INDUSTRIAL SOLUTIONS / WAREHOUSE & MATERIAL HANDLING / ${partner.name.toUpperCase()}`
                 : isNonMetallicPartner
                 ? `HOME / INDUSTRIAL SOLUTIONS / NON METALLIC SOLUTION / ${partner.name.toUpperCase()}`
                 : isFirePumpPartner
@@ -2125,14 +2151,93 @@ export default function PartnerDetail() {
               </div>
             </div>
           ) : (
-            // Standard layout for other partners
-            <div className="space-y-4 text-start">
-              <h2 className="text-2xl font-bold text-slate-900">
-                About the Technology Partnership
-              </h2>
-              <p className="text-slate-655 leading-relaxed text-base sm:text-lg whitespace-pre-line">
-                {partner.longDescription[locale]}
-              </p>
+            // Standard layout for other partners (Kirloskar Powergen, Fuji Electronics, Xoog, etc.)
+            <div className="space-y-16 text-start">
+              <div className="space-y-4 text-start">
+                <span className="eyebrow block">
+                  {partner.name.toUpperCase()}
+                </span>
+                <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+                  About the Technology Partnership
+                </h2>
+                <p className="text-slate-600 leading-relaxed text-base sm:text-lg whitespace-pre-line">
+                  {partner.longDescription[locale]}
+                </p>
+              </div>
+
+              {/* Product Portfolio Grid */}
+              <div className="space-y-8">
+                <div className="flex justify-center">
+                  <span className="eyebrow block">
+                    {partner.name.toUpperCase()} PRODUCT PORTFOLIO
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-4">
+                  {mergePartnerProducts(
+                    productsData
+                      .filter((p: any) => p.partnerSlug === partner.slug)
+                      .map((p: any) => ({
+                        id: p.id,
+                        category: p.category,
+                        tag: p.tag || partner.name.toUpperCase(),
+                        title: { en: p.title },
+                        desc: { en: p.shortDescription },
+                        specs: p.specs ? { en: p.specs } : undefined,
+                        image: p.image,
+                        slug: p.slug
+                      })),
+                    partner.slug
+                  ).map((prod: any, idx: number) => (
+                    <div
+                      key={idx}
+                      className="bg-white rounded-3xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 group flex flex-col justify-between text-start border border-slate-100/80"
+                    >
+                      <div className="h-64 sm:h-72 bg-white relative overflow-hidden flex items-center justify-center p-4">
+                        <img
+                          src={prod.image}
+                          alt={prod.title[locale]}
+                          onError={handleProductImageError}
+                          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+
+                      <div className="p-6 sm:p-7 bg-white flex-grow flex flex-col justify-between space-y-4">
+                        <div className="space-y-3">
+                          <span className="text-[11px] font-bold text-brand-primary uppercase tracking-widest block">
+                            {prod.tag}
+                          </span>
+                          <h4 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-brand-primary transition-colors leading-snug">
+                            {prod.title[locale]}
+                          </h4>
+                          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                            {prod.desc[locale]}
+                          </p>
+
+                          {prod.specs && (
+                            <div className="pt-2 border-t border-slate-100">
+                              <span className="inline-block text-[11px] font-semibold text-slate-500 bg-slate-50 border border-slate-200/80 px-2.5 py-1 rounded-md">
+                                {prod.specs[locale]}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="pt-3 border-t border-slate-100">
+                          <button
+                            type="button"
+                            onClick={() => handleOpenProductModal(prod)}
+                            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-primary hover:text-brand-secondary transition-colors group-hover:translate-x-1 duration-200 cursor-pointer"
+                          >
+                            <span>View More</span>
+                            <span>&rarr;</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 

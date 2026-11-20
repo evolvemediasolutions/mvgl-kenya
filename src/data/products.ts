@@ -1,4 +1,11 @@
-import { fetchFromStrapi, getStrapiMediaUrl, extractStrapiText, getCachedStrapiData, setCachedStrapiData } from '../services/strapi'
+import { 
+  fetchGraphQL, 
+  GET_PRODUCTS_QUERY, 
+  getMediaUrl, 
+  stripHtml, 
+  getCachedData, 
+  setCachedData 
+} from '../services/wordpress'
 
 export interface Product {
   id: string
@@ -15,6 +22,7 @@ export interface Product {
   exploreUrl?: string
   image: string
   images?: string[]
+
   brochure?: string
   isFeatured?: boolean
 }
@@ -760,80 +768,217 @@ export const fallbackProducts: Product[] = [
     "shortDescription": "Aerodynamically optimized, lightweight composite nacelle covers, rotor spinner cones, and aerodynamic fairings manufactured with advanced vacuum infusion processes for utility-scale wind energy generators.",
     "specs": "Aerodynamic Infusion Tech | High Fatigue Resistance | Extreme Weather Durability",
     "image": "/PRODUCTS/EPP COMPOSITE/Wind Turbine Components.jpg"
+  },
+  {
+    "id": "kp-diesel-genset",
+    "slug": "kp-diesel-genset",
+    "title": "Heavy-Duty Industrial Diesel Generator Sets",
+    "tag": "KIRLOSKAR POWERGEN",
+    "category": "power-generation",
+    "partner": "Kirloskar Powergen",
+    "partnerSlug": "kirloskar-powergen",
+    "solution": "Power Generation",
+    "shortDescription": "Engineered for continuous prime and emergency standby duty across manufacturing plants, data hubs, and health facilities.",
+    "specs": "15 kVA to 3000+ kVA | CPCB / ISO Compliant | DeepSea AMF Controller | Soundproof Enclosure",
+    "image": "https://images.unsplash.com/photo-1513828583688-c52646db42da?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "kp-gas-genset",
+    "slug": "kp-gas-genset",
+    "title": "Continuous Natural Gas & Biogas Generator Packages",
+    "tag": "KIRLOSKAR POWERGEN",
+    "category": "power-generation",
+    "partner": "Kirloskar Powergen",
+    "partnerSlug": "kirloskar-powergen",
+    "solution": "Power Generation",
+    "shortDescription": "High-efficiency, eco-friendly gas power generation systems engineered for low lifecycle operating costs and continuous base-load industrial power.",
+    "specs": "100 kVA to 2500 kVA | Natural Gas & Biogas Dual-Fuel | Lean-Burn Technology | Low Emission Certified",
+    "image": "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "kp-amf-panels",
+    "slug": "kp-amf-panels",
+    "title": "Automatic Mains Failure (AMF) & Synchronizing Switchgear",
+    "tag": "KIRLOSKAR POWERGEN",
+    "category": "power-generation",
+    "partner": "Kirloskar Powergen",
+    "partnerSlug": "kirloskar-powergen",
+    "solution": "Power Generation",
+    "shortDescription": "Intelligent power transfer switchgear and multi-genset paralleling systems ensuring zero disruption during utility power outages.",
+    "specs": "Microprocessor Controlled | 4-Pole Motorized ACB | Auto Load Sharing & Shedding | SCADA Modbus Interface",
+    "image": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "fe-frenic-inverter",
+    "slug": "fe-frenic-inverter",
+    "title": "FRENIC-MEGA High-Performance Industrial Drive",
+    "tag": "FUJI ELECTRONICS",
+    "category": "power-electronics",
+    "partner": "Fuji Electronics",
+    "partnerSlug": "fuji-electronics",
+    "solution": "Power Electronics",
+    "shortDescription": "High-performance vector control inverters delivering maximum starting torque, multi-drive synchronization, and harmonic suppression.",
+    "specs": "0.4 kW to 630 kW | Dynamic Torque Vector Control | Built-in Braking Transistor | Dual Rating HD/ND",
+    "image": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "fe-ups-7000",
+    "slug": "fe-ups-7000",
+    "title": "UPS7000HX High-Efficiency Online Double-Conversion UPS",
+    "tag": "FUJI ELECTRONICS",
+    "category": "power-electronics",
+    "partner": "Fuji Electronics",
+    "partnerSlug": "fuji-electronics",
+    "solution": "Power Electronics",
+    "shortDescription": "Transformerless, high-efficiency online UPS system engineered to protect mission-critical industrial processes, cleanrooms, and data infrastructure.",
+    "specs": "10 kVA to 500 kVA | 96.5% Efficiency | IGBT 3-Level Inverter | Modular N+1 Redundancy",
+    "image": "https://images.unsplash.com/photo-1544256718-3bcf237f3974?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "fe-harmonic-filter",
+    "slug": "fe-harmonic-filter",
+    "title": "Active Harmonic Conditioner & Dynamic Power Quality Filter",
+    "tag": "FUJI ELECTRONICS",
+    "category": "power-electronics",
+    "partner": "Fuji Electronics",
+    "partnerSlug": "fuji-electronics",
+    "solution": "Power Electronics",
+    "shortDescription": "Real-time harmonic mitigation and dynamic reactive power compensation ensuring compliance with IEEE 519 electrical standards.",
+    "specs": "Up to 50th Harmonic Cancellation | < 5ms Response Time | Power Factor Correction to 0.99 | Modular Rack Mount",
+    "image": "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "xoog-amr-500",
+    "slug": "xoog-amr-500",
+    "title": "Xoog Autonomous Mobile Transport Robot (AMR 500)",
+    "tag": "XOOG",
+    "category": "warehouse-material-handling",
+    "partner": "Xoog",
+    "partnerSlug": "xoog",
+    "solution": "Warehouse & Material Handling",
+    "shortDescription": "Intelligent autonomous mobile robot engineered for dynamic plant-floor pallet transportation, aisle navigation, and fleet scheduling.",
+    "specs": "500 kg Payload Capacity | Natural LiDAR SLAM Navigation | 360° Safety LiDAR & Obstacle Avoidance | Fleet WES Integration",
+    "image": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "xoog-asrs-shuttle",
+    "slug": "xoog-asrs-shuttle",
+    "title": "High-Density Automated Storage & Retrieval System (ASRS)",
+    "tag": "XOOG",
+    "category": "warehouse-material-handling",
+    "partner": "Xoog",
+    "partnerSlug": "xoog",
+    "solution": "Warehouse & Material Handling",
+    "shortDescription": "Automated 4-way pallet shuttle and crane ASRS maximizing warehouse vertical cube utilization, throughput rate, and inventory accuracy.",
+    "specs": "Storage Height up to 35m | Payload up to 1500 kg/pallet | Dual-Deep Shuttle System | WMS ERP Live Sync",
+    "image": "https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "xoog-smart-conveyor",
+    "slug": "xoog-smart-conveyor",
+    "title": "Modular Intelligent Roller Conveyor & High-Speed Sortation Lines",
+    "tag": "XOOG",
+    "category": "warehouse-material-handling",
+    "partner": "Xoog",
+    "partnerSlug": "xoog",
+    "solution": "Warehouse & Material Handling",
+    "shortDescription": "Energy-efficient 24V motorized driven roller (MDR) conveyors with zero pressure accumulation (ZPA) and high-speed cross-belt sorters.",
+    "specs": "Sortation Speed up to 2.5 m/s | Modular Plug-and-Play Sections | ZPA Zone Control | Low Noise < 65 dBA",
+    "image": "https://images.unsplash.com/photo-1616401784845-180882ba9ba8?auto=format&fit=crop&w=800&q=80"
   }
 ]
 
+
 export const partnerSlugMap: Record<string, string> = {
-  'Rockwell Automation': 'rockwell-automation',
-  'SPP Pumps': 'spp-pumps',
+  'Kirloskar Powergen': 'kirloskar-powergen',
   'Kirloskar Pneumatic': 'kirloskar-pneumatic',
   'Kirloskar Chillers': 'kirloskar-chillers',
+  'SPP Pumps': 'spp-pumps',
+  'Spp Pumps': 'spp-pumps',
+  'Rockwell Automation': 'rockwell-automation',
+  'Fuji Electronics': 'fuji-electronics',
+  'Xoog': 'xoog',
   'EPP Composites': 'epp-composites',
   'HMS Networks': 'hms-networks',
   'ProSoft Technology': 'prosoft-technology'
 }
 
-export function getInitialStrapiProducts(): Product[] {
-  return getCachedStrapiData<Product>('products_mapped') || []
-}
+export function getInitialWordPressProducts(): Product[]
+ {
+  return getCachedData<Product>('products_mapped') || []
 
-export async function fetchProductsFromStrapi(): Promise<Product[]> {
+}
+export const getInitialStrapiProducts = getInitialWordPressProducts
+
+export async function fetchProductsFromWordPress(): Promise<Product[]> {
   try {
-    const strapiData = await fetchFromStrapi<any>('products')
-    if (!strapiData || strapiData.length === 0) {
-      return getCachedStrapiData<Product>('products_mapped') || []
+    const data = await fetchGraphQL<{ products?: { nodes?: any[] } }>(GET_PRODUCTS_QUERY)
+    const nodes = data?.products?.nodes || []
+
+    if (!nodes || nodes.length === 0) {
+      return getCachedData<Product>('products_mapped') || []
+
     }
 
-    const mapped = strapiData.map((item: any) => {
-      const title = item.title || 'Untitled Product'
-      const autoSlug = item.slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `product-${item.id}`
+    const mapped = nodes.map((item: any) => {
+      const title = (item.title?.rendered || item.title || 'Untitled Product').trim()
+      const autoSlug = item.slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `product-${item.databaseId || item.id}`
       
+      const acf = item.acf || item.productFields || item
       let imgUrl = ''
-      if (item.images && Array.isArray(item.images) && item.images.length > 0) {
-        imgUrl = getStrapiMediaUrl(item.images[0].url)
-      } else if (item.image?.url) {
-        imgUrl = getStrapiMediaUrl(item.image.url)
+      if (item.featuredImage?.node?.sourceUrl) {
+        imgUrl = getMediaUrl(item.featuredImage.node.sourceUrl)
+      } else if (acf.image?.url || acf.image?.sourceUrl) {
+        imgUrl = getMediaUrl(acf.image.url || acf.image.sourceUrl)
       }
 
-      const partnerName = item.partner || 'Rockwell Automation'
-      const partnerSlug = partnerSlugMap[partnerName] || partnerName.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+      const partnerName = acf.partner || 'Rockwell Automation'
+      const partnerSlug = partnerSlugMap[partnerName]
+ || partnerName.toLowerCase().replace(/[^a-z0-9]+/g, '-')
 
-      // Default fallback image if Strapi has no image uploaded yet
+      // Default fallback image if WP has no image uploaded yet
       const fallbackImg = fallbackProducts.find(p => p.slug === autoSlug || p.title.toLowerCase() === title.toLowerCase())?.image || '/NEW LOGO/logo2.png'
 
+      const brochureUrl = acf.brochure?.mediaItemUrl || acf.brochure?.url || (typeof acf.brochure === 'string' ? acf.brochure : undefined)
+
       return {
-        id: String(item.documentId || item.id),
+        id: String(item.databaseId || item.id),
         slug: autoSlug,
         title,
-        tag: item.tag || partnerName.toUpperCase(),
-        category: (item.category || 'all').toLowerCase(),
+        tag: acf.tag || partnerName.toUpperCase(),
+        category: (acf.category || 'all').toLowerCase(),
         partner: partnerName,
         partnerSlug,
-        solution: item.solution || 'Automation & Control',
-        shortDescription: extractStrapiText(item.shortDescription) || '',
-        detailedDescription: extractStrapiText(item.detailedDescription) || '',
-        specs: item.specs || '',
-        exploreUrl: item.exploreUrl || item.explore_url || '',
+        solution: acf.solution || 'Automation & Control',
+        shortDescription: stripHtml(acf.shortDescription || item.excerpt) || '',
+        detailedDescription: stripHtml(acf.detailedDescription || item.content) || '',
+        specs: acf.specs || '',
+        exploreUrl: acf.exploreUrl || acf.explore_url || '',
         image: imgUrl || fallbackImg,
-        brochure: item.brochure?.url ? getStrapiMediaUrl(item.brochure.url) : undefined,
-        isFeatured: Boolean(item.isFeatured)
+        brochure: brochureUrl ? getMediaUrl(brochureUrl) : undefined,
+        isFeatured: Boolean(acf.isFeatured)
       }
     })
 
     if (mapped.length > 0) {
-      setCachedStrapiData('products_mapped', mapped)
+      setCachedData('products_mapped', mapped)
     }
     return mapped
   } catch (err) {
-    console.warn('[Products] Error loading products from Strapi:', err)
-    return getCachedStrapiData<Product>('products_mapped') || []
+    console.warn('[Products] Error loading products from WordPress GraphQL:', err)
+    return getCachedData<Product>('products_mapped') || []
+
   }
 }
+export const fetchProductsFromStrapi = fetchProductsFromWordPress
 
-export function parseProductSpecs(specsInput?: string | null): string[] {
+export function parseProductSpecs(specsInput?: string | null): string[]
+ {
   if (!specsInput) return []
+
   const trimmed = specsInput.trim()
   if (!trimmed) return []
+
 
   // If newline separated
   if (trimmed.includes('\n')) {
@@ -844,25 +989,33 @@ export function parseProductSpecs(specsInput?: string | null): string[] {
     return trimmed.split('|').map(s => s.trim()).filter(Boolean)
   }
   return [trimmed]
+
 }
 
-export function getMergedProducts(strapiProducts: Product[] = [], partnerSlug?: string): Product[] {
-  // If we have strapi products matching this partner, use them and merge with fallback
+export function getMergedProducts(cmsProducts: Product[]
+ = []
+, partnerSlug?: string): Product[]
+ {
+  // If we have CMS products matching this partner, use them and merge with fallback
   if (partnerSlug) {
-    const fromStrapi = strapiProducts.filter(p => p.partnerSlug === partnerSlug)
+    const fromCms = cmsProducts.filter(p => p.partnerSlug === partnerSlug)
     const fromFallback = fallbackProducts.filter(p => p.partnerSlug === partnerSlug)
-    if (fromStrapi.length > 0) {
-      // Return Strapi products combined with any non-overlapping fallback products
-      const strapiSlugs = new Set(fromStrapi.map(p => p.slug))
-      return [...fromStrapi, ...fromFallback.filter(f => !strapiSlugs.has(f.slug))]
+    if (fromCms.length > 0) {
+      // Return CMS products combined with any non-overlapping fallback products
+      const cmsSlugs = new Set(fromCms.map(p => p.slug))
+      return [...fromCms, ...fromFallback.filter(f => !cmsSlugs.has(f.slug))]
+
     }
     return fromFallback
   }
 
-  if (strapiProducts.length > 0) {
-    const strapiSlugs = new Set(strapiProducts.map(p => p.slug))
-    return [...strapiProducts, ...fallbackProducts.filter(f => !strapiSlugs.has(f.slug))]
+  if (cmsProducts.length > 0) {
+    const cmsSlugs = new Set(cmsProducts.map(p => p.slug))
+    return [...cmsProducts, ...fallbackProducts.filter(f => !cmsSlugs.has(f.slug))]
+
   }
 
   return fallbackProducts
 }
+
+export const productsData = fallbackProducts;

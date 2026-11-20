@@ -2,7 +2,15 @@ import { useEffect, useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, ArrowRight, ChevronDown, MapPin, SlidersHorizontal, RefreshCw } from 'lucide-react'
 import IndustrialChallengeCTA from '../components/ui/IndustrialChallengeCTA'
-import { fetchFromStrapi, getStrapiMediaUrl, getCachedStrapiData, setCachedStrapiData } from '../services/strapi'
+import { 
+  fetchGraphQL, 
+  GET_EVENTS_QUERY, 
+  GET_POSTS_QUERY, 
+  getMediaUrl, 
+  stripHtml, 
+  getCachedData, 
+  setCachedData 
+} from '../services/wordpress'
 
 export interface UnifiedItem {
   id: string
@@ -102,7 +110,7 @@ const defaultUnifiedItems: UnifiedItem[] = [
 
 export default function Events() {
   const [items, setItems] = useState<UnifiedItem[]>(() => {
-    const cached = getCachedStrapiData<UnifiedItem>('events_unified_mapped')
+    const cached = getCachedData<UnifiedItem>('events_unified_mapped')
     return (cached && cached.length > 0) ? cached : defaultUnifiedItems
   })
   const [searchTerm, setSearchTerm] = useState('')
@@ -110,62 +118,73 @@ export default function Events() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [sortBy, setSortBy] = useState<'newest' | 'oldest'>('newest')
 
-  // Fetch dynamic events and insights from Strapi
+  // Fetch dynamic events and insights from WordPress GraphQL
   useEffect(() => {
     async function loadDynamicContent() {
       try {
-        const [strapiEvents, strapiInsights] = await Promise.all([
-          fetchFromStrapi<any>('events'),
-          fetchFromStrapi<any>('insights')
+        const [eventsData, postsData] = await Promise.all([
+          fetchGraphQL<{ events?: { nodes?: any[] } }>(GET_EVENTS_QUERY),
+          fetchGraphQL<{ posts?: { nodes?: any[] } }>(GET_POSTS_QUERY)
         ])
 
-        const dynamicEvents: UnifiedItem[] = (strapiEvents || []).map((e: any) => {
-          const status = (e.eventStatus || 'Upcoming').toUpperCase()
+        const wpEvents = eventsData?.events?.nodes || []
+        const wpPosts = postsData?.posts?.nodes || []
+
+        const dynamicEvents: UnifiedItem[] = wpEvents.map((e: any) => {
+          const acf = e.acf || e.eventFields || e
+          const status = (acf.eventStatus || 'Upcoming').toUpperCase()
           const badgeType = status.includes('PAST') || status.includes('COMPLETED')
             ? 'event-past'
             : status.includes('ONGOING')
             ? 'event-ongoing'
             : 'event-upcoming'
 
+          const rawTitle = (e.title?.rendered || e.title || 'Untitled Event').trim()
+          const autoSlug = e.slug || rawTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `event-${e.databaseId || e.id}`
+          const imgUrl = e.featuredImage?.node?.sourceUrl ? getMediaUrl(e.featuredImage.node.sourceUrl) : (acf.coverImage?.sourceUrl || acf.coverImage?.url ? getMediaUrl(acf.coverImage.sourceUrl || acf.coverImage.url) : '')
+
           return {
-            id: `strapi-event-${e.documentId || e.id}`,
-            slug: e.slug || `event-${e.id}`,
+            id: `wp-event-${e.databaseId || e.id}`,
+            slug: autoSlug,
             type: 'event',
             badge: status,
             badgeType,
-            title: e.title || 'Untitled Event',
-            description: e.description || '',
-            date: e.dateDisplay || e.startDate || 'Upcoming',
-            rawDate: e.startDate || '2026-10-01',
-            time: e.boothNumber ? `Booth: ${e.boothNumber}` : undefined,
-            location: e.location || 'Nairobi, Kenya',
-            category: e.eventType || 'Event',
-            image: e.coverImage?.url
-              ? getStrapiMediaUrl(e.coverImage.url)
-              : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80',
-            link: `/events/${e.slug || e.id}`
+            title: rawTitle,
+            description: stripHtml(acf.description || e.excerpt || e.content || ''),
+            date: acf.dateDisplay || acf.startDate || 'Upcoming',
+            rawDate: acf.startDate || '2026-10-01',
+            time: acf.boothNumber ? `Booth: ${acf.boothNumber}` : undefined,
+            location: acf.location || 'Nairobi, Kenya',
+            category: acf.eventType || 'Industrial Expo',
+            image: imgUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80',
+            link: `/events/${autoSlug}`
           }
         })
 
-        const dynamicArticles: UnifiedItem[] = (strapiInsights || []).map((a: any) => ({
-          id: `strapi-insight-${a.documentId || a.id}`,
-          slug: a.slug || `insight-${a.id}`,
-          type: 'article',
-          badge: (a.category?.includes('Press') ? 'PRESS RELEASE' : 'BLOG').toUpperCase(),
-          badgeType: 'blog',
-          title: a.title || 'Untitled Article',
-          description: a.excerpt || a.description || '',
-          date: a.publishedDate || '2026',
-          rawDate: a.publishedDate || '2026-06-01',
-          category: (a.category || 'INSIGHTS').toUpperCase(),
-          image: a.coverImage?.url
-            ? getStrapiMediaUrl(a.coverImage.url)
-            : 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80',
-          link: '/insights'
-        }))
+        const dynamicArticles: UnifiedItem[] = wpPosts.map((a: any) => {
+          const rawTitle = (a.title?.rendered || a.title || 'Untitled Article').trim()
+          const autoSlug = a.slug || rawTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `insight-${a.databaseId || a.id}`
+          const categoryName = a.categories?.nodes?.[0]?.name || 'INSIGHTS'
+          const imgUrl = a.featuredImage?.node?.sourceUrl ? getMediaUrl(a.featuredImage.node.sourceUrl) : ''
+          const formattedDate = a.date ? new Date(a.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '2026'
+
+          return {
+            id: `wp-insight-${a.databaseId || a.id}`,
+            slug: autoSlug,
+            type: 'article',
+            badge: (categoryName.toLowerCase().includes('press') ? 'PRESS RELEASE' : 'BLOG').toUpperCase(),
+            badgeType: 'blog',
+            title: rawTitle,
+            description: stripHtml(a.excerpt || a.content || ''),
+            date: formattedDate,
+            rawDate: a.date ? a.date.split('T')[0] : '2026-06-01',
+            category: categoryName.toUpperCase(),
+            image: imgUrl || 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80',
+            link: `/insights`
+          }
+        })
 
         if (dynamicEvents.length > 0 || dynamicArticles.length > 0) {
-          // Prioritize dynamic items from Strapi over mock items
           const eventsToUse = dynamicEvents.length > 0
             ? dynamicEvents
             : defaultUnifiedItems.filter(d => d.type === 'event')
@@ -173,11 +192,11 @@ export default function Events() {
             ? dynamicArticles
             : defaultUnifiedItems.filter(d => d.type === 'article')
           const combined = [...eventsToUse, ...articlesToUse]
-          setCachedStrapiData('events_unified_mapped', combined)
+          setCachedData('events_unified_mapped', combined)
           setItems(combined)
         }
       } catch (err) {
-        console.warn('[Events] Error loading Strapi content, using default data.', err)
+        console.warn('[Events] Error loading WordPress GraphQL content, using default data.', err)
       }
     }
 

@@ -6,7 +6,14 @@ import {
   CheckCircle2, UploadCloud, X, Check, FileText, ChevronRight
 } from 'lucide-react'
 import IndustrialChallengeCTA from '../components/ui/IndustrialChallengeCTA'
-import { fetchFromStrapi, parseStrapiList, extractStrapiText, getCachedStrapiData, setCachedStrapiData } from '../services/strapi'
+import { 
+  fetchGraphQL, 
+  GET_CAREERS_QUERY, 
+  stripHtml, 
+  parseList, 
+  getCachedData, 
+  setCachedData 
+} from '../services/wordpress'
 
 interface JobPosition {
   id: string
@@ -169,7 +176,7 @@ export default function JobDetail() {
   const { slug } = useParams<{ slug: string }>()
   // Instant 0ms initial lookup from cache or fallback
   const targetSlug = (slug || '').toLowerCase()
-  const cachedJobs = getCachedStrapiData<JobPosition>('careers_mapped') || []
+  const cachedJobs = getCachedData<JobPosition>('careers_mapped') || []
   const initialFound = 
     cachedJobs.find(j => j.slug.toLowerCase() === targetSlug || j.id.toLowerCase() === targetSlug) ||
     fallbackPositions.find(j => j.slug.toLowerCase() === targetSlug || j.id.toLowerCase() === targetSlug) ||
@@ -197,29 +204,31 @@ export default function JobDetail() {
   useEffect(() => {
     async function loadJob() {
       try {
-        const strapiCareers = await fetchFromStrapi<any>('careers')
+        const res = await fetchGraphQL<{ careers?: { nodes?: any[] } }>(GET_CAREERS_QUERY)
+        const wpCareers = res?.careers?.nodes || []
         let allJobs: JobPosition[] = []
 
-        if (strapiCareers && strapiCareers.length > 0) {
-          const mapped: JobPosition[] = strapiCareers.map((c: any, idx: number) => {
-            const rawTitle = c.jobTitle || c.title || 'Untitled Position'
-            const autoSlug = c.slug || rawTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `career-${c.id}`
+        if (wpCareers && wpCareers.length > 0) {
+          const mapped: JobPosition[] = wpCareers.map((c: any, idx: number) => {
+            const acf = c.acf || c.careerFields || c
+            const rawTitle = (acf.jobTitle || c.title?.rendered || c.title || 'Untitled Position').trim()
+            const autoSlug = c.slug || rawTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `career-${c.databaseId || c.id}`
             return {
-              id: String(c.documentId || c.id),
+              id: String(c.databaseId || c.id),
               slug: autoSlug,
               title: rawTitle,
-              department: c.department || 'Engineering & Technical',
-              location: c.location || 'Nairobi, Kenya',
-              experience: c.experienceLevel || '3+ Years Exp',
-              jobType: c.jobType || 'Full-time',
-              jobCode: c.jobCode || `VM${153 - idx}`,
-              summary: extractStrapiText(c.summary) || '',
-              responsibilities: parseStrapiList(c.responsibilities),
-              requirements: parseStrapiList(c.requirements)
+              department: acf.department || 'Engineering & Technical',
+              location: acf.location || 'Nairobi, Kenya',
+              experience: acf.experienceLevel || '3+ Years Exp',
+              jobType: acf.jobType || 'Full-time',
+              jobCode: acf.jobCode || `VM${153 - idx}`,
+              summary: stripHtml(acf.summary || c.excerpt || ''),
+              responsibilities: parseList(acf.responsibilities || c.content),
+              requirements: parseList(acf.requirements)
             }
           })
           allJobs = mapped
-          setCachedStrapiData('careers_mapped', mapped)
+          setCachedData('careers_mapped', mapped)
         } else {
           allJobs = fallbackPositions
         }
@@ -239,7 +248,7 @@ export default function JobDetail() {
         const pool = allJobs.length > 1 ? allJobs : fallbackPositions
         setOtherJobs(pool.filter(j => j.slug !== (found ? found.slug : slug)).slice(0, 3))
       } catch (err) {
-        console.warn('Error fetching career details, using fallback', err)
+        console.warn('Error fetching career details from WordPress GraphQL, using fallback', err)
       } finally {
         setLoading(false)
       }
