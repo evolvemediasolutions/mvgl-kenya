@@ -315,12 +315,13 @@ export default function NonMetallicSolutions() {
           <div className="lg:col-span-5 flex justify-center lg:justify-end">
             <Link
               to="/solutions/non-metallic-solutions/epp-composites"
-              className="bg-white border border-slate-200/80 hover:border-brand-primary/50 rounded-2xl p-8 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center w-full max-w-[280px] sm:max-w-[320px] h-[150px] group"
+              className="bg-white border border-slate-200/80 hover:border-brand-primary/60 rounded-2xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center w-full max-w-[320px] h-[150px] group overflow-hidden"
+              title="Explore EPP Composites Products"
             >
               <img
                 src="/PARTNERS LOGO/EPP.jpg"
                 alt="EPP Composites"
-                className="max-h-16 max-w-[200px] object-contain group-hover:scale-105 transition-transform duration-300"
+                className="h-16 sm:h-20 w-auto max-w-[85%] max-h-[85px] object-contain group-hover:scale-105 transition-transform duration-300"
               />
             </Link>
           </div>

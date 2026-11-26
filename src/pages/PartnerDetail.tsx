@@ -16,6 +16,9 @@ export default function PartnerDetail() {
   const [eppFilter, setEppFilter] = useState('all')
   const [sppFilter, setSppFilter] = useState('all')
   const [prosoftFilter, setProsoftFilter] = useState('all')
+  const [powergenFilter, setPowergenFilter] = useState('all')
+  const [fujiFilter, setFujiFilter] = useState('all')
+  const [xoogFilter, setXoogFilter] = useState('all')
 
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
 
@@ -209,7 +212,7 @@ export default function PartnerDetail() {
   const getPartnerLogo = (slug: string) => {
     switch (slug) {
       case 'kirloskar-powergen':
-        return '/PARTNERS LOGO/KIRLOSKAR POWERGEN.svg'
+        return '/PARTNERS LOGO/KIRLOSKAR POWERGEN.jpg'
       case 'rockwell-automation':
         return '/PARTNERS LOGO/ROCKWELL AUTOMATION.png'
       case 'epp-composites':
@@ -225,9 +228,9 @@ export default function PartnerDetail() {
       case 'prosoft-technology':
         return '/PARTNERS LOGO/PROSOFT TECHNOLOGIES.png'
       case 'fuji-electronics':
-        return '/PARTNERS LOGO/FUJI ELECTRONICS.svg'
+        return '/PARTNERS LOGO/FUJI ELECTRIC.webp'
       case 'xoog':
-        return '/PARTNERS LOGO/XOOG.svg'
+        return '/PARTNERS LOGO/XOOG LOGO.svg'
       default:
         return partner?.logo || ''
     }
@@ -377,13 +380,15 @@ export default function PartnerDetail() {
           </div>
         </section>
       ) : (
-        <section className="w-full bg-[#f4f8fb] py-10 my-4 flex items-center justify-center">
+        <section className="w-full bg-[#f4f8fb] py-8 my-4">
           <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-            <img
-              src={getPartnerLogo(partner.slug)}
-              alt={partner.name}
-              className="h-14 sm:h-16 w-auto object-contain max-w-[280px]"
-            />
+            <div className="px-6 py-4 rounded-2xl bg-white shadow-xs border border-slate-200/80 flex items-center justify-center w-[220px] sm:w-[260px] h-[95px] overflow-hidden">
+              <img
+                src={getPartnerLogo(partner.slug)}
+                alt={partner.name}
+                className="h-12 sm:h-14 w-auto max-w-[200px] object-contain"
+              />
+            </div>
           </div>
         </section>
       )}
@@ -2143,6 +2148,432 @@ export default function PartnerDetail() {
                                 <span>View More</span>
                                 <span>&rarr;</span>
                               </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+          ) : partner.slug === 'kirloskar-powergen' ? (
+            // Kirloskar Powergen solutions + category filters
+            <div className="space-y-16 text-start">
+              {/* Product Filtering Section */}
+              <div className="space-y-8">
+                {/* 1. Centered Eyebrow Badge */}
+                <div className="flex justify-center">
+                  <span className="eyebrow block">
+                    KIRLOSKAR POWERGEN
+                  </span>
+                </div>
+
+                {/* 2. Filter Buttons Grid */}
+                <div className="flex flex-wrap items-center justify-center gap-3 max-w-5xl mx-auto">
+                  {[
+                    { id: 'all', label: { en: 'All' } },
+                    { id: 'diesel', label: { en: 'DIESEL GENERATORS' } },
+                    { id: 'gas', label: { en: 'GAS GENERATORS' } },
+                    { id: 'switchgear', label: { en: 'SWITCHGEAR & AMF' } }
+                  ].map((tab) => {
+                    const isActive = powergenFilter === tab.id
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setPowergenFilter(tab.id)}
+                        className={`px-5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer ${isActive
+                            ? 'bg-brand-primary text-white shadow-md'
+                            : 'bg-white border border-slate-200 text-slate-700 hover:border-brand-primary hover:text-brand-primary shadow-2xs'
+                          }`}
+                      >
+                        {tab.label[locale]}
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {/* 3. Product Cards Grid (Matching kirloskar-pneumatic UI) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-4">
+                  {mergePartnerProducts([
+                    {
+                      id: 1,
+                      category: 'diesel',
+                      tag: 'KIRLOSKAR POWERGEN',
+                      title: {
+                        en: 'Heavy-Duty Industrial Diesel Generator Sets'
+                      },
+                      desc: {
+                        en: 'Engineered for continuous prime and emergency standby duty across manufacturing plants, data hubs, and health facilities.'
+                      },
+                      specs: {
+                        en: '15 kVA to 3000+ kVA | CPCB / ISO Compliant | DeepSea AMF Controller | Soundproof Enclosure'
+                      },
+                      image: 'https://images.unsplash.com/photo-1513828583688-c52646db42da?auto=format&fit=crop&w=800&q=80',
+                      slug: 'kp-diesel-genset'
+                    },
+                    {
+                      id: 2,
+                      category: 'gas',
+                      tag: 'KIRLOSKAR POWERGEN',
+                      title: {
+                        en: 'Continuous Natural Gas & Biogas Generator Packages'
+                      },
+                      desc: {
+                        en: 'High-efficiency, eco-friendly gas power generation systems engineered for low lifecycle operating costs and continuous base-load industrial power.'
+                      },
+                      specs: {
+                        en: '100 kVA to 2500 kVA | Natural Gas & Biogas Dual-Fuel | Lean-Burn Technology | Low Emission Certified'
+                      },
+                      image: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80',
+                      slug: 'kp-gas-genset'
+                    },
+                    {
+                      id: 3,
+                      category: 'switchgear',
+                      tag: 'KIRLOSKAR POWERGEN',
+                      title: {
+                        en: 'Automatic Mains Failure (AMF) & Synchronizing Switchgear'
+                      },
+                      desc: {
+                        en: 'Intelligent power transfer switchgear and multi-genset paralleling systems ensuring zero disruption during utility power outages.'
+                      },
+                      specs: {
+                        en: 'Microprocessor Controlled | 4-Pole Motorized ACB | Auto Load Sharing & Shedding | SCADA Modbus Interface'
+                      },
+                      image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80',
+                      slug: 'kp-amf-panels'
+                    }
+                  ], 'kirloskar-powergen')
+                    .filter((prod) => powergenFilter === 'all' || prod.category === powergenFilter)
+                    .map((prod, idx) => (
+                      <div
+                        key={idx}
+                        className="bg-white rounded-3xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 group flex flex-col justify-between text-start border-0"
+                      >
+                        {/* Image Container */}
+                        <div className="h-64 sm:h-72 bg-white relative overflow-hidden flex items-center justify-center p-3">
+                          <img
+                            src={prod.image}
+                            alt={prod.title[locale]}
+                            onError={handleProductImageError}
+                            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                          />
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-6 sm:p-7 bg-white flex-grow flex flex-col justify-between space-y-4">
+                          <div className="space-y-3">
+                            <span className="text-[11px] font-bold text-brand-primary uppercase tracking-widest block">
+                              {prod.tag}
+                            </span>
+                            <h4 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-brand-primary transition-colors leading-snug">
+                              {prod.title[locale]}
+                            </h4>
+                            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed line-clamp-4">
+                              {prod.desc[locale]}
+                            </p>
+
+                            {prod.specs && (
+                              <div className="pt-2 border-t border-slate-100">
+                                <span className="inline-block text-[11px] font-semibold text-slate-500 bg-slate-50 border border-slate-200/80 px-2.5 py-1 rounded-md">
+                                  {prod.specs[locale]}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="pt-3 border-t border-slate-100">
+                            <button
+                              type="button"
+                              onClick={() => handleOpenProductModal(prod)}
+                              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-primary hover:text-brand-secondary transition-colors group-hover:translate-x-1 duration-200 cursor-pointer"
+                            >
+                              <span>View More</span>
+                              <span>&rarr;</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+          ) : partner.slug === 'fuji-electronics' ? (
+            // Fuji Electronics solutions + category filters
+            <div className="space-y-16 text-start">
+              {/* Product Filtering Section */}
+              <div className="space-y-8">
+                {/* 1. Centered Eyebrow Badge */}
+                <div className="flex justify-center">
+                  <span className="eyebrow block">
+                    FUJI ELECTRONICS
+                  </span>
+                </div>
+
+                {/* 2. Filter Buttons Grid */}
+                <div className="flex flex-wrap items-center justify-center gap-3 max-w-5xl mx-auto">
+                  {[
+                    { id: 'all', label: { en: 'All' } },
+                    { id: 'drives', label: { en: 'AC DRIVES & INVERTERS' } },
+                    { id: 'ups', label: { en: 'INDUSTRIAL UPS' } },
+                    { id: 'filters', label: { en: 'POWER QUALITY & FILTERS' } }
+                  ].map((tab) => {
+                    const isActive = fujiFilter === tab.id
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setFujiFilter(tab.id)}
+                        className={`px-5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer ${isActive
+                            ? 'bg-brand-primary text-white shadow-md'
+                            : 'bg-white border border-slate-200 text-slate-700 hover:border-brand-primary hover:text-brand-primary shadow-2xs'
+                          }`}
+                      >
+                        {tab.label[locale]}
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {/* 3. Product Cards Grid (Matching kirloskar-pneumatic UI) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-4">
+                  {mergePartnerProducts([
+                    {
+                      id: 1,
+                      category: 'drives',
+                      tag: 'FUJI ELECTRONICS',
+                      title: {
+                        en: 'FRENIC-MEGA High-Performance Industrial Drive'
+                      },
+                      desc: {
+                        en: 'High-performance vector control inverters delivering maximum starting torque, multi-drive synchronization, and harmonic suppression.'
+                      },
+                      specs: {
+                        en: '0.4 kW to 630 kW | Dynamic Torque Vector Control | Built-in Braking Transistor | Dual Rating HD/ND'
+                      },
+                      image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
+                      slug: 'fe-frenic-inverter'
+                    },
+                    {
+                      id: 2,
+                      category: 'ups',
+                      tag: 'FUJI ELECTRONICS',
+                      title: {
+                        en: 'UPS7000HX High-Efficiency Online Double-Conversion UPS'
+                      },
+                      desc: {
+                        en: 'Transformerless, high-efficiency online UPS system engineered to protect mission-critical industrial processes, cleanrooms, and data infrastructure.'
+                      },
+                      specs: {
+                        en: '10 kVA to 500 kVA | 96.5% Efficiency | IGBT 3-Level Inverter | Modular N+1 Redundancy'
+                      },
+                      image: 'https://images.unsplash.com/photo-1544256718-3bcf237f3974?auto=format&fit=crop&w=800&q=80',
+                      slug: 'fe-ups-7000'
+                    },
+                    {
+                      id: 3,
+                      category: 'filters',
+                      tag: 'FUJI ELECTRONICS',
+                      title: {
+                        en: 'Active Harmonic Conditioner & Dynamic Power Quality Filter'
+                      },
+                      desc: {
+                        en: 'Real-time harmonic mitigation and dynamic reactive power compensation ensuring compliance with IEEE 519 electrical standards.'
+                      },
+                      specs: {
+                        en: 'Up to 50th Harmonic Cancellation | < 5ms Response Time | Power Factor Correction to 0.99 | Modular Rack Mount'
+                      },
+                      image: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80',
+                      slug: 'fe-harmonic-filter'
+                    }
+                  ], 'fuji-electronics')
+                    .filter((prod) => fujiFilter === 'all' || prod.category === fujiFilter)
+                    .map((prod, idx) => (
+                      <div
+                        key={idx}
+                        className="bg-white rounded-3xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 group flex flex-col justify-between text-start border-0"
+                      >
+                        {/* Image Container */}
+                        <div className="h-64 sm:h-72 bg-white relative overflow-hidden flex items-center justify-center p-3">
+                          <img
+                            src={prod.image}
+                            alt={prod.title[locale]}
+                            onError={handleProductImageError}
+                            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                          />
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-6 sm:p-7 bg-white flex-grow flex flex-col justify-between space-y-4">
+                          <div className="space-y-3">
+                            <span className="text-[11px] font-bold text-brand-primary uppercase tracking-widest block">
+                              {prod.tag}
+                            </span>
+                            <h4 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-brand-primary transition-colors leading-snug">
+                              {prod.title[locale]}
+                            </h4>
+                            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed line-clamp-4">
+                              {prod.desc[locale]}
+                            </p>
+
+                            {prod.specs && (
+                              <div className="pt-2 border-t border-slate-100">
+                                <span className="inline-block text-[11px] font-semibold text-slate-500 bg-slate-50 border border-slate-200/80 px-2.5 py-1 rounded-md">
+                                  {prod.specs[locale]}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="pt-3 border-t border-slate-100">
+                            <button
+                              type="button"
+                              onClick={() => handleOpenProductModal(prod)}
+                              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-primary hover:text-brand-secondary transition-colors group-hover:translate-x-1 duration-200 cursor-pointer"
+                            >
+                              <span>View More</span>
+                              <span>&rarr;</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+          ) : partner.slug === 'xoog' ? (
+            // Xoog solutions + category filters
+            <div className="space-y-16 text-start">
+              {/* Product Filtering Section */}
+              <div className="space-y-8">
+                {/* 1. Centered Eyebrow Badge */}
+                <div className="flex justify-center">
+                  <span className="eyebrow block">
+                    XOOG
+                  </span>
+                </div>
+
+                {/* 2. Filter Buttons Grid */}
+                <div className="flex flex-wrap items-center justify-center gap-3 max-w-5xl mx-auto">
+                  {[
+                    { id: 'all', label: { en: 'All' } },
+                    { id: 'amr', label: { en: 'AUTONOMOUS MOBILE ROBOTS (AMR)' } },
+                    { id: 'asrs', label: { en: 'ASRS STORAGE SYSTEMS' } },
+                    { id: 'conveyors', label: { en: 'CONVEYORS & SORTATION' } }
+                  ].map((tab) => {
+                    const isActive = xoogFilter === tab.id
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setXoogFilter(tab.id)}
+                        className={`px-5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer ${isActive
+                            ? 'bg-brand-primary text-white shadow-md'
+                            : 'bg-white border border-slate-200 text-slate-700 hover:border-brand-primary hover:text-brand-primary shadow-2xs'
+                          }`}
+                      >
+                        {tab.label[locale]}
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {/* 3. Product Cards Grid (Matching kirloskar-pneumatic UI) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-4">
+                  {mergePartnerProducts([
+                    {
+                      id: 1,
+                      category: 'amr',
+                      tag: 'XOOG',
+                      title: {
+                        en: 'Xoog Autonomous Mobile Transport Robot (AMR 500)'
+                      },
+                      desc: {
+                        en: 'Intelligent autonomous mobile robot engineered for dynamic plant-floor pallet transportation, aisle navigation, and fleet scheduling.'
+                      },
+                      specs: {
+                        en: '500 kg Payload Capacity | Natural LiDAR SLAM Navigation | 360° Safety LiDAR & Obstacle Avoidance | Fleet WES Integration'
+                      },
+                      image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80',
+                      slug: 'xoog-amr-500'
+                    },
+                    {
+                      id: 2,
+                      category: 'asrs',
+                      tag: 'XOOG',
+                      title: {
+                        en: 'High-Density Automated Storage & Retrieval System (ASRS)'
+                      },
+                      desc: {
+                        en: 'Automated 4-way pallet shuttle and crane ASRS maximizing warehouse vertical cube utilization, throughput rate, and inventory accuracy.'
+                      },
+                      specs: {
+                        en: 'Storage Height up to 35m | Payload up to 1500 kg/pallet | Dual-Deep Shuttle System | WMS ERP Live Sync'
+                      },
+                      image: 'https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=800&q=80',
+                      slug: 'xoog-asrs-shuttle'
+                    },
+                    {
+                      id: 3,
+                      category: 'conveyors',
+                      tag: 'XOOG',
+                      title: {
+                        en: 'Modular Intelligent Roller Conveyor & High-Speed Sortation Lines'
+                      },
+                      desc: {
+                        en: 'Energy-efficient 24V motorized driven roller (MDR) conveyors with zero pressure accumulation (ZPA) and high-speed cross-belt sorters.'
+                      },
+                      specs: {
+                        en: 'Sortation Speed up to 2.5 m/s | Modular Plug-and-Play Sections | ZPA Zone Control | Low Noise < 65 dBA'
+                      },
+                      image: 'https://images.unsplash.com/photo-1616401784845-180882ba9ba8?auto=format&fit=crop&w=800&q=80',
+                      slug: 'xoog-smart-conveyor'
+                    }
+                  ], 'xoog')
+                    .filter((prod) => xoogFilter === 'all' || prod.category === xoogFilter)
+                    .map((prod, idx) => (
+                      <div
+                        key={idx}
+                        className="bg-white rounded-3xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 group flex flex-col justify-between text-start border-0"
+                      >
+                        {/* Image Container */}
+                        <div className="h-64 sm:h-72 bg-white relative overflow-hidden flex items-center justify-center p-3">
+                          <img
+                            src={prod.image}
+                            alt={prod.title[locale]}
+                            onError={handleProductImageError}
+                            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                          />
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-6 sm:p-7 bg-white flex-grow flex flex-col justify-between space-y-4">
+                          <div className="space-y-3">
+                            <span className="text-[11px] font-bold text-brand-primary uppercase tracking-widest block">
+                              {prod.tag}
+                            </span>
+                            <h4 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-brand-primary transition-colors leading-snug">
+                              {prod.title[locale]}
+                            </h4>
+                            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed line-clamp-4">
+                              {prod.desc[locale]}
+                            </p>
+
+                            {prod.specs && (
+                              <div className="pt-2 border-t border-slate-100">
+                                <span className="inline-block text-[11px] font-semibold text-slate-500 bg-slate-50 border border-slate-200/80 px-2.5 py-1 rounded-md">
+                                  {prod.specs[locale]}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="pt-3 border-t border-slate-100">
+                            <button
+                              type="button"
+                              onClick={() => handleOpenProductModal(prod)}
+                              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-primary hover:text-brand-secondary transition-colors group-hover:translate-x-1 duration-200 cursor-pointer"
+                            >
+                              <span>View More</span>
+                              <span>&rarr;</span>
+                            </button>
                           </div>
                         </div>
                       </div>

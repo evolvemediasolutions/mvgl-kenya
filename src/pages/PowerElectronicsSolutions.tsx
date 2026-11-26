@@ -280,13 +280,13 @@ export default function PowerElectronicsSolutions() {
           <div className="lg:col-span-5 flex justify-center lg:justify-end">
             <Link
               to="/solutions/power-electronics/fuji-electronics"
-              className="bg-white border border-slate-200/80 hover:border-brand-primary/60 rounded-2xl p-8 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center w-full max-w-[320px] h-[150px] group overflow-hidden"
+              className="bg-white border border-slate-200/80 hover:border-brand-primary/60 rounded-2xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center w-full max-w-[320px] h-[150px] group overflow-hidden"
               title="Explore Fuji Electronics Products"
             >
               <img
-                src="/PARTNERS LOGO/FUJI ELECTRONICS.svg"
+                src="/PARTNERS LOGO/FUJI ELECTRIC.webp"
                 alt="Fuji Electronics"
-                className="max-h-16 max-w-[220px] object-contain group-hover:scale-105 transition-transform duration-300"
+                className="h-16 sm:h-20 w-auto max-w-[85%] max-h-[85px] object-contain group-hover:scale-105 transition-transform duration-300"
               />
             </Link>
           </div>

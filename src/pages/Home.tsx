@@ -154,13 +154,13 @@ export default function Home() {
   ]
 
   const partnerLogos = [
-    { name: 'Kirloskar Powergen', image: '/PARTNERS LOGO/KIRLOSKAR POWERGEN.svg', slug: 'kirloskar-powergen', scale: 'scale-105' },
+    { name: 'Kirloskar Powergen', image: '/PARTNERS LOGO/KIRLOSKAR POWERGEN.jpg', slug: 'kirloskar-powergen', scale: 'scale-100' },
     { name: 'Kirloskar Pneumatic', image: '/PARTNERS LOGO/KIRLOSKAR PNEUMATIC.jpg', slug: 'kirloskar-pneumatic', scale: 'scale-100' },
     { name: 'Kirloskar Chillers', image: '/PARTNERS LOGO/KCPL.jpg', slug: 'kirloskar-chillers', scale: 'scale-100' },
     { name: 'SPP Pumps', image: '/PARTNERS LOGO/SPP.jpg', slug: 'spp-pumps', scale: 'scale-100' },
     { name: 'Rockwell Automation', image: '/PARTNERS LOGO/ROCKWELL AUTOMATION.png', slug: 'rockwell-automation', scale: 'scale-[1.45]' },
-    { name: 'Fuji Electronics', image: '/PARTNERS LOGO/FUJI ELECTRONICS.svg', slug: 'fuji-electronics', scale: 'scale-105' },
-    { name: 'Xoog', image: '/PARTNERS LOGO/XOOG.svg', slug: 'xoog', scale: 'scale-105' },
+    { name: 'Fuji Electric', image: '/PARTNERS LOGO/FUJI ELECTRIC.webp', slug: 'fuji-electronics', scale: 'scale-100' },
+    { name: 'Xoog', image: '/PARTNERS LOGO/XOOG LOGO.svg', slug: 'xoog', scale: 'scale-100' },
     { name: 'Allen Bradley', image: '/PARTNERS LOGO/ALLEN BRADLEY.png', slug: 'rockwell-automation', scale: 'scale-[1.45]' },
     { name: 'FactoryTalk', image: '/PARTNERS LOGO/FACTORY TALK.png', slug: 'rockwell-automation', scale: 'scale-115' },
     { name: 'EPP Composites', image: '/PARTNERS LOGO/EPP.jpg', slug: 'epp-composites', scale: 'scale-100' },

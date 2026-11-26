@@ -17,7 +17,7 @@ export const partnersData: Partner[] = [
     id: 'kirloskar-powergen',
     slug: 'kirloskar-powergen',
     name: 'Kirloskar Powergen',
-    logo: '/PARTNERS LOGO/KIRLOSKAR POWERGEN.svg',
+    logo: '/PARTNERS LOGO/KIRLOSKAR POWERGEN.jpg',
     description: {
       en: 'Reliable Prime & Standby Power Generation Solutions'
     },
@@ -82,7 +82,7 @@ export const partnersData: Partner[] = [
     id: 'fuji-electronics',
     slug: 'fuji-electronics',
     name: 'Fuji Electronics',
-    logo: '/PARTNERS LOGO/FUJI ELECTRONICS.svg',
+    logo: '/PARTNERS LOGO/FUJI ELECTRIC.webp',
     description: {
       en: 'Advanced Power Electronics, Inverters & Energy Control'
     },
@@ -95,7 +95,7 @@ export const partnersData: Partner[] = [
     id: 'xoog',
     slug: 'xoog',
     name: 'Xoog',
-    logo: '/PARTNERS LOGO/XOOG.svg',
+    logo: '/PARTNERS LOGO/XOOG LOGO.svg',
     description: {
       en: 'Intelligent Warehouse Automation & Material Handling'
     },

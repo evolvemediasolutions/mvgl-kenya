@@ -294,13 +294,13 @@ export default function PowerGenerationSolutions() {
           <div className="lg:col-span-5 flex justify-center lg:justify-end">
             <Link
               to="/solutions/power-generation/kirloskar-powergen"
-              className="bg-white border border-slate-200/80 hover:border-brand-primary/60 rounded-2xl p-8 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center w-full max-w-[320px] h-[150px] group overflow-hidden"
+              className="bg-white border border-slate-200/80 hover:border-brand-primary/60 rounded-2xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center w-full max-w-[320px] h-[150px] group overflow-hidden"
               title="Explore Kirloskar Powergen Products"
             >
               <img
-                src="/PARTNERS LOGO/KIRLOSKAR POWERGEN.svg"
+                src="/PARTNERS LOGO/KIRLOSKAR POWERGEN.jpg"
                 alt="Kirloskar Powergen"
-                className="max-h-16 max-w-[220px] object-contain group-hover:scale-105 transition-transform duration-300"
+                className="h-16 sm:h-20 w-auto max-w-[85%] max-h-[85px] object-contain group-hover:scale-105 transition-transform duration-300"
               />
             </Link>
           </div>
